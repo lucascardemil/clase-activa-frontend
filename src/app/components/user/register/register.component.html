@@ -1,0 +1,94 @@
+<main class="form-signin w-100 m-auto">
+    <form [formGroup]="userForm" (ngSubmit)="signUp(userForm.value)" class="needs-validation" novalidate>
+        <h1 class="mb-5 text-center fw-light">Registrarse</h1>
+
+        <div class="mb-3">
+            <!-- <label for="role" class="form-label">Soy</label> -->
+            <select class="form-select form-select-lg" formControlName="role" [ngClass]="(role?.touched || role?.dirty) && role?.hasError('required') ? 'is-invalid' : '' || 
+                          ((role?.touched || role?.dirty) && !role?.invalid) ? 'is-valid' : ''">
+                <option value="">Soy</option>
+                <option value="profesor">Profesor</option>
+                <option value="alumno">Alumno</option>
+                <option value="apoderado">Apoderado</option>
+            </select>
+
+
+            <div class="invalid-feedback">
+                {{ role?.hasError('required') ? 'El rol es requerido' : '' }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <!-- <label for="rut" class="form-label">rut</label> -->
+            <input type="text" class="form-control form-control-lg" formControlName="rut" placeholder="11.111.111-1"
+                [ngClass]="(rut?.touched || rut?.dirty) && rut?.hasError('required') ? 'is-invalid' : '' ||
+                           (rut?.touched || rut?.dirty) && this.rutService.msj == false ? 'is-invalid' : '' || 
+                           ((rut?.touched || rut?.dirty) && !rut?.invalid) ? 'is-valid' : ''"
+                (focus)="this.rutService.rutFormat($event)" (keydown)="this.rutService.rutFormat($event)" (keyup)="this.rutService.rutFormat($event)" />
+
+            <div class="invalid-feedback" *ngIf="this.rutService.msj == false">Rut invalido</div>
+
+            <div class="invalid-feedback" *ngIf="this.rutService.msj == true">
+                {{ rut?.hasError('required') ? 'El rut es requerido' : '' }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <!-- <label for="rut" class="form-label">rut</label> -->
+            <input type="text" class="form-control form-control-lg" formControlName="name" placeholder="Nombre"
+                [ngClass]="(name?.touched || name?.dirty) && name?.hasError('required') ? 'is-invalid' : '' || 
+                          name?.hasError('name') ? 'is-invalid' : '' ||
+                          ((name?.touched || name?.dirty) && !name?.invalid) ? 'is-valid' : ''" />
+
+
+            <div class="invalid-feedback">
+                {{ name?.hasError('required') ? 'El nombre es requerido' : '' }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <!-- <label for="rut" class="form-label">rut</label> -->
+            <input type="email" class="form-control form-control-lg" formControlName="email" placeholder="Correo"
+                [ngClass]="(email?.touched || email?.dirty) && email?.hasError('required') ? 'is-invalid' : '' || 
+                          email?.hasError('email') ? 'is-invalid' : '' ||
+                          ((email?.touched || email?.dirty) && !email?.invalid) ? 'is-valid' : ''" />
+
+
+            <div class="invalid-feedback">
+                {{ email?.hasError('required') ? 'El email es requerido' : '' }}
+                {{ email?.hasError('rut') ? 'El email no es valido' : '' }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <!-- <label for="password" class="form-label">Contraseña</label -->
+            <input type="password" class="form-control form-control-lg" formControlName="password"
+                placeholder="Contraseña" [ngClass]="(password?.touched || password?.dirty) && password?.hasError('required') ? 'is-invalid' : '' || 
+                          ((password?.touched || password?.dirty) && !password?.invalid) ? 'is-valid' : ''" />
+
+            <div class="invalid-feedback">
+                {{ password?.hasError('required') ? 'La contraseña es requerida' : '' }}
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+            <!-- <label for="password" class="form-label">Contraseña</label -->
+            <input type="password" class="form-control form-control-lg" formControlName="repeatpassword"
+                placeholder="Repetir Contraseña"
+                [ngClass]="(repeatpassword?.touched || repeatpassword?.dirty) && repeatpassword?.hasError('required') ? 'is-invalid' : '' || 
+                (repeatpassword?.touched || repeatpassword?.dirty) && this.msjPassword == false ? 'is-invalid' : '' ||   
+                ((repeatpassword?.touched || repeatpassword?.dirty) && !repeatpassword?.invalid) ? 'is-valid' : ''"
+                (focus)="confirmPassword($event)" (keydown)="confirmPassword($event)"
+                (keyup)="confirmPassword($event)" />
+
+
+            <div class="invalid-feedback" *ngIf="this.msjPassword == false">Las contraseñas no coiciden</div>
+            
+
+        </div>
+
+        <button class="w-100 btn btn-lg btn-primary" type="submit" [disabled]="!userForm.valid">Registrar</button>
+        <p class="mt-3 mb-3 text-center text-muted">¿Ya tienes una cuenta? <a [routerLink]="['/acceso']" class="text-reset text-decoration-none fw-bold">Iniciar Sesión</a></p>
+    </form>
+</main>

@@ -1,0 +1,401 @@
+<div class="py-3">
+
+    <figure>
+        <blockquote class="blockquote">
+            <h1>Cobertura Curricular</h1>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Rellena los campos para generar una planificación.
+        </figcaption>
+    </figure>
+
+    <div class="row" [formGroup]="plannigAddForm">
+        <div class="col">
+            <label class="fw-semibold mb-3">Niveles</label>
+            <select class="form-select" formControlName="level" [ngClass]="(level?.touched || level?.dirty) && level?.hasError('required') ? 'is-invalid' : '' || 
+            ((level?.touched || level?.dirty) && !level?.invalid) ? 'is-valid' : ''" (change)="loadCourses($event)">
+                <option value="">Seleccione el nivel</option>
+                <option *ngFor="let level of list_niveles" [value]="level.id">{{ level.name }}</option>
+            </select>
+
+            <div class="invalid-feedback">
+                {{ level?.hasError('required') ? 'El nivel es requerido' : '' }}
+            </div>
+        </div>
+        <div class="col">
+            <label class="fw-semibold mb-3">Cursos</label>
+            <select class="form-select" formControlName="course" [ngClass]="(course?.touched || course?.dirty) && course?.hasError('required') ? 'is-invalid' : '' || 
+            ((course?.touched || course?.dirty) && !course?.invalid) ? 'is-valid' : ''"
+                (change)="loadSubjects($event)">
+                <option value="">Seleccione el curso</option>
+                <option *ngFor="let course of list_courses" [value]="course.id">{{ course.name }}</option>
+            </select>
+
+            <div class="invalid-feedback">
+                {{ course?.hasError('required') ? 'El curso es requerido' : '' }}
+            </div>
+        </div>
+        <div class="col">
+            <label class="fw-semibold mb-3">Asignaturas</label>
+            <select class="form-select" formControlName="subject" [ngClass]="(subject?.touched || subject?.dirty) && subject?.hasError('required') ? 'is-invalid' : '' || 
+            ((subject?.touched || subject?.dirty) && !subject?.invalid) ? 'is-valid' : ''">
+                <option value="">Seleccione la asignatura</option>
+                <option *ngFor="let subject of list_subjects" [value]="subject.id">{{ subject.name }}</option>
+            </select>
+
+            <div class="invalid-feedback">
+                {{ subject?.hasError('required') ? 'La asignatura es requerido' : '' }}
+            </div>
+        </div>
+        <div class="col-12 my-3">
+            <label class="fw-semibold mb-3">Unidad</label>
+
+            <div class="input-group">
+                <input type="text" class="form-control" formControlName="unit" [ngClass]="(unit?.touched || unit?.dirty) && unit?.hasError('required') ? 'is-invalid' : '' || 
+                ((unit?.touched || unit?.dirty) && !unit?.invalid) ? 'is-valid' : ''" placeholder="Unidad"
+                    aria-label="Unidad" aria-describedby="button-unit">
+                <button class="btn btn-primary" type="button" id="button-unit"
+                    (click)="savePlanningUnit({name: plannigAddForm.value.unit, subject: plannigAddForm.value.subject})"
+                    [disabled]="disabledButton([plannigAddForm.value.unit, plannigAddForm.value.subject])"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-plus">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>Agregar</button>
+            </div>
+            <div class="invalid-feedback">
+                {{ unit?.hasError('required') ? 'La unidad es requerido' : '' }}
+            </div>
+        </div>
+
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingEje">
+                    <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseEje" aria-expanded="false" aria-controls="collapseEje">
+                        Eje
+                    </button>
+                </h2>
+                <div id="collapseEje" class="accordion-collapse collapse" aria-labelledby="headingEje"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+
+                        <div class="mb-3">
+
+                            <input class="form-control" list="datalistUnits" formControlName="unit" [ngClass]="(unit?.touched || unit?.dirty) && unit?.hasError('required') ? 'is-invalid' : '' || 
+                            ((unit?.touched || unit?.dirty) && !unit?.invalid) ? 'is-valid' : ''"
+                                placeholder="Buscar la Unidad">
+                            <datalist id="datalistUnits">
+                                <option *ngFor="let unit of list_units" [value]="unit.name" [id]="unit.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ unit?.hasError('required') ? 'La unidad es requerida' : '' }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <textarea class="form-control" formControlName="axi" [ngClass]="(axi?.touched || axi?.dirty) && axi?.hasError('required') ? 'is-invalid' : '' || 
+                            ((axi?.touched || axi?.dirty) && !axi?.invalid) ? 'is-valid' : ''" placeholder="Eje"
+                                aria-label="Eje"></textarea>
+
+                            <div class="invalid-feedback">
+                                {{ axi?.hasError('required') ? 'El Eje es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            (click)="savePlanningWithUnit({name: plannigAddForm.value.axi, unit: plannigAddForm.value.unit, table: 'axis', message: 'Eje'})"
+                            [disabled]="disabledButton([plannigAddForm.value.axi, plannigAddForm.value.unit])"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-plus">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg> Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingObjetivo">
+                    <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseObjetivo" aria-expanded="false" aria-controls="collapseObjetivo">
+                        Objetivos
+                    </button>
+                </h2>
+                <div id="collapseObjetivo" class="accordion-collapse collapse" aria-labelledby="headingObjetivo"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+
+                        <div class="mb-3">
+
+                            <input class="form-control" list="datalistUnits" formControlName="unit" [ngClass]="(unit?.touched || unit?.dirty) && unit?.hasError('required') ? 'is-invalid' : '' || 
+                            ((unit?.touched || unit?.dirty) && !unit?.invalid) ? 'is-valid' : ''"
+                                placeholder="Buscar la Unidad">
+                            <datalist id="datalistUnits">
+                                <option *ngFor="let unit of list_units" [value]="unit.name" [id]="unit.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ unit?.hasError('required') ? 'La unidad es requerida' : '' }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+
+                            <input class="form-control" list="datalistAxis" formControlName="axi" [ngClass]="(axi?.touched || axi?.dirty) && axi?.hasError('required') ? 'is-invalid' : '' || 
+                            ((axi?.touched || axi?.dirty) && !axi?.invalid) ? 'is-valid' : ''"
+                                placeholder="Buscar el Eje">
+                            <datalist id="datalistAxis">
+                                <option *ngFor="let axi of list_axis" [value]="axi.name" [id]="axi.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ axi?.hasError('required') ? 'El eje es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <textarea class="form-control" formControlName="objective" [ngClass]="(objective?.touched || objective?.dirty) && objective?.hasError('required') ? 'is-invalid' : '' || 
+                            ((objective?.touched || objective?.dirty) && !objective?.invalid) ? 'is-valid' : ''"
+                                placeholder="Objetivos" aria-label="Objetivos"></textarea>
+
+                            <div class="invalid-feedback">
+                                {{ objective?.hasError('required') ? 'El objetivo es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            (click)="savePlanningObjective({name: plannigAddForm.value.objective, unit: plannigAddForm.value.unit, axi: plannigAddForm.value.axi})"
+                            [disabled]="disabledButton([plannigAddForm.value.objective, plannigAddForm.value.unit, plannigAddForm.value.axi])"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-plus">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg> Agregar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSubObjetivo">
+                    <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseSubObjetivo" aria-expanded="false" aria-controls="collapseSubObjetivo">
+                        Sub-Objetivo
+                    </button>
+                </h2>
+                <div id="collapseSubObjetivo" class="accordion-collapse collapse" aria-labelledby="headingSubObjetivo"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+
+                        <div class="mb-3">
+                            <input class="form-control" list="datalistObjectives" formControlName="objective" [ngClass]="(objective?.touched || objective?.dirty) && objective?.hasError('required') ? 'is-invalid' : '' || 
+            ((objective?.touched || objective?.dirty) && !objective?.invalid) ? 'is-valid' : ''"
+                                placeholder="Buscar el Objetivo">
+                            <datalist id="datalistObjectives">
+                                <option *ngFor="let objective of list_objectives" [value]="objective.name"
+                                    [id]="objective.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ objective?.hasError('required') ? 'El objetivo es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <textarea class="form-control" formControlName="subObjective" [ngClass]="(subObjective?.touched || subObjective?.dirty) && subObjective?.hasError('required') ? 'is-invalid' : '' || 
+                ((subObjective?.touched || subObjective?.dirty) && !subObjective?.invalid) ? 'is-valid' : ''"
+                                placeholder="Sub-Objetivos" aria-label="Sub-Objetivos"></textarea>
+
+                            <div class="invalid-feedback">
+                                {{ subObjective?.hasError('required') ? 'El sub-objetivo es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            (click)="savePlanningWithObjective({name: plannigAddForm.value.subObjective, objective: plannigAddForm.value.objective, table: 'subobjectives', message: 'Sub-Objetivo'})"
+                            [disabled]="disabledButton([plannigAddForm.value.subObjective, plannigAddForm.value.objective])"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-plus">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg> Agregar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingHabilidad">
+                    <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseHabilidad" aria-expanded="false" aria-controls="collapseHabilidad">
+                        Habilidad
+                    </button>
+                </h2>
+                <div id="collapseHabilidad" class="accordion-collapse collapse" aria-labelledby="headingHabilidad"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="mb-3">
+                            <input class="form-control" list="datalistUnits" formControlName="unit" [ngClass]="(unit?.touched || unit?.dirty) && unit?.hasError('required') ? 'is-invalid' : '' || 
+            ((unit?.touched || unit?.dirty) && !unit?.invalid) ? 'is-valid' : ''" placeholder="Buscar el Unidad">
+                            <datalist id="datalistUnits">
+                                <option *ngFor="let unit of list_units" [value]="unit.name" [id]="unit.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ unit?.hasError('required') ? 'La Unidad es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <textarea class="form-control" formControlName="skill" [ngClass]="(skill?.touched || skill?.dirty) && skill?.hasError('required') ? 'is-invalid' : '' || 
+                            ((skill?.touched || skill?.dirty) && !skill?.invalid) ? 'is-valid' : ''"
+                                placeholder="Habilidad" aria-label="Habilidad"></textarea>
+
+                            <div class="invalid-feedback">
+                                {{ skill?.hasError('required') ? 'La Habilidad es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            (click)="savePlanningWithUnit({name: plannigAddForm.value.skill, unit: plannigAddForm.value.unit, table: 'skills', message: 'Habilidad'})"
+                            [disabled]="disabledButton([plannigAddForm.value.skill, plannigAddForm.value.unit])"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-plus">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg> Agregar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingActitud">
+                    <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseActitud" aria-expanded="false" aria-controls="collapseActitud">
+                        Actitud
+                    </button>
+                </h2>
+                <div id="collapseActitud" class="accordion-collapse collapse" aria-labelledby="headingActitud"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="mb-3">
+                            <input class="form-control" list="datalistUnits" formControlName="unit" [ngClass]="(unit?.touched || unit?.dirty) && unit?.hasError('required') ? 'is-invalid' : '' || 
+            ((unit?.touched || unit?.dirty) && !unit?.invalid) ? 'is-valid' : ''" placeholder="Buscar el Unidad">
+                            <datalist id="datalistUnits">
+                                <option *ngFor="let unit of list_units" [value]="unit.name" [id]="unit.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ unit?.hasError('required') ? 'La Unidad es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <textarea class="form-control" formControlName="attitude" [ngClass]="(attitude?.touched || attitude?.dirty) && attitude?.hasError('required') ? 'is-invalid' : '' || 
+                            ((attitude?.touched || attitude?.dirty) && !attitude?.invalid) ? 'is-valid' : ''"
+                                placeholder="Actitud" aria-label="Actitud"></textarea>
+
+                            <div class="invalid-feedback">
+                                {{ attitude?.hasError('required') ? 'La Actitud es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            (click)="savePlanningWithUnit({name: plannigAddForm.value.attitude, unit: plannigAddForm.value.unit, table: 'attitudes', message: 'Actitud'})"
+                            [disabled]="disabledButton([plannigAddForm.value.attitude, plannigAddForm.value.unit])"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-plus">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg> Agregar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingIndicador">
+                    <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseIndicador" aria-expanded="false" aria-controls="collapseIndicador">
+                        Indicador
+                    </button>
+                </h2>
+                <div id="collapseIndicador" class="accordion-collapse collapse" aria-labelledby="headingIndicador"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="mb-3">
+                            <input class="form-control" list="datalistObjectivesIndicators" formControlName="objective"
+                                [ngClass]="(objective?.touched || objective?.dirty) && objective?.hasError('required') ? 'is-invalid' : '' || 
+            ((objective?.touched || objective?.dirty) && !objective?.invalid) ? 'is-valid' : ''"
+                                placeholder="Buscar el Objetivo">
+                            <datalist id="datalistObjectivesIndicators">
+                                <option *ngFor="let objective of list_objectives" [value]="objective.name"
+                                    [id]="objective.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ objective?.hasError('required') ? 'El objetivo es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <textarea class="form-control" formControlName="indicator" [ngClass]="(indicator?.touched || indicator?.dirty) && indicator?.hasError('required') ? 'is-invalid' : '' || 
+                            ((indicator?.touched || indicator?.dirty) && !indicator?.invalid) ? 'is-valid' : ''"
+                                placeholder="Indicador" aria-label="Indicador"></textarea>
+
+                            <div class="invalid-feedback">
+                                {{ indicator?.hasError('required') ? 'El Indicador es requerido' : '' }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            (click)="savePlanningWithObjective({name: plannigAddForm.value.indicator, objective: plannigAddForm.value.objective, table: 'indicators', message: 'Indicador'})"
+                            [disabled]="disabledButton([plannigAddForm.value.indicator, plannigAddForm.value.objective])"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-plus">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg> Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive col-12">
+            <table class="table bg-white mt-5">
+                <thead>
+                    <tr class="font-monospace">
+                        <th scope="col">#</th>
+                        <th scope="col">CURSO</th>
+                        <th scope="col">ASIGNATURA</th>
+                        <th scope="col">UNIDAD</th>
+                        <th scope="col">EJE</th>
+                        <th scope="col">OBJETIVO</th>
+                        <th scope="col">INDICADOR</th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let planning of list_plannings | paginate: { itemsPerPage: 100, currentPage: pages }; let index=index">
+                    <tr>
+                        <th scope="row">{{ index+1 }}</th>
+                        <td>{{ planning.course }}</td>
+                        <td>{{ planning.subject }}</td>
+                        <td>{{ planning.unit }}</td>
+                        <td>{{ planning.axi }}</td>
+                        <td>
+                            <p>{{ planning.objective }}</p>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item" *ngFor="let subObjective of planning.subObjective">
+                                    {{ subObjective.name }}
+                                </li>
+                            </ul>
+                        </td>
+                        <td>{{ planning.indicator }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <pagination-controls class="text-end" previousLabel="Anterior" nextLabel="Siguiente" (pageChange)="pages = $event"></pagination-controls>
+        </div>
+    </div>
+</div>

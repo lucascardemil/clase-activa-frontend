@@ -1,0 +1,205 @@
+<div class="container-fluid py-3 px-0">
+    <div class="row">
+        <div class="col-lg-7 col-md">
+            <div class="card mb-3">
+                <h5 class="card-header">Agregar Pregunta</h5>
+                <div class="card-body">
+                    <form [formGroup]="questionAddForm" (ngSubmit)="addQuestion(questionAddForm.value)"
+                        class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label class="fw-semibold mb-3">Materia</label>
+
+                            <select class="form-select" formControlName="theme" [ngClass]="(theme?.touched || theme?.dirty) && theme?.hasError('required') ? 'is-invalid' : '' || 
+                        ((theme?.touched || theme?.dirty) && !theme?.invalid) ? 'is-valid' : ''">
+                                <option value="">Seleccione la materia</option>
+                                <option *ngFor="let theme of list_themes" [value]="theme.id">{{ theme.name }}</option>
+                            </select>
+
+                            <div class="invalid-feedback">
+                                {{ theme?.hasError('required') ? 'La materia es requerida' : '' }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-semibold mb-3">Titulo Pregunta</label>
+
+                            <ckeditor [config]="options" [editor]="classicEditor" formControlName="question" [ngClass]="(question?.touched || question?.dirty) && question?.hasError('required') ? 'is-invalid' : '' || 
+                            ((question?.touched || question?.dirty) && !question?.invalid) ? 'is-valid' : ''">
+                            </ckeditor>
+
+                            <div class="invalid-feedback">
+                                {{ question?.hasError('required') ? 'La pregunta es requerida' : '' }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-semibold mb-3">Imagen Pregunta <small
+                                    class="text-muted">(Opcional)</small></label>
+
+                            <div class="input-group">
+                                <input class="form-control" type="file" (change)="imagePreview($event)"
+                                    formControlName="image_question" accept=".png, .jpg, .jpeg">
+                                <button class="btn btn-danger" type="button" (click)="clearImageQuestion()"><svg
+                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="feather feather-x">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg></button>
+
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="fw-semibold mb-3">Texto Adicional <small
+                                    class="text-muted">(Opcional)</small></label>
+
+                            <ckeditor [config]="options" [editor]="classicEditor" formControlName="text_aditional"
+                                [ngClass]="(text_aditional?.touched || text_aditional?.dirty) && text_aditional?.hasError('required') ? 'is-invalid' : '' || 
+                            ((text_aditional?.touched || question?.dirty) && !text_aditional?.invalid) ? 'is-valid' : ''">
+                            </ckeditor>
+
+                            <div class="invalid-feedback">
+                                {{ text_aditional?.hasError('required') ? 'La pregunta es requerida' : '' }}
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="fw-semibold mb-3">Tipo de pregunta</label>
+
+                            <select class="form-select" formControlName="type_question"
+                                [ngClass]="(type_question?.touched || type_question?.dirty) && type_question?.hasError('required') ? 'is-invalid' : '' || 
+                        ((type_question?.touched || type_question?.dirty) && !type_question?.invalid) ? 'is-valid' : ''" (change)="showAnswers($event)">
+                                <option value="">Seleccione el tipo de pregunta</option>
+                                <option value="1">Alternativa</option>
+                                <option value="2">Verdadero o Falso</option>
+                            </select>
+
+                            <div class="invalid-feedback">
+                                {{ type_question?.hasError('required') ? 'El tipo de pregunta es requerido' : '' }}
+                            </div>
+                        </div>
+
+
+                        <div #asShowAlternative id="show_alternatives" formArrayName="alternatives" hidden>
+                            <div *ngFor="let alternative of alternatives.controls; let i = index">
+                                <div class="mb-3" [formGroupName]="i">
+                                    <div class="row">
+                                        <div class="col-2" #asCheckButtons>
+                                            <input type="radio" class="btn-check" name="options_alternatives" id="{{i}}"
+                                                (change)="selectedAlternative(i)" autocomplete="off">
+                                            <label class="btn btn-outline-secondary w-100" for="{{i}}">{{
+                                                alternative.value.id }}</label>
+                                        </div>
+                                        <div class="col-10" #asEditors>
+                                            <!-- <div *ngIf="alternative.value.id === 'E'; else elseBlock">
+                                                <ckeditor
+                                                    [config]="{ placeholder:'Alternativa E (Opcional)', toolbar: ['Mathtype']}"
+                                                    [editor]="classicEditor" formControlName="editor" id="{{i}}"
+                                                    (keyup)="EditorKeyUp($event, i)">
+                                                </ckeditor>
+                                            </div>
+                                            <ng-template #elseBlock>
+                                                <ckeditor
+                                                    [config]="{ placeholder:'Alternativa '+ alternative.value.id, toolbar: ['Mathtype']}"
+                                                    [editor]="classicEditor" formControlName="editor" id="{{i}}"
+                                                    (keyup)="EditorKeyUp($event, i)">
+                                                </ckeditor>
+                                            </ng-template> -->
+
+                                            <ckeditor
+                                                    [config]="{ placeholder:'Alternativa '+ alternative.value.id, toolbar: ['Mathtype']}"
+                                                    [editor]="classicEditor" formControlName="editor" id="{{i}}"
+                                                    (keyup)="EditorKeyUp($event, i)">
+                                                </ckeditor>
+
+                                            <div class="input-group" #asFiles>
+                                                <input class="form-control" type="file"
+                                                    (change)="imagePreviewAnswer($event, i)" id="{{i}}"
+                                                    formControlName="image_alternative" accept=".png, .jpg, .jpeg">
+                                                <button class="btn btn-danger" type="button"
+                                                    (click)="clearImageAnswer(i)"><svg
+                                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                        class="feather feather-x">
+                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                    </svg></button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div #asShowTrueFalse id="show_true_false" formArrayName="true_false" hidden>
+                            <div *ngFor="let true_false of true_false.controls; let i = index">
+                                <div class="mb-3" [formGroupName]="i">
+                                    <input type="radio" class="btn-check" name="options_true_false"
+                                        id="{{ true_false.value.id }}" (change)="selectedTrueFalse(i)"
+                                        autocomplete="off">
+                                    <label class="btn btn-outline-secondary w-100" for="{{ true_false.value.id }}">{{
+                                        true_false.value.label }}</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="d-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary" [disabled]="!questionAddForm.valid"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-plus">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg> Agregar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 col-md ">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="question-tab" data-bs-toggle="tab" data-bs-target="#question"
+                        type="button" role="tab" aria-controls="question" aria-selected="true">Pregunta</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="test-tab" data-bs-toggle="tab" data-bs-target="#test" type="button"
+                        role="tab" aria-controls="test" aria-selected="false">Prueba</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active bg-white border border-top-0 rounded-bottom p-3" id="question"
+                    role="tabpanel" aria-labelledby="question-tab">
+
+
+                    <ul>
+                        <li><label class="h5 mb-3">Pregunta</label></li>
+                        <p class="h6 text-muted" #asTitle_question></p>
+                        <li><label class="h5 mb-3">Imagen Pregunta <small class="text-muted">(Opcional)</small></label>
+                        </li>
+                        <p #asImage_question></p>
+                        <li><label class="h5 mb-3">Texto Adicional <small class="text-muted">(Opcional)</small></label>
+                        </li>
+                        <p class="h6 text-muted" #asText_aditional></p>
+                        <li><label class="h5 mb-3">Alternativas</label></li>
+                        <p class="h6 text-muted" #asAlternatives></p>
+                    </ul>
+
+                    <button type="button" class="btn btn-success" [disabled]="!questionAddForm.valid"
+                        (click)="preview(questionAddForm.value)"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg> Vista Previa</button>
+
+                </div>
+                <div class="tab-pane fade bg-white border border-top-0 rounded-bottom p-3" id="test" role="tabpanel"
+                    aria-labelledby="test-tab">...</div>
+            </div>
+        </div>
+    </div>
+</div>

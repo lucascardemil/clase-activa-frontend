@@ -1,0 +1,56 @@
+<main class="container-form">
+    <div class="form-signin w-100 m-auto">
+        <form [formGroup]="userForm" (ngSubmit)="logIn(userForm.value)" class="needs-validation" novalidate>
+            <h2 class="mb-3 text-center">Iniciar Sesión</h2>
+
+            <div class="mb-3">
+                <!-- <label for="role" class="form-label">Soy</label> -->
+                <select class="form-select form-select-lg" formControlName="role" [ngClass]="(role?.touched || role?.dirty) && role?.hasError('required') ? 'is-invalid' : '' || 
+                    ((role?.touched || role?.dirty) && !role?.invalid) ? 'is-valid' : ''">
+                    <option value="">Soy</option>
+                    <option value="profesor">Profesor</option>
+                    <option value="alumno">Alumno</option>
+                    <option value="apoderado">Apoderado</option>
+                </select>
+
+
+                <div class="invalid-feedback">
+                    {{ role?.hasError('required') ? 'El rol es requerido' : '' }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <!-- <label for="rut" class="form-label">rut</label> -->
+                <input type="text" class="form-control form-control-lg" formControlName="rut" placeholder="11.111.111-1"
+                    [ngClass]="(rut?.touched || rut?.dirty) && rut?.hasError('required') ? 'is-invalid' : '' ||
+                           (rut?.touched || rut?.dirty) && this.rutService.msj == false ? 'is-invalid' : '' || 
+                           ((rut?.touched || rut?.dirty) && !rut?.invalid) ? 'is-valid' : ''"
+                    (focus)="this.rutService.rutFormat($event)" (keydown)="this.rutService.rutFormat($event)"
+                    (keyup)="this.rutService.rutFormat($event)" />
+
+
+                <div class="invalid-feedback" *ngIf="this.rutService.msj == false">Rut invalido</div>
+
+                <div class="invalid-feedback" *ngIf="this.rutService.msj == true">
+                    {{ rut?.hasError('required') ? 'El rut es requerido' : '' }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <!-- <label for="password" class="form-label">Contraseña</label -->
+                <input type="password" class="form-control form-control-lg" formControlName="password"
+                    placeholder="Contraseña" [ngClass]="(password?.touched || password?.dirty) && password?.hasError('required') ? 'is-invalid' : '' || 
+                    ((password?.touched || password?.dirty) && !password?.invalid) ? 'is-valid' : ''" />
+
+                <div class="invalid-feedback">
+                    {{ password?.hasError('required') ? 'La contraseña es requerida' : '' }}
+                </div>
+
+            </div>
+
+            <button class="w-100 btn btn-lg btn-primary" type="submit" [disabled]="!userForm.valid">Entrar</button>
+            <p class="mt-3 mb-3 text-center text-muted">¿Nuevo aquí? <a [routerLink]="['/registro']"
+                    class="text-reset text-decoration-none fw-bold">Registrate</a></p>
+        </form>
+    </div>
+</main>

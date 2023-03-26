@@ -1,0 +1,236 @@
+<div class="pt-3">
+    <figure>
+        <blockquote class="blockquote">
+            <h1>Edita tu perfil</h1>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            En esta sección podras cambiar tu datos personales y agregar logo de la empresa para tus reportes
+        </figcaption>
+    </figure>
+
+    <div class="row row-cols-2">
+
+        <div class="col my-5">
+            <h4 class="mb-3">Información personal</h4>
+
+            <form [formGroup]="updateUserFormPerson" (ngSubmit)="updateInfoPerson(updateUserFormPerson.value)"
+                class="needs-validation" novalidate>
+
+                <input type="text" class="form-control" formControlName="id" hidden readonly />
+
+                <div class="col mb-3">
+
+                    <input type="text" class="form-control" formControlName="name" placeholder="Nombre" [ngClass]="(name?.touched || name?.dirty) && name?.hasError('required') ? 'is-invalid' : '' || 
+                              name?.hasError('name') ? 'is-invalid' : '' ||
+                              ((name?.touched || name?.dirty) && !name?.invalid) ? 'is-valid' : ''" />
+
+
+                    <div class="invalid-feedback">
+                        {{ name?.hasError('required') ? 'El nombre es requerido' : '' }}
+
+                    </div>
+                </div>
+
+                <div class="col mb-3">
+
+                    <input type="text" class="form-control" formControlName="last_name" placeholder="Apellido Paterno"
+                        [ngClass]="(last_name?.touched || last_name?.dirty) && last_name?.hasError('required') ? 'is-invalid' : '' || 
+                            last_name?.hasError('last_name') ? 'is-invalid' : '' ||
+                              ((last_name?.touched || last_name?.dirty) && !last_name?.invalid) ? 'is-valid' : ''" />
+
+
+                    <div class="invalid-feedback">
+                        {{ last_name?.hasError('required') ? 'El apellido paterno es requerido' : '' }}
+                    </div>
+                </div>
+
+                <div class="col mb-3">
+
+                    <input type="text" class="form-control" formControlName="mothers_last_name"
+                        placeholder="Apellido Materno"
+                        [ngClass]="(mothers_last_name?.touched || mothers_last_name?.dirty) && mothers_last_name?.hasError('required') ? 'is-invalid' : '' || 
+                            mothers_last_name?.hasError('mothers_last_name') ? 'is-invalid' : '' ||
+                              ((mothers_last_name?.touched || mothers_last_name?.dirty) && !mothers_last_name?.invalid) ? 'is-valid' : ''" />
+
+
+                    <div class="invalid-feedback">
+                        {{ mothers_last_name?.hasError('required') ? 'El nombre es requerido' : '' }}
+                    </div>
+                </div>
+
+                <div class="col mb-3">
+                    <input type="email" class="form-control" formControlName="email" placeholder="Correo" [ngClass]="(email?.touched || email?.dirty) && email?.hasError('required') ? 'is-invalid' : '' || 
+                              email?.hasError('email') ? 'is-invalid' : '' ||
+                              ((email?.touched || email?.dirty) && !email?.invalid) ? 'is-valid' : ''" />
+
+
+                    <div class="invalid-feedback">
+                        {{ email?.hasError('required') ? 'El email es requerido' : '' }}
+                        {{ email?.hasError('email') ? 'El email no es valido' : '' }}
+                    </div>
+                </div>
+                <div class="col input-group mb-3">
+                    <span class="input-group-text">+569</span>
+                    <input type="tel" class="form-control" formControlName="telefono" placeholder="Telefono"
+                        maxlength="8" [ngClass]="(telefono?.touched || telefono?.dirty) && telefono?.hasError('required') ? 'is-invalid' : '' || 
+                            telefono?.hasError('pattern') ? 'is-invalid' : '' ||
+                              ((telefono?.touched || telefono?.dirty) && !telefono?.invalid) ? 'is-valid' : ''" />
+
+
+                    <div class="invalid-feedback">
+                        {{ telefono?.hasError('required') ? 'El telefono es requerido' : '' }}
+                        {{ telefono?.hasError('pattern') ? 'Solamente numeros' : '' }}
+                    </div>
+                </div>
+
+
+
+                <button class="w-30 btn btn-primary" type="submit"
+                    [disabled]="!updateUserFormPerson.valid">Actualizar</button>
+            </form>
+
+        </div>
+
+        <div class="col my-5">
+            <h4 class="mb-3">Cambiar contraseña</h4>
+
+            <form [formGroup]="changePasswordUser" (ngSubmit)="changePassword(changePasswordUser.value)"
+                class="needs-validation" novalidate>
+
+                <input type="text" class="form-control" formControlName="id" hidden readonly />
+
+                <div class="mb-3">
+
+                    <input type="password" class="form-control" formControlName="password" placeholder="Contraseña"
+                        maxlength="10" minlength="8"
+                        [ngClass]="(password?.touched || password?.dirty) && password?.hasError('required') ? 'is-invalid' : '' || 
+                        password?.hasError('minlength') ? 'is-invalid' : '' ||  ((password?.touched || password?.dirty) && !password?.invalid) ? 'is-valid' : ''" />
+
+                    <div class="invalid-feedback">
+                        {{ password?.hasError('required') ? 'La contraseña es requerida' : '' }}
+                        {{ password?.hasError('minlength') ? 'La contraseña tiene que se mayor 8 caracteres' : '' }}
+                    </div>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <input type="password" class="form-control" formControlName="repeatpassword" maxlength="10"
+                        minlength="8" placeholder="Repetir Contraseña" [ngClass]="(repeatpassword?.touched || repeatpassword?.dirty) && repeatpassword?.hasError('required') ? 'is-invalid' : '' ||
+                        repeatpassword?.hasError('minlength') ? 'is-invalid' : '' || 
+                    (repeatpassword?.touched || repeatpassword?.dirty) && this.msjPassword == false ? 'is-invalid' : '' ||   
+                    ((repeatpassword?.touched || repeatpassword?.dirty) && !repeatpassword?.invalid) ? 'is-valid' : ''"
+                        (focus)="confirmPassword($event)" (keydown)="confirmPassword($event)"
+                        (keyup)="confirmPassword($event)" />
+
+
+                    <div class="invalid-feedback">
+                        <div>{{ this.msjPassword == false ? 'Las contraseñas no coiciden' : '' }}</div>
+                        {{ repeatpassword?.hasError('minlength') ? 'La contraseña tiene que se mayor 8 caracteres' : ''
+                        }}
+                    </div>
+
+
+
+                </div>
+
+                <button class="w-30 btn btn-primary" type="submit"
+                    [disabled]="!changePasswordUser.valid">Actualizar</button>
+            </form>
+
+        </div>
+
+        <div class="col my-5">
+            <h4 class="mb-3">Información educacional</h4>
+
+            <form [formGroup]="updateUserFormEducation" (ngSubmit)="updateInfoEducation(updateUserFormEducation.value)"
+                class="needs-validation" novalidate>
+
+                <input type="text" class="form-control" formControlName="id" hidden readonly />
+
+                <div class="mb-3">
+                    <label class="fw-semibold mb-3">Niveles (selecciona uno o varios niveles)</label>
+
+                    <div class="bg-white p-3 rounded border-opacity-25">
+                        <div class="form-check" *ngFor="let level of list_levels">
+                            <input class="form-check-input" type="checkbox" [id]="level.id" [value]="level.id"
+                                (click)="loadCourses($event)">
+                            <label class="form-check-label" [for]="level.id">
+                                {{ level.name }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-semibold mb-3">Cursos (selecciona uno o varios cursos)</label>
+
+                    <div class="bg-white p-3 rounded border-opacity-25">
+                        <div class="form-check" *ngFor="let course of list_courses">
+                            <input class="form-check-input" type="checkbox" [id]="course.id" [checked]="course.checked"
+                                (click)="loadSubjects($event)">
+                            <label class="form-check-label" [for]="course.id">
+                                {{ course.name }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-semibold mb-3">Asignaturas (selecciona uno o varios asignaturas)</label>
+
+                    <div class="bg-white p-3 rounded border-opacity-25">
+                        <div class="form-check" *ngFor="let subject of list_subjects">
+                            <input class="form-check-input" type="checkbox" [id]="subject.id"
+                                [checked]="subject.checked" (click)="checkBoxs($event)">
+                            <label class="form-check-label" [for]="subject.id">
+                                {{ subject.name }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="w-30 btn btn-primary" type="submit">Actualizar</button>
+            </form>
+
+        </div>
+
+        <div class="col my-5">
+            <h4 class="mb-3">Logo del colegio</h4>
+
+            <form [formGroup]="updateUserFormSchool" (ngSubmit)="uploadImageUser(updateUserFormSchool.value)"
+                class="needs-validation" enctype="multipart/form-data" novalidate>
+
+                <input type="text" class="form-control" formControlName="id" hidden readonly />
+
+                <div class="col mb-3">
+
+                    <input type="text" class="form-control" formControlName="school" placeholder="Colegio" [ngClass]="(school?.touched || school?.dirty) && school?.hasError('required') ? 'is-invalid' : '' || 
+                        school?.hasError('school') ? 'is-invalid' : '' ||
+                              ((school?.touched || school?.dirty) && !school?.invalid) ? 'is-valid' : ''" />
+
+
+                    <div class="invalid-feedback">
+                        {{ school?.hasError('required') ? 'El colegio es requerido' : '' }}
+                    </div>
+                </div>
+
+
+                <div class="col mb-3">
+                    <input class="form-control" accept=".jpg,.png" type="file" id="formFile" formControlName="image"
+                        (change)="uploadImage($event)">
+                </div>
+
+
+                <button class="w-30 btn btn-primary" type="submit"
+                    [disabled]="!updateUserFormSchool.valid">Actualizar</button>
+
+
+            </form>
+
+            <div class="col-6 mt-3" *ngFor="let image of images">
+                <img [src]="'./' + image" class="img-fluid border-opacity-25" alt="...">
+            </div>
+        </div>
+
+    </div>
+</div>

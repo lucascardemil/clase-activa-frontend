@@ -1,0 +1,148 @@
+<div class="pt-3">
+
+    <figure>
+        <blockquote class="blockquote">
+            <h1>Pruebas</h1>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Rellena los campos y utiliza los botones de la parte inferior de este formulario para administrar
+            las pruebas.
+        </figcaption>
+    </figure>
+
+    <div *ngIf="test.length === 0">
+        <div class="card">
+            <h5 class="card-header">Información del examen</h5>
+            <div class="card-body">
+                <form [formGroup]="testAddForm" (ngSubmit)="addTest(testAddForm.value)" class="needs-validation"
+                    novalidate>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-4">
+                                <label class="fw-semibold mb-3">Niveles</label>
+
+                                <select class="form-select" formControlName="level" [ngClass]="(level?.touched || level?.dirty) && level?.hasError('required') ? 'is-invalid' : '' || 
+                ((level?.touched || level?.dirty) && !level?.invalid) ? 'is-valid' : ''"
+                                    (change)="loadCourses($event)">
+                                    <option value="">Seleccione el nivel</option>
+                                    <option *ngFor="let level of list_niveles" [value]="level.id">{{ level.name }}
+                                    </option>
+                                </select>
+
+                                <div class="invalid-feedback">
+                                    {{ level?.hasError('required') ? 'El nivel es requerido' : '' }}
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <label class="fw-semibold mb-3">Cursos</label>
+
+                                <select class="form-select" formControlName="course" [ngClass]="(course?.touched || course?.dirty) && course?.hasError('required') ? 'is-invalid' : '' || 
+                ((course?.touched || course?.dirty) && !course?.invalid) ? 'is-valid' : ''"
+                                    (change)="loadSubject($event)">
+                                    <option value="">Seleccione el curso</option>
+                                    <option *ngFor="let course of list_courses" [value]="course.id">{{ course.name }}
+                                    </option>
+                                </select>
+
+                                <div class="invalid-feedback">
+                                    {{ course?.hasError('required') ? 'El curso es requerido' : '' }}
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <label class="fw-semibold mb-3">Asignaturas</label>
+
+                                <select class="form-select" formControlName="subject" [ngClass]="(subject?.touched || subject?.dirty) && subject?.hasError('required') ? 'is-invalid' : '' || 
+                ((subject?.touched || subject?.dirty) && !subject?.invalid) ? 'is-valid' : ''"
+                                    (change)="loadTheme($event)">
+                                    <option value="">Seleccione la asignatura</option>
+                                    <option *ngFor="let subject of list_subjects" [value]="subject.id">{{ subject.name
+                                        }}
+                                    </option>
+                                </select>
+
+                                <div class="invalid-feedback">
+                                    {{ subject?.hasError('required') ? 'La asignatura es requerido' : '' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <input type="text" class="form-control" formControlName="name" [ngClass]="(name?.touched || name?.dirty) && name?.hasError('required') ? 'is-invalid' : '' || 
+                ((name?.touched || name?.dirty) && !name?.invalid) ? 'is-valid' : ''" placeholder="Nombre del examen">
+
+                        <div class="invalid-feedback">
+                            {{ name?.hasError('required') ? 'El nombre es requerido' : '' }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+
+                        <input type="number" class="form-control" formControlName="percentage"
+                            [ngClass]="(percentage?.touched || percentage?.dirty) && percentage?.hasError('required') ? 'is-invalid' : '' || 
+                        percentage?.hasError('minlength') ? 'is-invalid' : '' || ((percentage?.touched || percentage?.dirty)  && !percentage?.invalid) ? 'is-valid' : ''" min="50"
+                            max="100" placeholder="Porcentaje de examen">
+
+                        <div class="invalid-feedback">
+                            {{ percentage?.hasError('required') ? 'El porcentaje es requerido' : '' }}
+                            {{ percentage?.hasError('minlength') ? 'El porcentaje no puede ser menor a 50%' : '' }}
+                            {{ percentage?.hasError('maxlength') ? 'El porcentaje no puede ser mayor a 100%' : '' }}
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="standard">
+                        <label class="form-check-label" for="standard">
+                            Agregar Estándar de Aprendizaje
+                        </label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" type="checkbox" data-bs-toggle="collapse"
+                            data-bs-target="#collapseInstructions" aria-expanded="false"
+                            aria-controls="collapseInstructions">
+                        <label class="form-check-label">
+                            Agregar Instrucciones
+                        </label>
+
+                        <div class="collapse my-3" id="collapseInstructions">
+                            <textarea class="form-control" formControlName="instruction" rows="3"></textarea>
+                        </div>
+
+
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" type="checkbox" data-bs-toggle="collapse"
+                            data-bs-target="#collapseObjectives" aria-expanded="false"
+                            aria-controls="collapseObjectives">
+                        <label class="form-check-label">
+                            Agregar Objetivos
+                        </label>
+
+                        <div class="collapse my-3" id="collapseObjectives">
+                            <textarea class="form-control" formControlName="objective" rows="3"></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary" [disabled]="!testAddForm.valid">Siguiente <svg
+                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-arrow-right">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="test.length > 0">
+        <app-add-questions [test]="test"></app-add-questions>
+    </div>
+</div>

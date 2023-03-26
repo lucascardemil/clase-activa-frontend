@@ -1,0 +1,228 @@
+<div class="pt-3">
+
+    <figure>
+        <blockquote class="blockquote">
+            <h1>Asignaturas</h1>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            Rellena los campos y utiliza los botones de la parte inferior de este formulario para administrar
+            las asignaturas.
+        </figcaption>
+    </figure>
+
+    <form [formGroup]="subjectAddForm" (ngSubmit)="addSubject(subjectAddForm.value)" class="needs-validation"
+        novalidate>
+        <div class="mb-3">
+            <label class="fw-semibold mb-3">Niveles (selecciona uno o varios niveles)</label>
+
+            <div class="bg-white p-3 rounded border-opacity-25">
+                <div class="form-check" *ngFor="let nivel of list_niveles">
+                    <input class="form-check-input level" type="checkbox" [id]="nivel.id" formControlName="level"
+                        (click)="loadCourses($event)">
+                    <label class="form-check-label" [for]="nivel.id">
+                        {{ nivel.name }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="fw-semibold mb-3">Cursos (selecciona uno o varios cursos)</label>
+
+            <div class="bg-white p-3 rounded border-opacity-25">
+                <div class="form-check" *ngFor="let course of list_courses">
+                    <input class="form-check-input" type="checkbox" [id]="course.id" formControlName="course"
+                        (click)="checkCourses($event)">
+                    <label class="form-check-label" [for]="course.id">
+                        {{ course.name }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <input type="text" class="form-control" formControlName="name" [ngClass]="(name?.touched || name?.dirty) && name?.hasError('required') ? 'is-invalid' : '' || 
+            ((name?.touched || name?.dirty) && !name?.invalid) ? 'is-valid' : ''" placeholder="Nombre Asignatura">
+
+            <div class="invalid-feedback">
+                {{ name?.hasError('required') ? 'El nombre es requerido' : '' }}
+            </div>
+        </div>
+        <div class="mb-3 form-check form-check-inline">
+            <input class="form-check-input" type="radio" value="1" formControlName="condition_subject" checked>
+            <label class="form-check-label" for="conditionActivo">
+                Activo
+            </label>
+        </div>
+        <div class="mb-3 form-check form-check-inline">
+            <input class="form-check-input" type="radio" value="0" formControlName="condition_subject">
+            <label class="form-check-label" for="conditionInactivo">
+                Inactivo
+            </label>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary" [disabled]="!subjectAddForm.valid"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-plus">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg> Agregar</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-light">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Asignatura</th>
+                    <th scope="col">Nivel</th>
+                    <th scope="col">Curso</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col" class="text-center">Acción</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let subject of list_subjects | orderBy: sortFn; let index=index">
+                <tr *ngIf="subject.condition_level === 1 && subject.condition_course === 1">
+                    <th scope="row">{{index+1}}</th>
+                    <td>{{ subject.name }}</td>
+                    <td>{{ subject.level }}</td>
+                    <td>{{ subject.course }}</td>
+                    <td>{{ subject.condition_subject == 1 ? 'Activo' : 'Inactivo' }}</td>
+                    <td class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-warning btn-sm" (click)="editSubject(subject.id)"
+                            data-bs-toggle="modal" [attr.data-bs-target]="'#edit_modal_' + subject.id">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-edit-2">
+                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            </svg>
+                        </button>
+
+                        <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-toggle="modal"
+                            [attr.data-bs-target]="'#delete_modal_' + subject.id">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-trash-2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                </path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Modal -->
+                <div class="modal fade" id="{{ 'edit_modal_' + subject.id }}" tabindex="-1"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar asignatura</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form [formGroup]="subjectUpdateForm"
+                                    (ngSubmit)="updateSubject(subjectUpdateForm.value)" class="needs-validation"
+                                    novalidate>
+                                    <input type="text" class="form-control" formControlName="id" hidden readonly>
+
+                                    <!-- <div class="mb-3">
+                                    <label class="fw-semibold mb-3">Niveles (selecciona uno o varios niveles)</label>
+                        
+                                    <div class="bg-light p-3 rounded border-opacity-25">
+                                        <div class="form-check" *ngFor="let nivel of list_niveles_update">
+                                            <input class="form-check-input" type="checkbox" [id]="nivel.id" formControlName="level_update"
+                                                (click)="loadCoursesUpdate($event)">
+                                            <label class="form-check-label" [for]="nivel.id">
+                                                {{ nivel.name }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="fw-semibold mb-3">Cursos (selecciona uno o varios courses)</label>
+                        
+                                    <div class="bg-light p-3 rounded border-opacity-25">
+                                        <div class="form-check" *ngFor="let course of list_courses_update">
+                                            <input class="form-check-input" type="checkbox" [id]="course.id" formControlName="course_update"
+                                                (click)="checkCourses($event)">
+                                            <label class="form-check-label" [for]="course.id">
+                                                {{ course.name }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" formControlName="name_update"
+                                            [ngClass]="(name_update?.touched || name_update?.dirty) && name_update?.hasError('required') ? 'is-invalid' : '' || 
+                                    ((name_update?.touched || name_update?.dirty) && !name_update?.invalid) ? 'is-valid' : ''" placeholder="Nombre Asignatura">
+
+                                        <div class="invalid-feedback">
+                                            {{ name_update?.hasError('required') ? 'El nombre es requerido' : '' }}
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" value="1"
+                                            formControlName="condition_subject_update" checked>
+                                        <label class="form-check-label" for="conditionActivo">
+                                            Activo
+                                        </label>
+                                    </div>
+                                    <div class="mb-3 form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" value="0"
+                                            formControlName="condition_subject_update">
+                                        <label class="form-check-label" for="conditionInactivo">
+                                            Inactivo
+                                        </label>
+                                    </div>
+                                    <hr>
+                                    <div class="d-grid gap-2 d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-warning" data-bs-dismiss="modal"
+                                            [disabled]="!subjectUpdateForm.valid">Actualizar</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="{{ 'delete_modal_' + subject.id }}" tabindex="-1"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">¿Está seguro que desea eliminar?
+                                </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h1></h1>
+                                <p>Si usted elimina este asignatura <b>NO</b> podrá recuperar la información.</p>
+                                <hr>
+                                <div class="d-grid gap-2 d-flex justify-content-end">
+
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                                        (click)="deleteSubject(subject.id)">Eliminar</button>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </tbody>
+        </table>
+    </div>
+</div>
