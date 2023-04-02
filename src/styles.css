@@ -1,5 +1,7 @@
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 @import "~angular-notifier/styles";
+@import '~ag-grid-community/styles/ag-grid.css';
+@import '~ag-grid-community/styles/ag-theme-alpine.css';
 
 body{
     background-color: #F3F3F3;

@@ -26,7 +26,10 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
 //Notification
 import { NOTYF, notyfFactory } from './services/notyf/notyf.token';
-import { NgxPaginationModule } from 'ngx-pagination';
+
+
+//AG-GRID
+import { AgGridModule } from 'ag-grid-angular';
 
 
 @NgModule({
@@ -44,7 +47,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
         RutModule,
         SpinnerModule,
         CKEditorModule,
-        NgxPaginationModule
+        AgGridModule
     ],
     providers: [
         { provide: JWT_OPTIONS, useValue: JWT_OPTIONS }, JwtHelperService,
