@@ -16,13 +16,33 @@ export class PlanningService {
     getAllPlanning() {
         return this.http.get(`${this.url}/plannings`);
     }
+
+    getSelectUnits() {
+        return this.http.get(`${this.url}/plannings/getSelectUnits`);
+    }
+
+    getSelectAxis() {
+        return this.http.get(`${this.url}/plannings/getSelectAxis`);
+    }
     
     getIdPlanning(table: string) {
-        return this.http.get(`${this.url}/plannings/${table}`);
+        return this.http.get(`${this.url}/plannings/getIdPlanning/${table}`);
     }
 
     getIdSubObjective(id: number) {
         return this.http.get(`${this.url}/plannings/getIdSubObjective/${id}`);
+    }
+
+    getIdObjective(id: number) {
+        return this.http.get(`${this.url}/plannings/getIdObjective/${id}`);
+    }
+
+    getIdAttitude(id: number) {
+        return this.http.get(`${this.url}/plannings/getIdAttitude/${id}`);
+    }
+
+    getIdSkill(id: number) {
+        return this.http.get(`${this.url}/plannings/getIdSkill/${id}`);
     }
 
     addPlaning(planning: Planning) {
@@ -33,27 +53,27 @@ export class PlanningService {
         return this.http.post(`${this.url}/plannings/addPlanningUnit`, planning);
     }
 
-    addPlanningAxi(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningAxi`, planning);
+    addPlanningAxiObjective(planning: Planning) {
+        return this.http.post(`${this.url}/plannings/addPlanningAxiObjective`, planning);
     }
 
-    addPlanningObjective(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningObjective`, planning);
+    addPlanningUnitObjective(planning: Planning) {
+        return this.http.post(`${this.url}/plannings/addPlanningUnitObjective`, planning);
     }
 
     addPlanningSubObjective(planning: Planning) {
         return this.http.post(`${this.url}/plannings/addPlanningSubObjective`, planning);
     }
 
-    addPlanningSkill(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningSkill`, planning);
+    addPlanningUnitSkill(planning: Planning) {
+        return this.http.post(`${this.url}/plannings/addPlanningUnitSkill`, planning);
     }
     
-    addPlanningAttitude(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningAttitude`, planning);
+    addPlanningUnitAttitude(planning: Planning) {
+        return this.http.post(`${this.url}/plannings/addPlanningUnitAttitude`, planning);
     }
-    
-    addPlanningIndicator(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningIndicator`, planning);
+
+    addPlanningObjectiveIndicator(planning: Planning) {
+        return this.http.post(`${this.url}/plannings/addPlanningObjectiveIndicator`, planning);
     }
 }

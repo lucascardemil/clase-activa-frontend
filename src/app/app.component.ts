@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from 'src/app/services/user/user.service';
-
 
 @Component({
     selector: 'app-root',
@@ -16,6 +15,10 @@ export class AppComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
+        
     }
+
+
+    
 
 }
