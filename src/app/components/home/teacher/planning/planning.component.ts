@@ -12,7 +12,6 @@ import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { ColDef, GridOptions } from 'ag-grid-community';
 import { firstValueFrom } from 'rxjs';
-import { ModalPlanningComponent } from './modal-planning/modal-planning.component';
 
 
 
@@ -113,17 +112,17 @@ export class PlanningComponent implements OnInit {
         {
             field: 'accion',
             cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' },
-            cellRenderer: ModalPlanningComponent,
-            cellRendererParams: {
-                onClick: this.onButtonClick.bind(this),
+            cellRenderer: (params: any) => {
+                let button = document.createElement('button');
+                button.innerHTML = '<i class="bi bi-pencil-square"></i> Editar';
+                button.setAttribute('type', 'button');
+                button.setAttribute('class', 'btn btn-primary');
+                button.setAttribute('data-bs-toggle', 'modal');
+                button.setAttribute('data-bs-target', '#edit_modal_' + params.data.id_objetivo + '');
+                return button;
             }
         },
     ]
-
-
-    onButtonClick(params: any){
-        this.id_objective = params.id_objetivo;
-    }
 
 
     planningAddForm = new FormGroup({
@@ -279,7 +278,8 @@ export class PlanningComponent implements OnInit {
             subjects.map((subject: Subject) => {
                 this.list_all_subjects.push({
                     id: subject.id,
-                    name: subject.name
+                    name: subject.name,
+                    course: subject.course
                 })
             })
         })
@@ -330,7 +330,7 @@ export class PlanningComponent implements OnInit {
             skills.map((skill: any) => {
                 this.list_skills.push({
                     id: skill.id,
-                    oa: 'OA' + skill.oa,
+                    oa: 'OAH' + skill.oa,
                     name: skill.name
                 })
             })
@@ -345,7 +345,7 @@ export class PlanningComponent implements OnInit {
             attitudes.map((attitude: any) => {
                 this.list_attitudes.push({
                     id: attitude.id,
-                    oa: 'OA' + attitude.oa,
+                    oa: 'OAA' + attitude.oa,
                     name: attitude.name
                 })
             })
@@ -437,28 +437,78 @@ export class PlanningComponent implements OnInit {
         });
     }
 
-    savePlanning(planning: any) {
-        this.planningService.addPlaning(planning).subscribe((res: any) => {
+    savePlanningSubjectAxi(planning: any) {
+        this.planningService.addPlaningSubjectAxi(planning).subscribe((res: any) => {
             if (res.status === 'success') {
                 this.clearForm();
                 this.notyf.success(res.message);
 
-                if (res.result.table === 'axis') {
-                    this.list_axis.push({ id: res.result.id, name: res.result.name })
-                }
+                this.planningService.getidAxisSubjects(res.result.name, res.result.subject).subscribe((axis: any) => {
+                    axis.map((axi: any) => {
+                        this.select_axis.push({
+                            id: axi.id,
+                            name: axi.subject + '/' + axi.name
+                        })
+                    })
+                })
 
-                if (res.result.table === 'objectives') {
-                    this.list_objectives.push({ id: res.result.id, oa: 'OA' + res.result.oa, name: res.result.name })
-                }
-
-                if (res.result.table === 'attitudes') {
-                    this.list_attitudes.push({ id: res.result.id, name: res.result.name })
-                }
             } else {
                 this.notyf.error(res.message);
             }
         });
     }
+
+    savePlanningObjective(planning: any) {
+        this.planningService.addPlaningObjective(planning).subscribe((res: any) => {
+            if (res.status === 'success') {
+                this.clearForm();
+                this.notyf.success(res.message);
+
+                this.list_objectives.push({
+                    id: res.result.id,
+                    oa: 'OA' + res.result.oa,
+                    name: res.result.name
+                })
+            } else {
+                this.notyf.error(res.message);
+            }
+        });
+    }
+
+    savePlanningAttitude(planning: any) {
+        this.planningService.addPlaningAttitude(planning).subscribe((res: any) => {
+            if (res.status === 'success') {
+                this.clearForm();
+                this.notyf.success(res.message);
+
+                this.list_attitudes.push({
+                    id: res.result.id,
+                    oa: 'OAA' + res.result.oa,
+                    name: res.result.name
+                })
+            } else {
+                this.notyf.error(res.message);
+            }
+        });
+    }
+
+    savePlanningSkill(planning: any) {
+        this.planningService.addPlaningSkill(planning).subscribe((res: any) => {
+            if (res.status === 'success') {
+                this.clearForm();
+                this.notyf.success(res.message);
+
+                this.list_skills.push({
+                    id: res.result.id,
+                    oa: 'OAH' + res.result.oa,
+                    name: res.result.name
+                })
+            } else {
+                this.notyf.error(res.message);
+            }
+        });
+    }
+
 
     savePlanningUnit(planning: any) {
         this.planningService.addPlanningUnit(planning).subscribe(
@@ -682,8 +732,7 @@ export class PlanningComponent implements OnInit {
         this.unit?.setValue('');
         this.axi?.setValue('');
         this.skill?.setValue('');
-        // this.objective?.setValue('');
-        this.planningAddForm.patchValue({ objective: false });
+        this.objective?.setValue('');
         this.subObjective?.setValue('');
         this.indicator?.setValue('');
         this.attitude?.setValue('');
@@ -743,6 +792,10 @@ export class PlanningComponent implements OnInit {
         let without_html = text.replace(/<(?:.|\n)*?>/gm, '');
         let shortened = without_html.substring(0, charlimit) + '...';
         return shortened;
+    }
+
+    updatePlanning(plannings: any){
+
     }
 
 

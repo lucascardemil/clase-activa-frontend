@@ -16,7 +16,6 @@ import { ThemeComponent } from './components/home/teacher/theme/theme.component'
 import { TestComponent } from './components/home/teacher/test/test.component';
 import { AddQuestionsComponent } from './components/home/teacher/test/add-questions/add-questions.component';
 import { PlanningComponent } from './components/home/teacher/planning/planning.component';
-import { ModalPlanningComponent } from './components/home/teacher/planning/modal-planning/modal-planning.component';
 
 
 const routes: Routes = [
@@ -91,6 +90,5 @@ export const ArrayOfComponents = [
     ApoderadoComponent,
     LoginComponent,
     RegisterComponent,
-    EditProfileComponent,
-    ModalPlanningComponent
+    EditProfileComponent
 ]

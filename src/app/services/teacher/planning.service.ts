@@ -45,6 +45,26 @@ export class PlanningService {
         return this.http.get(`${this.url}/plannings/getIdSkill/${id}`);
     }
 
+    getidAxisSubjects(name: string, subject: string) {
+        return this.http.get(`${this.url}/plannings/getidAxisSubjects/${name}/${subject}`);
+    }
+
+    addPlaningSubjectAxi(planning: Planning) {
+        return this.http.post(`${this.url}/plannings/addPlaningSubjectAxi`, planning);
+    }
+
+    addPlaningObjective(planning: Planning) {
+        return this.http.post(`${this.url}/plannings/addPlaningObjective`, planning);
+    }
+
+    addPlaningAttitude(planning: Planning) {
+        return this.http.post(`${this.url}/plannings/addPlaningAttitude`, planning);
+    }
+
+    addPlaningSkill(planning: Planning) {
+        return this.http.post(`${this.url}/plannings/addPlaningSkill`, planning);
+    }
+
     addPlaning(planning: Planning) {
         return this.http.post(`${this.url}/plannings/addPlaning`, planning);
     }

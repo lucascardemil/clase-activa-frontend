@@ -61,7 +61,7 @@
                 </div>
                 <div class="col-12 my-3">
                     <button class="btn btn-primary" type="button" id="button-unit"
-                        (click)="savePlanningUnit({name: planningAddForm.value.unit, subject: planningAddForm.value.subject, table: 'units', message: 'Unidad'})"
+                        (click)="savePlanningUnit({name: planningAddForm.value.unit, subject: planningAddForm.value.subject})"
                         [disabled]="disabledButton([planningAddForm.value.unit, planningAddForm.value.subject])"><svg
                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -79,7 +79,8 @@
                     <select class="form-select" formControlName="subject" [ngClass]="(subject?.touched || subject?.dirty) && subject?.hasError('required') ? 'is-invalid' : '' || 
                 ((subject?.touched || subject?.dirty) && !subject?.invalid) ? 'is-valid' : ''">
                         <option value="">Seleccione la asignatura</option>
-                        <option *ngFor="let subject of list_all_subjects" [value]="subject.id">{{ subject.name }}
+                        <option *ngFor="let subject of list_all_subjects" [value]="subject.id">{{ subject.name }} - {{
+                            subject.course }}
                         </option>
                     </select>
 
@@ -98,7 +99,7 @@
                 </div>
                 <div class="col-12 my-3">
                     <button class="btn btn-primary" type="button" id="button-axi"
-                        (click)="savePlanning({name: planningAddForm.value.axi, subject: planningAddForm.value.subject, table: 'axis', message: 'Eje'})"
+                        (click)="savePlanningSubjectAxi({name: planningAddForm.value.axi, subject: planningAddForm.value.subject})"
                         [disabled]="disabledButton([planningAddForm.value.axi, planningAddForm.value.subject])"><svg
                             xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -130,9 +131,10 @@
                             <div class="input-group">
                                 <input type="text" class="form-control" formControlName="objective" [ngClass]="(objective?.touched || objective?.dirty) && objective?.hasError('required') ? 'is-invalid' : '' || 
                 ((objective?.touched || objective?.dirty) && !objective?.invalid) ? 'is-valid' : ''"
-                                    placeholder="Objetivo" aria-label="Unidad" aria-describedby="button-objective">
+                                    placeholder="Objetivo" aria-label="Objetivo" aria-describedby="button-objective">
+
                                 <button class="btn btn-primary" type="button" id="button-objective"
-                                    (click)="savePlanning({oa: planningAddForm.value.number_oa, name: planningAddForm.value.objective, table: 'objectives', message: 'Objetivo'})"
+                                    (click)="savePlanningObjective({oa: planningAddForm.value.number_oa, name: planningAddForm.value.objective})"
                                     [disabled]="disabledButton([planningAddForm.value.number_oa, planningAddForm.value.objective])"><svg
                                         xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -173,7 +175,7 @@
                 ((attitude?.touched || attitude?.dirty) && !attitude?.invalid) ? 'is-valid' : ''" placeholder="Actitud"
                                     aria-label="Actitud" aria-describedby="button-attitude">
                                 <button class="btn btn-primary" type="button" id="button-objective"
-                                    (click)="savePlanning({oa: planningAddForm.value.number_oaa, name: planningAddForm.value.attitude, table: 'attitudes', message: 'Actitud'})"
+                                    (click)="savePlanningAttitude({oa: planningAddForm.value.number_oaa, name: planningAddForm.value.attitude})"
                                     [disabled]="disabledButton([planningAddForm.value.number_oaa, planningAddForm.value.attitude])"><svg
                                         xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -215,7 +217,7 @@
                 ((skill?.touched || skill?.dirty) && !skill?.invalid) ? 'is-valid' : ''" placeholder="Habilidad"
                                     aria-label="Actitud" aria-describedby="button-skill">
                                 <button class="btn btn-primary" type="button" id="button-objective"
-                                    (click)="savePlanning({oa: planningAddForm.value.number_oah, name: planningAddForm.value.skill, table: 'skills', message: 'Habilidad'})"
+                                    (click)="savePlanningSkill({oa: planningAddForm.value.number_oah, name: planningAddForm.value.skill})"
                                     [disabled]="disabledButton([planningAddForm.value.number_oah, planningAddForm.value.skill])"><svg
                                         xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -261,8 +263,7 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <!-- <div class="form-check" *ngFor="let objective of checkbox_objectives"> -->
-                            <div class="row">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}">
                                 <div class="col-2">
                                     <div class="form-check" *ngFor="let objective of list_objectives">
                                         <input class="form-check-input" type="checkbox" formControlName="objective_axi"
@@ -278,10 +279,6 @@
                                 </div>
                             </div>
                         </div>
-
-
-
-
                         <button type="submit" class="btn btn-primary"
                             (click)="savePlanningAxiObjective({id: checkboxs, axi: planningAddForm.value.select_axi})"
                             [disabled]="disabledButton([planningAddForm.value.select_axi, planningAddForm.value.objective_axi])"><svg
@@ -318,8 +315,7 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <!-- <div class="form-check" *ngFor="let objective of checkbox_objectives"> -->
-                            <div class="row">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}">
                                 <div class="col-2">
                                     <div class="form-check" *ngFor="let objective of list_objectives">
                                         <input class="form-check-input" type="checkbox" formControlName="objective_unit"
@@ -359,10 +355,20 @@
                     data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         <div class="mb-3">
-                            <div class="form-check" *ngFor="let objective of list_objectives">
-                                <input class="form-check-input" type="checkbox" formControlName="objective"
-                                    [id]="objective.id" (click)="checkBox($event)">
-                                <label class="form-check-label" [for]="objective.id">{{ objective.oa }}</label>
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}">
+                                <div class="col-2">
+                                    <div class="form-check" *ngFor="let objective of list_objectives">
+                                        <input class="form-check-input" type="checkbox" formControlName="objective_unit"
+                                            [id]="objective.id" (click)="checkBox($event)">
+                                        <label class="form-check-label" [for]="objective.id"
+                                            (mouseover)="previewObjective(objective.name)">{{ objective.oa }}
+                                        </label>
+
+                                    </div>
+                                </div>
+                                <div class="col w-100">
+                                    <div class="shadow-none p-3 bg-light rounded">{{ text_objective }}</div>
+                                </div>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -411,8 +417,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <!-- <div class="form-check" *ngFor="let objective of checkbox_objectives"> -->
-                            <div class="row">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}">
                                 <div class="col-2">
                                     <div class="form-check" *ngFor="let skill of list_skills">
                                         <input class="form-check-input" type="checkbox" formControlName="skill_unit"
@@ -465,8 +470,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <!-- <div class="form-check" *ngFor="let objective of checkbox_objectives"> -->
-                            <div class="row">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}">
                                 <div class="col-2">
                                     <div class="form-check" *ngFor="let attitude of list_attitudes">
                                         <input class="form-check-input" type="checkbox" formControlName="attitude_unit"
@@ -520,8 +524,7 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <!-- <div class="form-check" *ngFor="let objective of checkbox_objectives"> -->
-                            <div class="row">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}">
                                 <div class="col-2">
                                     <div class="form-check" *ngFor="let objective of checkbox_objectives_indicators">
                                         <input class="form-check-input" type="checkbox"
@@ -574,33 +577,30 @@
             [gridOptions]="gridOptions">
         </ag-grid-angular>
 
-        <!-- Modal -->
-        <div class="modal fade" id="{{ 'edit_modal_' + id_objective }}" tabindex="-1"
-            aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">¿Está seguro que desea eliminar?
-                        </h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h1></h1>
-                        <p>Si usted elimina este asignatura <b>NO</b> podrá recuperar la información.</p>
-                        <hr>
-                        <div class="d-grid gap-2 d-flex justify-content-end">
-
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-
-                            <!-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                (click)="deleteSubject(subject.id)">Eliminar</button> -->
+        <ng-container *ngFor="let row of rowData">
+            <!-- Modal -->
+            <div class="modal fade" id="{{ 'edit_modal_' + row.id_objetivo }}" tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
 
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
 
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                (click)="updatePlanning(row)">Actualizar</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </ng-container>
 
     </div>
 </div>
