@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Subject } from 'src/app/models/Subject'
 import { Course } from 'src/app/models/Course';
 import { CourseService } from 'src/app/services/teacher/course.service';
@@ -28,6 +28,9 @@ export class PlanningComponent implements OnInit {
     list_niveles: any = []
     list_courses: any = []
     list_objectives: any = []
+    list_objectives_axis: any = []
+    list_objectives_units: any = []
+    list_objectives_subobjectives: any = []
     list_skills: any = []
     list_attitudes: any = []
     list_axis: any = []
@@ -41,6 +44,8 @@ export class PlanningComponent implements OnInit {
     text_skill: string = ''
     text_attitude: string = ''
     id_objective: number = 0
+    list_preview_subobjectives: any = []
+    selectedItem: any;
 
     checkboxs: any = []
 
@@ -69,19 +74,27 @@ export class PlanningComponent implements OnInit {
             cellRenderer: (params: any) => {
 
                 let container = document.createElement('div');
-                let div = document.createElement('div');
-                div.textContent = 'OA' + params.data.objetivo[0].oa;
-                container.appendChild(div);
 
-                let ul = document.createElement('ul');
+                if (params.data.objetivo && params.data.objetivo.length > 0) {
+                    let div_title = document.createElement('div');
+                    let div_subtitle = document.createElement('div');
+                    div_title.textContent = 'OA' + params.data.objetivo[0].title_oa;
+                    div_subtitle.textContent = params.data.objetivo[0].subtitle_oa;
+                    container.appendChild(div_title);
+                    container.appendChild(div_subtitle);
 
-                let subobjective = this.truncateChar(params.data.objetivo[0].name);
-                let li = document.createElement('li');
-                li.textContent = subobjective;
-                ul.appendChild(li);
-                container.appendChild(ul);
+                    let ul = document.createElement('ul');
+                    let subobjective = params.data.objetivo;
+                    subobjective.forEach((element: any) => {
+                        let li = document.createElement('li');
+                        li.textContent = element.title_subobjective;
+                        ul.appendChild(li);
+                    });
 
-                return container
+                    container.appendChild(ul);
+                }
+
+                return container;
             },
             autoHeight: true,
             cellStyle: { 'white-space': 'normal' },
@@ -89,6 +102,9 @@ export class PlanningComponent implements OnInit {
         },
         {
             field: 'indicador', width: 300,
+            cellRenderer: (params: any) => {
+                return this.createListTable(params.data.indicador, 'indicator');
+            },
             cellStyle: { 'white-space': 'normal' }
         },
         {
@@ -118,11 +134,23 @@ export class PlanningComponent implements OnInit {
                 button.setAttribute('type', 'button');
                 button.setAttribute('class', 'btn btn-primary');
                 button.setAttribute('data-bs-toggle', 'modal');
-                button.setAttribute('data-bs-target', '#edit_modal_' + params.data.id_objetivo + '');
+                // button.setAttribute('data-bs-target', '#edit_modal_' + params.data.id + '');
+                button.setAttribute('data-bs-target', '#edit_modal');
+                button.addEventListener('click', () => {
+                    // Lógica del controlador de eventos aquí
+                    this.selectItem(params.data.id);
+                });
                 return button;
             }
         },
     ]
+
+    @ViewChildren('stickyElement')
+    stickyElements!: QueryList<ElementRef>;
+
+    selectItem(id: string) {
+        this.selectedItem = this.rowData.find((item: any) => item.id === id);
+    }
 
 
     planningAddForm = new FormGroup({
@@ -310,11 +338,27 @@ export class PlanningComponent implements OnInit {
     }
 
     loadObjectives() {
-        this.list_objectives = []
+        this.list_objectives_axis = []
+        this.list_objectives_units = []
+        this.list_objectives_subobjectives = []
+
         let table = 'objectives'
         this.planningService.getIdPlanning(table).subscribe((objectives: any) => {
             objectives.map((objective: any) => {
-                this.list_objectives.push({
+
+                this.list_objectives_axis.push({
+                    id: objective.id,
+                    oa: 'OA' + objective.oa,
+                    name: objective.name
+                })
+
+                this.list_objectives_units.push({
+                    id: objective.id,
+                    oa: 'OA' + objective.oa,
+                    name: objective.name
+                })
+
+                this.list_objectives_subobjectives.push({
                     id: objective.id,
                     oa: 'OA' + objective.oa,
                     name: objective.name
@@ -390,52 +434,144 @@ export class PlanningComponent implements OnInit {
         }
     }
 
-    loadPlannings() {
-        this.planningService.getAllPlanning().subscribe(async (plannings: any) => {
+    // loadPlannings() {
+    //     this.rowData = [];
+    //     this.planningService.getAllPlanning().subscribe(async (plannings: any) => {
+    //         if (plannings.length === 0) {
+    //             console.log('No hay datos');
+    //             return;
+    //         }
+
+    //         for (let planning of plannings) {
+
+    //             let list_subobjectives = await firstValueFrom(this.planningService.getIdSubObjective(planning.id_objective));
+    //             let list_skills = await firstValueFrom(this.planningService.getIdSkill(planning.id_unit));
+    //             let list_attitudes = await firstValueFrom(this.planningService.getIdAttitude(planning.id_unit));
+
+    //             let list_indicators = await firstValueFrom(this.planningService.getIdIndicator(planning.id_objective, planning.id_unit));
+
+    //             let indicatorsForThisPlanning = Object.values(list_indicators).filter((indicator: any) => indicator.objective === planning.id_objective && indicator.unit === planning.id_unit);
+    //             let indicator = indicatorsForThisPlanning.map((indicator: any) => {
+    //                 return {
+    //                     'title': [this.truncateChar(indicator.name)]
+    //                 }
+    //             });
+
+    //             let subobjectivesForThisPlanning = Object.values(list_subobjectives).filter((subobjective: any) => subobjective.objective === planning.id_objective);
+    //             let subobjective = subobjectivesForThisPlanning.map((subobjective: any) => {
+    //                 return {
+    //                     'title_oa': subobjective.oa,
+    //                     'subtitle_oa': subobjective.name,
+    //                     'title_subobjective': [this.truncateChar(subobjective.name_subobjective)]
+    //                 }
+    //             });
+
+
+
+    //             let skillsForThisPlanning = Object.values(list_skills).filter((skill: any) => skill.unit === planning.id_unit);
+    //             let skill = skillsForThisPlanning.map((skill: any) => {
+    //                 return {
+    //                     'title': skill.oa,
+    //                     'subtitle': [this.truncateChar(skill.name)]
+    //                 }
+    //             });
+
+    //             let attitudesForThisPlanning = Object.values(list_attitudes).filter((attitude: any) => attitude.unit === planning.id_unit);
+    //             let attitude = attitudesForThisPlanning.map((attitude: any) => {
+    //                 return {
+    //                     'title': attitude.oa,
+    //                     'subtitle': [this.truncateChar(attitude.name)]
+    //                 }
+    //             });
+
+    //             this.rowData.push({
+    //                 curso: planning.course,
+    //                 asignatura: planning.subject,
+    //                 unidad: planning.unit,
+    //                 eje: planning.axi,
+    //                 objetivo: subobjective,
+    //                 indicador: indicator,
+    //                 habilidad: skill,
+    //                 actitud: attitude,
+    //                 id_objetivo: planning.id_objective,
+    //                 id: planning.id_temporal,
+    //                 id_axi: planning.id_axi
+    //             })
+    //         }
+    //         this.gridApi.setRowData(this.rowData);
+    //     });
+    // }
+
+    async loadPlannings(): Promise<void> {
+        this.rowData = [];
+
+        try {
+            const plannings: any = await this.planningService.getAllPlanning().toPromise();
+
             if (plannings.length === 0) {
                 console.log('No hay datos');
                 return;
             }
 
             for (let planning of plannings) {
+                const list_subobjectives = await firstValueFrom(this.planningService.getIdSubObjective(planning.id_objective));
+                const list_skills = await firstValueFrom(this.planningService.getIdSkill(planning.id_unit));
+                const list_attitudes = await firstValueFrom(this.planningService.getIdAttitude(planning.id_unit));
+                const list_indicators = await firstValueFrom(this.planningService.getIdIndicator(planning.id_objective, planning.id_unit));
 
-                let subobjectives = await firstValueFrom(this.planningService.getIdSubObjective(planning.id_objective));
-                let list_skills = await firstValueFrom(this.planningService.getIdSkill(planning.id_unit));
-                let list_attitudes = await firstValueFrom(this.planningService.getIdAttitude(planning.id_unit));
+                const indicatorsForThisPlanning = Object.values(list_indicators).filter((indicator: any) => indicator.objective === planning.id_objective && indicator.unit === planning.id_unit);
+                const indicator = indicatorsForThisPlanning.map((indicator: any) => {
+                    return {
+                        'title': [this.truncateChar(indicator.name)]
+                    }
+                });
 
-                let skillsForThisPlanning = Object.values(list_skills).filter((skill: any) => skill.unit === planning.id_unit);
-                let skill = skillsForThisPlanning.map((skill: any) => {
+                const subobjectivesForThisPlanning = Object.values(list_subobjectives).filter((subobjective: any) => subobjective.objective === planning.id_objective);
+                const subobjective = subobjectivesForThisPlanning.map((subobjective: any) => {
+                    return {
+                        'title_oa': subobjective.oa,
+                        'subtitle_oa': subobjective.name,
+                        'title_subobjective': [this.truncateChar(subobjective.name_subobjective)]
+                    }
+                });
+
+                const skillsForThisPlanning = Object.values(list_skills).filter((skill: any) => skill.unit === planning.id_unit);
+                const skill = skillsForThisPlanning.map((skill: any) => {
                     return {
                         'title': skill.oa,
                         'subtitle': [this.truncateChar(skill.name)]
                     }
                 });
 
-                let attitudesForThisPlanning = Object.values(list_attitudes).filter((attitude: any) => attitude.unit === planning.id_unit);
-                let attitude = attitudesForThisPlanning.map((attitude: any) => {
+                const attitudesForThisPlanning = Object.values(list_attitudes).filter((attitude: any) => attitude.unit === planning.id_unit);
+                const attitude = attitudesForThisPlanning.map((attitude: any) => {
                     return {
                         'title': attitude.oa,
                         'subtitle': [this.truncateChar(attitude.name)]
                     }
                 });
 
-                let indicator = this.truncateChar(planning.indicator);
-
                 this.rowData.push({
                     curso: planning.course,
                     asignatura: planning.subject,
                     unidad: planning.unit,
                     eje: planning.axi,
-                    objetivo: subobjectives,
+                    objetivo: subobjective,
                     indicador: indicator,
                     habilidad: skill,
                     actitud: attitude,
-                    id_objetivo: planning.id_objective
-                })
+                    id_objetivo: planning.id_objective,
+                    id: planning.id_temporal,
+                    id_axi: planning.id_axi
+                });
             }
+
             this.gridApi.setRowData(this.rowData);
-        });
+        } catch (error) {
+            console.log(error);
+        }
     }
+
 
     savePlanningSubjectAxi(planning: any) {
         this.planningService.addPlaningSubjectAxi(planning).subscribe((res: any) => {
@@ -443,7 +579,7 @@ export class PlanningComponent implements OnInit {
                 this.clearForm();
                 this.notyf.success(res.message);
 
-                this.planningService.getidAxisSubjects(res.result.name, res.result.subject).subscribe((axis: any) => {
+                this.planningService.getIdAxisSubjects(res.result.name, res.result.subject).subscribe((axis: any) => {
                     axis.map((axi: any) => {
                         this.select_axis.push({
                             id: axi.id,
@@ -495,7 +631,7 @@ export class PlanningComponent implements OnInit {
     savePlanningSkill(planning: any) {
         this.planningService.addPlaningSkill(planning).subscribe((res: any) => {
             if (res.status === 'success') {
-                this.clearForm();
+                this.subject?.setValue('');
                 this.notyf.success(res.message);
 
                 this.list_skills.push({
@@ -514,7 +650,7 @@ export class PlanningComponent implements OnInit {
         this.planningService.addPlanningUnit(planning).subscribe(
             (res: any) => {
                 if (res.status === 'success') {
-                    this.clearForm();
+                    this.unit?.setValue('');
                     this.notyf.success(res.message);
                     this.select_units.push({
                         id: res.result.id,
@@ -534,20 +670,22 @@ export class PlanningComponent implements OnInit {
 
         this.planningService.addPlanningAxiObjective(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
-                this.planningAddForm.patchValue({ objective_axi: false });
-                this.planningAddForm.patchValue({ select_axi: '' });
-                this.checkboxs = []
-
-
                 const { insertedRecords, existingRecords } = res.result;
 
                 insertedRecords.forEach((record: any) => {
                     this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
+
                 });
 
                 existingRecords.forEach((record: any) => {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
+
+                this.loadPlannings();
+
+                this.planningAddForm.patchValue({ objective_axi: false });
+                this.planningAddForm.patchValue({ select_axi: '' });
+                this.checkboxs = []
             }
         });
     }
@@ -560,10 +698,6 @@ export class PlanningComponent implements OnInit {
 
         this.planningService.addPlanningUnitObjective(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
-                this.planningAddForm.patchValue({ objective_unit: false });
-                this.planningAddForm.patchValue({ select_unit: '' });
-                this.checkboxs = []
-
                 const { insertedRecords, existingRecords } = res.result;
 
                 insertedRecords.forEach((record: any) => {
@@ -573,6 +707,12 @@ export class PlanningComponent implements OnInit {
                 existingRecords.forEach((record: any) => {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
+
+                this.loadPlannings();
+
+                this.planningAddForm.patchValue({ objective_unit: false });
+                this.planningAddForm.patchValue({ select_unit: '' });
+                this.checkboxs = []
             }
         });
     }
@@ -585,12 +725,8 @@ export class PlanningComponent implements OnInit {
 
         this.planningService.addPlanningSubObjective(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
-                this.planningAddForm.patchValue({ objective: false });
-                this.planningAddForm.patchValue({ subObjective: '' });
-                this.checkboxs = []
-
                 const { insertedRecords, existingRecords } = res.result;
-
+                
                 insertedRecords.forEach((record: any) => {
                     this.notyf.success('¡El OA' + record.name_oa + ' con el subjetivo fue creado con exito!');
                 });
@@ -598,6 +734,12 @@ export class PlanningComponent implements OnInit {
                 existingRecords.forEach((record: any) => {
                     this.notyf.error('¡El OA' + record.name_oa + ' con el subjetivo ya está creado!');
                 });
+
+                this.loadPlannings();
+
+                this.planningAddForm.patchValue({ objective_unit: false });
+                this.planningAddForm.patchValue({ subObjective: '' });
+                this.checkboxs = []
             }
         });
     }
@@ -610,12 +752,8 @@ export class PlanningComponent implements OnInit {
 
         this.planningService.addPlanningUnitSkill(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
-                this.planningAddForm.patchValue({ skill_unit: false });
-                this.planningAddForm.patchValue({ select_unit: '' });
-                this.checkboxs = []
-
                 const { insertedRecords, existingRecords } = res.result;
-
+                
                 insertedRecords.forEach((record: any) => {
                     this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
                 });
@@ -623,6 +761,12 @@ export class PlanningComponent implements OnInit {
                 existingRecords.forEach((record: any) => {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
+
+                this.loadPlannings();
+
+                this.planningAddForm.patchValue({ skill_unit: false });
+                this.planningAddForm.patchValue({ select_unit: '' });
+                this.checkboxs = []
             }
         });
     }
@@ -635,12 +779,8 @@ export class PlanningComponent implements OnInit {
 
         this.planningService.addPlanningUnitAttitude(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
-                this.planningAddForm.patchValue({ attitude_unit: false });
-                this.planningAddForm.patchValue({ select_unit: '' });
-                this.checkboxs = []
-
                 const { insertedRecords, existingRecords } = res.result;
-
+                
                 insertedRecords.forEach((record: any) => {
                     this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
                 });
@@ -648,6 +788,12 @@ export class PlanningComponent implements OnInit {
                 existingRecords.forEach((record: any) => {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
+
+                this.loadPlannings();
+
+                this.planningAddForm.patchValue({ attitude_unit: false });
+                this.planningAddForm.patchValue({ select_unit: '' });
+                this.checkboxs = []
             }
         });
     }
@@ -660,12 +806,8 @@ export class PlanningComponent implements OnInit {
 
         this.planningService.addPlanningObjectiveIndicator(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
-                this.planningAddForm.patchValue({ objective_indicator: false });
-                this.planningAddForm.patchValue({ select_unit: '' });
-                this.checkboxs = []
-
                 const { insertedRecords, existingRecords } = res.result;
-
+                
                 insertedRecords.forEach((record: any) => {
                     this.notyf.success('¡El OA' + record.oa + ' con el indicador fue creado con exito!');
                 });
@@ -673,6 +815,14 @@ export class PlanningComponent implements OnInit {
                 existingRecords.forEach((record: any) => {
                     this.notyf.error('¡El OA' + record.oa + ' con el indicador ya está creado!');
                 });
+
+                this.loadPlannings();
+
+                this.planningAddForm.patchValue({ objective_indicator: false });
+                this.planningAddForm.patchValue({ select_unit: '' });
+                this.planningAddForm.patchValue({ indicator: '' });
+                this.checkboxs = []
+                this.checkbox_objectives_indicators = []
             }
         });
 
@@ -694,6 +844,11 @@ export class PlanningComponent implements OnInit {
             this.text_skill = ''
         }
 
+    }
+
+    previewObjectiveSubObjectives(objective: number, name: string) {
+        this.text_objective = name
+        this.planningService.getIdSubObjective(objective).subscribe((objectives: any) => this.list_preview_subobjectives = objectives)
     }
 
     previewObjective(name: string) {
@@ -763,6 +918,11 @@ export class PlanningComponent implements OnInit {
 
         for (let i = 0; i < columns.length; i++) {
             let div = document.createElement('div');
+            if (title === 'objective') {
+                div.textContent = 'OA' + columns[i].title;
+                container.appendChild(div);
+            }
+
             if (title === 'attitude') {
                 div.textContent = 'OAA' + columns[i].title;
                 container.appendChild(div);
@@ -773,11 +933,20 @@ export class PlanningComponent implements OnInit {
                 container.appendChild(div);
             }
 
-            let ul = document.createElement('ul');
-            let li = document.createElement('li');
-            li.textContent = columns[i].subtitle;
-            ul.appendChild(li);
-            container.appendChild(ul);
+            if (title === 'indicator') {
+                div.textContent = columns[i].title;
+                container.appendChild(div);
+            }
+
+
+            if (columns[i].subtitle !== undefined) {
+
+                let ul = document.createElement('ul');
+                let li = document.createElement('li');
+                li.textContent = columns[i].subtitle;
+                ul.appendChild(li);
+                container.appendChild(ul);
+            }
         }
 
         return container
@@ -794,7 +963,15 @@ export class PlanningComponent implements OnInit {
         return shortened;
     }
 
-    updatePlanning(plannings: any){
+    onScroll(event: any) {
+        const maxScrollTop = event.target.scrollHeight - event.target.clientHeight;
+        let scrollTop = event.target.scrollTop;
+        this.stickyElements.forEach(stickyElement => {
+            stickyElement.nativeElement.style.top = `${Math.min(scrollTop, maxScrollTop)}px`;
+        });
+    }
+
+    updatePlanning(plannings: any) {
 
     }
 

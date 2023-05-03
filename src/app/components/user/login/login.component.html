@@ -8,6 +8,7 @@
                 <select class="form-select form-select-lg" formControlName="role" [ngClass]="(role?.touched || role?.dirty) && role?.hasError('required') ? 'is-invalid' : '' || 
                     ((role?.touched || role?.dirty) && !role?.invalid) ? 'is-valid' : ''">
                     <option value="">Soy</option>
+                    <option value="administrador">Administrador</option>
                     <option value="profesor">Profesor</option>
                     <option value="alumno">Alumno</option>
                     <option value="apoderado">Apoderado</option>

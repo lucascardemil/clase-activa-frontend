@@ -45,8 +45,12 @@ export class PlanningService {
         return this.http.get(`${this.url}/plannings/getIdSkill/${id}`);
     }
 
-    getidAxisSubjects(name: string, subject: string) {
-        return this.http.get(`${this.url}/plannings/getidAxisSubjects/${name}/${subject}`);
+    getIdIndicator(objective: number, unit: number) {
+        return this.http.get(`${this.url}/plannings/getIdIndicator/${objective}/${unit}`);
+    }
+
+    getIdAxisSubjects(name: string, subject: string) {
+        return this.http.get(`${this.url}/plannings/getIdAxisSubjects/${name}/${subject}`);
     }
 
     addPlaningSubjectAxi(planning: Planning) {

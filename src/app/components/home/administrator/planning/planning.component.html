@@ -263,9 +263,10 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}"
+                                (scroll)="onScroll($event)">
                                 <div class="col-2">
-                                    <div class="form-check" *ngFor="let objective of list_objectives">
+                                    <div class="form-check" *ngFor="let objective of list_objectives_axis">
                                         <input class="form-check-input" type="checkbox" formControlName="objective_axi"
                                             [id]="objective.id" (click)="checkBox($event)">
                                         <label class="form-check-label" [for]="objective.id"
@@ -274,7 +275,7 @@
 
                                     </div>
                                 </div>
-                                <div class="col w-100">
+                                <div class="col w-100 text-preview" #stickyElement>
                                     <div class="shadow-none p-3 bg-light rounded">{{ text_objective }}</div>
                                 </div>
                             </div>
@@ -315,9 +316,10 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}"
+                                (scroll)="onScroll($event)">
                                 <div class="col-2">
-                                    <div class="form-check" *ngFor="let objective of list_objectives">
+                                    <div class="form-check" *ngFor="let objective of list_objectives_units">
                                         <input class="form-check-input" type="checkbox" formControlName="objective_unit"
                                             [id]="objective.id" (click)="checkBox($event)">
                                         <label class="form-check-label" [for]="objective.id"
@@ -326,7 +328,7 @@
 
                                     </div>
                                 </div>
-                                <div class="col w-100">
+                                <div class="col w-100 text-preview" #stickyElement>
                                     <div class="shadow-none p-3 bg-light rounded">{{ text_objective }}</div>
                                 </div>
                             </div>
@@ -355,19 +357,25 @@
                     data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         <div class="mb-3">
-                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}"
+                                (scroll)="onScroll($event)">
                                 <div class="col-2">
-                                    <div class="form-check" *ngFor="let objective of list_objectives">
+                                    <div class="form-check" *ngFor="let objective of list_objectives_subobjectives">
                                         <input class="form-check-input" type="checkbox" formControlName="objective_unit"
                                             [id]="objective.id" (click)="checkBox($event)">
                                         <label class="form-check-label" [for]="objective.id"
-                                            (mouseover)="previewObjective(objective.name)">{{ objective.oa }}
+                                            (mouseover)="previewObjectiveSubObjectives(objective.id, objective.name)">{{ objective.oa }}
                                         </label>
 
                                     </div>
                                 </div>
-                                <div class="col w-100">
-                                    <div class="shadow-none p-3 bg-light rounded">{{ text_objective }}</div>
+                                <div class="col w-100 text-preview" #stickyElement>
+                                    <div class="shadow-none p-3 bg-light rounded">
+                                        <p>{{text_objective}}</p>
+                                        <ul>
+                                            <li *ngFor="let objective of list_preview_subobjectives">{{ objective.name_subobjective }}</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -417,7 +425,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}"
+                                (scroll)="onScroll($event)">
                                 <div class="col-2">
                                     <div class="form-check" *ngFor="let skill of list_skills">
                                         <input class="form-check-input" type="checkbox" formControlName="skill_unit"
@@ -428,7 +437,7 @@
 
                                     </div>
                                 </div>
-                                <div class="col w-100">
+                                <div class="col w-100 text-preview" #stickyElement>
                                     <div class="shadow-none p-3 bg-light rounded">{{ text_skill }}</div>
                                 </div>
                             </div>
@@ -470,7 +479,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}"
+                                (scroll)="onScroll($event)">
                                 <div class="col-2">
                                     <div class="form-check" *ngFor="let attitude of list_attitudes">
                                         <input class="form-check-input" type="checkbox" formControlName="attitude_unit"
@@ -481,7 +491,7 @@
 
                                     </div>
                                 </div>
-                                <div class="col w-100">
+                                <div class="col w-100 text-preview" #stickyElement>
                                     <div class="shadow-none p-3 bg-light rounded">{{ text_attitude }}</div>
                                 </div>
                             </div>
@@ -524,7 +534,8 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}"
+                                (scroll)="onScroll($event)">
                                 <div class="col-2">
                                     <div class="form-check" *ngFor="let objective of checkbox_objectives_indicators">
                                         <input class="form-check-input" type="checkbox"
@@ -536,7 +547,7 @@
 
                                     </div>
                                 </div>
-                                <div class="col w-100">
+                                <div class="col w-100 text-preview" #stickyElement>
                                     <div class="shadow-none p-3 bg-light rounded">{{ text_indicator }}</div>
                                 </div>
                             </div>
@@ -577,30 +588,13 @@
             [gridOptions]="gridOptions">
         </ag-grid-angular>
 
-        <ng-container *ngFor="let row of rowData">
-            <!-- Modal -->
-            <div class="modal fade" id="{{ 'edit_modal_' + row.id_objetivo }}" tabindex="-1"
-                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar
-                            </h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
+        <!-- <app-editar-planning [data]="rowData"></app-editar-planning> -->
 
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <app-edit-planning [modalId]="'edit_modal'" [selectedItem]="selectedItem"></app-edit-planning>
 
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                (click)="updatePlanning(row)">Actualizar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ng-container>
+        <!-- <ng-container *ngFor="let row of rowData">
+            <app-editar-planning [modalId]="'edit_modal_' + row.id"></app-editar-planning>
+        </ng-container> -->
 
     </div>
 </div>

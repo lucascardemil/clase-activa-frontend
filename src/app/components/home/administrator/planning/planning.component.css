@@ -3,7 +3,11 @@
 }
 
 .container-scroll{
-    height: 200px;
+    max-height: 200px;
     overflow-y: auto;
+}
+
+.text-preview{
+    position: relative;
 }
 

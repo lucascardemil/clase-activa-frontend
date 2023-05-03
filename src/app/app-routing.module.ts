@@ -15,12 +15,22 @@ import { HomeComponent } from './components/home/home.component';
 import { ThemeComponent } from './components/home/teacher/theme/theme.component';
 import { TestComponent } from './components/home/teacher/test/test.component';
 import { AddQuestionsComponent } from './components/home/teacher/test/add-questions/add-questions.component';
-import { PlanningComponent } from './components/home/teacher/planning/planning.component';
+import { PlanningComponent } from './components/home/administrator/planning/planning.component';
+import { AdministratorComponent } from './components/home/administrator/administrator.component';
 
 
 const routes: Routes = [
     {
         path: 'home', component: HomeComponent, children: [
+            {
+                path: 'administrador', component: AdministratorComponent, children: [
+                    {
+                        path: 'cobertura_curricular',
+                        component: PlanningComponent
+                    },
+                    { path: '', redirectTo: 'administrador', pathMatch: "full" }
+                ]
+            },
             {
                 path: 'profesor', component: TeacherComponent, children: [
                     {
@@ -50,10 +60,6 @@ const routes: Routes = [
                             { path: '', redirectTo: 'pruebas', pathMatch: "full" }
                         ]
                     },
-                    {
-                        path: 'cobertura_curricular',
-                        component: PlanningComponent
-                    },
                     { path: '', redirectTo: 'profesor', pathMatch: "full" }
 
                 ]
@@ -63,10 +69,10 @@ const routes: Routes = [
             { path: 'editar-perfil', component: EditProfileComponent },
         ], canActivate: [AuthGuard]
     },
-    { path: 'acceso', component: LoginComponent},
+    { path: 'acceso', component: LoginComponent },
     { path: 'registro', component: RegisterComponent },
     { path: '', redirectTo: 'home', pathMatch: 'full' },
-    { path: '**', component: LoginComponent}
+    { path: '**', component: LoginComponent }
 ];
 
 @NgModule({
@@ -90,5 +96,6 @@ export const ArrayOfComponents = [
     ApoderadoComponent,
     LoginComponent,
     RegisterComponent,
-    EditProfileComponent
+    EditProfileComponent,
+    AdministratorComponent
 ]
