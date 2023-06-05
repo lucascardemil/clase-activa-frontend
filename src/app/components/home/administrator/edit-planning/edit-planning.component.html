@@ -40,7 +40,8 @@
                                         [ngClass]="{'scroll': list_edit_objectives.length > 10}"
                                         (scroll)="onScroll($event)">
                                         <div class="col-2">
-                                            <div class="form-check" formArrayName="objective_edit_axi" *ngFor="let select_edit_objective of objective_edit_axi.controls; let i = index">
+                                            <div class="form-check" formArrayName="objective_edit_axi"
+                                                *ngFor="let select_edit_objective of objective_edit_axi.controls; let i = index">
                                                 <input class="form-check-input" type="checkbox" [formControlName]="i"
                                                     [id]="list_edit_objectives[i].id" (click)="checkBox($event)">
                                                 <label class="form-check-label" [for]="list_edit_objectives[i].id"

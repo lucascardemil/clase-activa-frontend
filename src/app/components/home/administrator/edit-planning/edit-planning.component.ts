@@ -86,19 +86,18 @@ export class EditPlanningComponent implements OnInit {
                         let selectedValue = this.select_edit_axis.find((item: any) => item.id === this.selectedItem[key]).name;
                         this.planningUpdateForm.get('select_edit_axi')?.setValue(selectedValue);
                     }
+                    if (key === 'objetivo') {
+                        for (let objective of this.selectedItem[key]) {
+                            let selectedValueIndex = this.list_edit_objectives.findIndex((item: any) => item.id === objective.objective);
+                            this.objective_edit_axi.controls[selectedValueIndex].setValue(true);
 
-                    if (key === 'id_objetivo') {
-                        let selectedValueIndex = this.list_edit_objectives.findIndex((item: any) => item.id === this.selectedItem[key]);
-                        this.objective_edit_axi.controls[selectedValueIndex].setValue(true);
-
-                        let selectedValue = this.list_edit_objectives.find((item: any) => item.id === this.selectedItem[key]);
-                        this.text_objective = selectedValue.name;
-                        this.checkboxs.push({
-                            id: String(selectedValue.id)
-                        })
+                            let selectedValue = this.list_edit_objectives.find((item: any) => item.id === objective.objective);
+                            this.text_objective = selectedValue.name;
+                            this.checkboxs.push({
+                                id: String(selectedValue.id)
+                            })
+                        }
                     }
-
-
                 }
             }
         }

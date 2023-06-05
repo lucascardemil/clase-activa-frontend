@@ -236,7 +236,7 @@
         </div>
 
 
-        <div class="accordion" id="accordionExample">
+        <div class="accordion p-0 mb-5" id="accordionExample">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingEjeUnidad">
                     <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse"
@@ -364,7 +364,8 @@
                                         <input class="form-check-input" type="checkbox" formControlName="objective_unit"
                                             [id]="objective.id" (click)="checkBox($event)">
                                         <label class="form-check-label" [for]="objective.id"
-                                            (mouseover)="previewObjectiveSubObjectives(objective.id, objective.name)">{{ objective.oa }}
+                                            (mouseover)="previewObjectiveSubObjectives(objective.id, objective.name)">{{
+                                            objective.oa }}
                                         </label>
 
                                     </div>
@@ -373,7 +374,8 @@
                                     <div class="shadow-none p-3 bg-light rounded">
                                         <p>{{text_objective}}</p>
                                         <ul>
-                                            <li *ngFor="let objective of list_preview_subobjectives">{{ objective.name_subobjective }}</li>
+                                            <li *ngFor="let objective of list_preview_subobjectives">{{
+                                                objective.name_subobjective }}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -577,24 +579,67 @@
             </div>
         </div>
 
-        <div class="form-check form-switch d-grid gap-2 d-md-flex justify-content-md-end mt-5">
+        <!-- <div class="form-check form-switch d-grid gap-2 d-md-flex justify-content-md-end mt-5">
             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
                 (click)="show_columns($event)">
             <label class="form-check-label" for="flexSwitchCheckDefault">Ver Más</label>
-        </div>
+        </div> -->
 
-        <ag-grid-angular [defaultColDef]="defaultColDef" (gridReady)="onGridReady($event)" class="ag-theme-alpine mt-2"
-            style="width: 100%; height: 800px" [rowData]="rowData" [columnDefs]="colDefs" [animateRows]="true"
-            [gridOptions]="gridOptions">
-        </ag-grid-angular>
-
-        <!-- <app-editar-planning [data]="rowData"></app-editar-planning> -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Curso</th>
+                    <th scope="col">Asignatura</th>
+                    <th scope="col">Unidad</th>
+                    <th scope="col">Eje</th>
+                    <th scope="col">Objetivo</th>
+                    <th scope="col">Indicador</th>
+                    <th scope="col">Habilidad</th>
+                    <th scope="col">Actitud</th>
+                    <th scope="col">Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let planning of rowData">
+                    <td>{{ planning.curso }}</td>
+                    <td>{{ planning.asignatura }}</td>
+                    <td>{{ planning.unidad }}</td>
+                    <td>{{ planning.eje }}</td>
+                    <td>
+                        <div *ngFor="let objetivo of planning.objetivo">
+                            <b>OA{{ objetivo.oa }}</b>
+                            <p>{{ objetivo.name }}</p>
+                            <ul>
+                                <li *ngFor="let subobjective of objetivo.subobjective">{{ subobjective }}</li>
+                            </ul>
+                        </div>
+                    </td>
+                    <td>
+                        <div *ngFor="let indicador of planning.indicador">
+                            <p>{{ indicador }}</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div *ngFor="let habilidad of planning.habilidad">
+                            <b>OAH{{ habilidad.oa }}</b>
+                            <p>{{ habilidad.name }}</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div *ngFor="let actitud of planning.actitud">
+                            <b>OAA{{ actitud.oa }}</b>
+                            <p>{{ actitud.name }}</p>
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-primary" data-bs-toggle='modal'
+                        data-bs-target="#edit_modal" (click)="selectItem(planning.id)"><i
+                                class="bi bi-pencil-square"></i> Editar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
         <app-edit-planning [modalId]="'edit_modal'" [selectedItem]="selectedItem"></app-edit-planning>
-
-        <!-- <ng-container *ngFor="let row of rowData">
-            <app-editar-planning [modalId]="'edit_modal_' + row.id"></app-editar-planning>
-        </ng-container> -->
-
     </div>
 </div>
