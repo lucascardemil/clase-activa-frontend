@@ -11,7 +11,7 @@ import { PlanningService } from 'src/app/services/teacher/planning.service';
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { ColDef, GridOptions } from 'ag-grid-community';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 
 
 
@@ -27,6 +27,7 @@ export class PlanningComponent implements OnInit {
     list_all_subjects: any = []
     list_niveles: any = []
     list_courses: any = []
+    list_all_courses: any = []
     list_objectives: any = []
     list_objectives_axis: any = []
     list_objectives_units: any = []
@@ -34,6 +35,7 @@ export class PlanningComponent implements OnInit {
     list_skills: any = []
     list_attitudes: any = []
     list_axis: any = []
+    list_units: any = []
     select_axis: any = []
     select_units: any = []
     checkbox_objectives_indicators: any = []
@@ -49,6 +51,11 @@ export class PlanningComponent implements OnInit {
     checkboxs: any = []
 
     rowData: any = []
+
+    pagedItems: any[] = []; // Lista de elementos paginados
+
+    currentPage: number = 1; // Página actual
+    itemsPerPage: number = 10; // Elementos por página
 
 
     @ViewChildren('stickyElement')
@@ -79,7 +86,10 @@ export class PlanningComponent implements OnInit {
         skill_unit: new FormControl(),
         attitude_unit: new FormControl(),
         number_oaa: new FormControl(),
-        number_oah: new FormControl()
+        number_oah: new FormControl(),
+        select_filter_course: new FormControl(),
+        select_filter_subject: new FormControl(),
+        select_filter_unit: new FormControl()
     });
 
     constructor(
@@ -91,7 +101,7 @@ export class PlanningComponent implements OnInit {
     }
 
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.planningAddForm = this.formBuilder.group(
             {
                 level: ['', [Validators.required]],
@@ -113,7 +123,10 @@ export class PlanningComponent implements OnInit {
                 skill_unit: ['', [Validators.required]],
                 attitude_unit: ['', [Validators.required]],
                 number_oaa: ['', [Validators.required]],
-                number_oah: ['', [Validators.required]]
+                number_oah: ['', [Validators.required]],
+                select_filter_course: [''],
+                select_filter_subject: [''],
+                select_filter_unit: ['']
             })
 
         this.loadLevels()
@@ -122,34 +135,12 @@ export class PlanningComponent implements OnInit {
         this.loadObjectives()
         this.loadAttitudes()
         this.loadAxis()
-        this.loadPlannings()
+        await this.loadPlannings()
         this.loadAllSubjects()
+        this.loadAllCourses()
         this.loadSkills()
+        this.calculatePagedItems()
     }
-
-
-    // show_columns(event: any) {
-    //     if (event.target.checked === true) {
-    //         if (this.gridOptions.columnApi) {
-    //             this.gridOptions.columnApi.setColumnVisible('eje', false);
-    //             this.gridOptions.columnApi.setColumnVisible('objetivo', false);
-    //             this.gridOptions.columnApi.setColumnVisible('indicador', false);
-
-    //             this.gridOptions.columnApi.setColumnVisible('habilidad', true);
-    //             this.gridOptions.columnApi.setColumnVisible('actitud', true);
-    //         }
-    //     } else {
-    //         if (this.gridOptions.columnApi) {
-    //             this.gridOptions.columnApi.setColumnVisible('eje', true);
-    //             this.gridOptions.columnApi.setColumnVisible('objetivo', true);
-    //             this.gridOptions.columnApi.setColumnVisible('indicador', true);
-
-    //             this.gridOptions.columnApi.setColumnVisible('habilidad', false);
-    //             this.gridOptions.columnApi.setColumnVisible('actitud', false);
-    //         }
-    //     }
-
-    // }
 
     loadLevels() {
         this.list_niveles = []
@@ -178,6 +169,18 @@ export class PlanningComponent implements OnInit {
         })
     }
 
+    loadAllCourses() {
+        this.list_all_courses = []
+        this.courseService.getCourse().subscribe((courses: any) => {
+            courses.map((course: Course) => {
+                this.list_all_courses.push({
+                    id: course.id,
+                    name: course.name
+                })
+            })
+        })
+    }
+
     loadSubjects(event: any) {
         this.list_subjects = []
         let id = event.target.value
@@ -199,6 +202,19 @@ export class PlanningComponent implements OnInit {
                     id: subject.id,
                     name: subject.name,
                     course: subject.course
+                })
+            })
+        })
+    }
+
+    loadUnits(event: any) {
+        this.list_units = []
+        let id = event.target.value
+        this.planningService.getSubjectForUnit(id).subscribe((units: any) => {
+            units.map((unit: any) => {
+                this.list_units.push({
+                    id: unit.id,
+                    name: unit.name
                 })
             })
         })
@@ -325,15 +341,14 @@ export class PlanningComponent implements OnInit {
         }
     }
 
-    async loadPlannings(): Promise<void> {
+    async loadPlannings(unit?: number): Promise<void> {
         const list_plannings = [];
 
         try {
-            const plannings: any = await this.planningService.getAllPlanning().toPromise();
+            const plannings: any = await lastValueFrom(this.planningService.getAllPlanning(unit));
 
             if (plannings.length === 0) {
-                console.log('No hay datos');
-                return;
+                this.rowData = [];
             }
 
             for (let planning of plannings) {
@@ -398,7 +413,7 @@ export class PlanningComponent implements OnInit {
 
             this.rowData = this.groupObjectives(list_plannings);
 
-            console.log(this.rowData)
+            this.calculatePagedItems();
 
         } catch (error) {
             console.log(error);
@@ -425,7 +440,11 @@ export class PlanningComponent implements OnInit {
         }, []);
     }
 
-
+    async loadPlanningsForUnit(event: any) {
+        let id = event.target.value
+        await this.loadPlannings(id);
+        this.calculatePagedItems();
+    }
 
     savePlanningSubjectAxi(planning: any) {
         this.planningService.addPlaningSubjectAxi(planning).subscribe((res: any) => {
@@ -522,7 +541,7 @@ export class PlanningComponent implements OnInit {
             element.axi = this.listAxis(planning.axi)
         })
 
-        this.planningService.addPlanningAxiObjective(this.checkboxs).subscribe((res: any) => {
+        this.planningService.addPlanningAxiObjective(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -535,7 +554,7 @@ export class PlanningComponent implements OnInit {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
 
-                this.loadPlannings();
+                await this.loadPlannings();
 
                 this.planningAddForm.patchValue({ objective_axi: false });
                 this.planningAddForm.patchValue({ select_axi: '' });
@@ -550,7 +569,7 @@ export class PlanningComponent implements OnInit {
             element.unit = this.listUnits(planning.unit)
         })
 
-        this.planningService.addPlanningUnitObjective(this.checkboxs).subscribe((res: any) => {
+        this.planningService.addPlanningUnitObjective(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -562,7 +581,7 @@ export class PlanningComponent implements OnInit {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
 
-                this.loadPlannings();
+                await this.loadPlannings();
 
                 this.planningAddForm.patchValue({ objective_unit: false });
                 this.planningAddForm.patchValue({ select_unit: '' });
@@ -577,7 +596,7 @@ export class PlanningComponent implements OnInit {
             element.subObjective = planning.subObjective
         })
 
-        this.planningService.addPlanningSubObjective(this.checkboxs).subscribe((res: any) => {
+        this.planningService.addPlanningSubObjective(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -589,7 +608,7 @@ export class PlanningComponent implements OnInit {
                     this.notyf.error('¡El OA' + record.name_oa + ' con el subjetivo ya está creado!');
                 });
 
-                this.loadPlannings();
+                await this.loadPlannings();
 
                 this.planningAddForm.patchValue({ objective_unit: false });
                 this.planningAddForm.patchValue({ subObjective: '' });
@@ -604,7 +623,7 @@ export class PlanningComponent implements OnInit {
             element.unit = this.listUnits(planning.unit)
         })
 
-        this.planningService.addPlanningUnitSkill(this.checkboxs).subscribe((res: any) => {
+        this.planningService.addPlanningUnitSkill(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -616,7 +635,7 @@ export class PlanningComponent implements OnInit {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
 
-                this.loadPlannings();
+                await this.loadPlannings();
 
                 this.planningAddForm.patchValue({ skill_unit: false });
                 this.planningAddForm.patchValue({ select_unit: '' });
@@ -631,7 +650,7 @@ export class PlanningComponent implements OnInit {
             element.unit = this.listUnits(planning.unit)
         })
 
-        this.planningService.addPlanningUnitAttitude(this.checkboxs).subscribe((res: any) => {
+        this.planningService.addPlanningUnitAttitude(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -643,7 +662,7 @@ export class PlanningComponent implements OnInit {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
 
-                this.loadPlannings();
+                await this.loadPlannings();
 
                 this.planningAddForm.patchValue({ attitude_unit: false });
                 this.planningAddForm.patchValue({ select_unit: '' });
@@ -658,7 +677,7 @@ export class PlanningComponent implements OnInit {
             element.unit = this.listUnits(planning.unit)
         })
 
-        this.planningService.addPlanningObjectiveIndicator(this.checkboxs).subscribe((res: any) => {
+        this.planningService.addPlanningObjectiveIndicator(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -670,7 +689,7 @@ export class PlanningComponent implements OnInit {
                     this.notyf.error('¡El OA' + record.oa + ' con el indicador ya está creado!');
                 });
 
-                this.loadPlannings();
+                await this.loadPlannings();
 
                 this.planningAddForm.patchValue({ objective_indicator: false });
                 this.planningAddForm.patchValue({ select_unit: '' });
@@ -825,8 +844,30 @@ export class PlanningComponent implements OnInit {
         });
     }
 
-    updatePlanning(plannings: any) {
+    get totalPages(): number {
+        return Math.ceil(this.rowData.length / this.itemsPerPage);
+    }
 
+    calculatePagedItems() {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        this.pagedItems = this.rowData.slice(startIndex, endIndex);
+
+        console.log(this.pagedItems)
+
+    }
+
+    pageChanged(pageNumber: number) {
+        this.currentPage = pageNumber;
+        this.calculatePagedItems();
+    }
+
+    async clearFilter() {
+        await this.loadPlannings();
+        this.calculatePagedItems();
+        this.planningAddForm.patchValue({ select_filter_course: '' });
+        this.planningAddForm.patchValue({ select_filter_subject: '' });
+        this.planningAddForm.patchValue({ select_filter_unit: '' });
     }
 
 

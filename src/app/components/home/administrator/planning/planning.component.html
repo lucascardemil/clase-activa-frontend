@@ -9,7 +9,7 @@
         </figcaption>
     </figure>
 
-    <div class="row" [formGroup]="planningAddForm">
+    <div [formGroup]="planningAddForm">
         <div class="shadow p-3 mb-5 bg-body rounded">
             <div class="row">
                 <div class="col">
@@ -579,18 +579,36 @@
             </div>
         </div>
 
-        <!-- <div class="form-check form-switch d-grid gap-2 d-md-flex justify-content-md-end mt-5">
-            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-                (click)="show_columns($event)">
-            <label class="form-check-label" for="flexSwitchCheckDefault">Ver Más</label>
-        </div> -->
+        <div class="row mb-3">
+            <div class="col ">
+                <!-- <label class="fw-semibold mb-3">Cursos</label> -->
+                <select class="form-select" formControlName="select_filter_course" (change)="loadSubjects($event)">
+                    <option value="">Seleccione el curso</option>
+                    <option *ngFor="let course of list_all_courses" [value]="course.id">{{ course.name }}</option>
+                </select>
+            </div>
+            <div class="col">
+                <!-- <label class="fw-semibold mb-3">Asignaturas</label> -->
+                <select class="form-select" formControlName="select_filter_subject" (change)="loadUnits($event)">
+                    <option value="">Seleccione la asignatura</option>
+                    <option *ngFor="let subject of list_subjects" [value]="subject.id">{{ subject.name }}</option>
+                </select>
+            </div>
+            <div class="col">
+                <!-- <label class="fw-semibold mb-3">Unidad</label> -->
+                <select class="form-select" formControlName="select_filter_unit" (change)="loadPlanningsForUnit($event)">
+                    <option value="">Seleccione la unidad</option>
+                    <option *ngFor="let unit of list_units" [value]="unit.id">{{ unit.name }}</option>
+                </select>
+            </div>
+            <div class="col">
+                <button class="btn btn-danger" type="button" (click)="clearFilter()">Limpiar</button>
+            </div>
+        </div>
 
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th scope="col">Curso</th>
-                    <th scope="col">Asignatura</th>
-                    <th scope="col">Unidad</th>
                     <th scope="col">Eje</th>
                     <th scope="col">Objetivo</th>
                     <th scope="col">Indicador</th>
@@ -600,10 +618,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let planning of rowData">
-                    <td>{{ planning.curso }}</td>
-                    <td>{{ planning.asignatura }}</td>
-                    <td>{{ planning.unidad }}</td>
+                <tr *ngFor="let planning of pagedItems">
                     <td>{{ planning.eje }}</td>
                     <td>
                         <div *ngFor="let objetivo of planning.objetivo">
@@ -633,12 +648,15 @@
                     </td>
                     <td>
                         <button type="button" class="btn btn-primary" data-bs-toggle='modal'
-                        data-bs-target="#edit_modal" (click)="selectItem(planning.id)"><i
+                            data-bs-target="#edit_modal" (click)="selectItem(planning.id)"><i
                                 class="bi bi-pencil-square"></i> Editar</button>
                     </td>
                 </tr>
             </tbody>
         </table>
+
+        <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+            (pageChange)="pageChanged($event)"></app-pagination>
 
         <app-edit-planning [modalId]="'edit_modal'" [selectedItem]="selectedItem"></app-edit-planning>
     </div>

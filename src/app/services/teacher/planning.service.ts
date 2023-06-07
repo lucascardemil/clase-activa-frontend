@@ -13,8 +13,8 @@ export class PlanningService {
         private http: HttpClient,
     ) { }
 
-    getAllPlanning() {
-        return this.http.get(`${this.url}/plannings`);
+    getAllPlanning(id?: number) {
+        return this.http.get(`${this.url}/plannings/${id}`);
     }
 
     getSelectUnits() {
@@ -51,6 +51,10 @@ export class PlanningService {
 
     getIdAxisSubjects(name: string, subject: string) {
         return this.http.get(`${this.url}/plannings/getIdAxisSubjects/${name}/${subject}`);
+    }
+
+    getSubjectForUnit(id: number) {
+        return this.http.get(`${this.url}/plannings/getSubjectForUnit/${id}`);
     }
 
     addPlaningSubjectAxi(planning: Planning) {

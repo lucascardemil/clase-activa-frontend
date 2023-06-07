@@ -17,6 +17,8 @@ import { TestComponent } from './components/home/teacher/test/test.component';
 import { AddQuestionsComponent } from './components/home/teacher/test/add-questions/add-questions.component';
 import { PlanningComponent } from './components/home/administrator/planning/planning.component';
 import { AdministratorComponent } from './components/home/administrator/administrator.component';
+import { PaginationComponent } from './components/pagination/pagination.component';
+import { EditPlanningComponent } from './components/home/administrator/edit-planning/edit-planning.component';
 
 
 const routes: Routes = [
@@ -97,5 +99,7 @@ export const ArrayOfComponents = [
     LoginComponent,
     RegisterComponent,
     EditProfileComponent,
-    AdministratorComponent
+    AdministratorComponent,
+    EditPlanningComponent,
+    PaginationComponent
 ]
