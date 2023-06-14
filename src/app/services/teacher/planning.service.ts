@@ -14,7 +14,7 @@ export class PlanningService {
     ) { }
 
     getAllPlanning(id?: number) {
-        return this.http.get(`${this.url}/plannings/${id}`);
+        return this.http.get(`${this.url}/plannings/getAllPlanning/${id}`);
     }
 
     getSelectUnits() {

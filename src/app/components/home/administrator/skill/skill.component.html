@@ -1,0 +1,42 @@
+<div [formGroup]="planningAddSkill">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div class="row">
+            <div class="col-12 my-3">
+                <div class="row g-3">
+                    <div class="col-2">
+                        <label class="fw-semibold mb-3">N° OAH</label>
+
+                        <input type="text" class="form-control" oninput="this.value = this.value.toUpperCase()"
+                            formControlName="number_oah" [ngClass]="(number_oah?.touched || number_oah?.dirty) && number_oah?.hasError('required') ? 'is-invalid' : '' || 
+    ((number_oah?.touched || number_oah?.dirty) && !number_oah?.invalid) ? 'is-valid' : ''" placeholder="A" min="1">
+                        <div class="invalid-feedback">
+                            {{ number_oah?.hasError('required') ? 'El OAH es requerido' : '' }}
+                        </div>
+
+                    </div>
+                    <div class="col-10">
+                        <label class="fw-semibold mb-3">Habilidad</label>
+
+                        <div class="input-group">
+                            <input type="text" class="form-control" formControlName="skill" [ngClass]="(skill?.touched || skill?.dirty) && skill?.hasError('required') ? 'is-invalid' : '' || 
+        ((skill?.touched || skill?.dirty) && !skill?.invalid) ? 'is-valid' : ''" placeholder="Habilidad"
+                                aria-label="Actitud" aria-describedby="button-skill">
+                            <button class="btn btn-primary" type="button" id="button-objective"
+                                (click)="savePlanningSkill({oa: planningAddSkill.value.number_oah, name: planningAddSkill.value.skill})"
+                                [disabled]="disabledButton([planningAddSkill.value.number_oah, planningAddSkill.value.skill])"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-plus">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>Agregar</button>
+                        </div>
+                        <div class="invalid-feedback">
+                            {{ skill?.hasError('required') ? 'La Habilidad es requerido' : '' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

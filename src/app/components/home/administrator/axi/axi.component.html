@@ -1,0 +1,40 @@
+<div [formGroup]="planningAddAxi">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div class="row">
+            <div class="col">
+                <label class="fw-semibold mb-3">Asignaturas</label>
+                <select class="form-select" formControlName="subject" [ngClass]="(subject?.touched || subject?.dirty) && subject?.hasError('required') ? 'is-invalid' : '' || 
+        ((subject?.touched || subject?.dirty) && !subject?.invalid) ? 'is-valid' : ''">
+                    <option value="">Seleccione la asignatura</option>
+                    <option *ngFor="let subject of list_all_subjects" [value]="subject.id">{{ subject.name }} - {{
+                        subject.course }}
+                    </option>
+                </select>
+
+                <div class="invalid-feedback">
+                    {{ subject?.hasError('required') ? 'La asignatura es requerido' : '' }}
+                </div>
+            </div>
+            <div class="col-12 my-3">
+                <label class="fw-semibold mb-3">Eje</label>
+                <input type="text" class="form-control" formControlName="axi" [ngClass]="(axi?.touched || axi?.dirty) && axi?.hasError('required') ? 'is-invalid' : '' || 
+        ((axi?.touched || axi?.dirty) && !axi?.invalid) ? 'is-valid' : ''" placeholder="Eje" aria-label="Unidad"
+                    aria-describedby="button-axi">
+                <div class="invalid-feedback">
+                    {{ axi?.hasError('required') ? 'El eje es requerido' : '' }}
+                </div>
+            </div>
+            <div class="col-12 my-3">
+                <button class="btn btn-primary" type="button" id="button-axi"
+                    (click)="savePlanningSubjectAxi({name: planningAddAxi.value.axi, subject: planningAddAxi.value.subject})"
+                    [disabled]="disabledButton([planningAddAxi.value.axi, planningAddAxi.value.subject])"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-plus">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>

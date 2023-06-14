@@ -1,0 +1,42 @@
+<div [formGroup]="planningAddAttitude">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div class="row">
+            <div class="col-12 my-3">
+                <div class="row g-3">
+                    <div class="col-2">
+                        <label class="fw-semibold mb-3">N° OAA</label>
+
+                        <input type="text" class="form-control" oninput="this.value = this.value.toUpperCase()"
+                            formControlName="number_oaa" [ngClass]="(number_oaa?.touched || number_oaa?.dirty) && number_oaa?.hasError('required') ? 'is-invalid' : '' || 
+    ((number_oaa?.touched || number_oaa?.dirty) && !number_oaa?.invalid) ? 'is-valid' : ''" placeholder="A" min="1">
+                        <div class="invalid-feedback">
+                            {{ number_oaa?.hasError('required') ? 'El OAA es requerido' : '' }}
+                        </div>
+
+                    </div>
+                    <div class="col-10">
+                        <label class="fw-semibold mb-3">Actitud</label>
+
+                        <div class="input-group">
+                            <input type="text" class="form-control" formControlName="attitude" [ngClass]="(attitude?.touched || attitude?.dirty) && attitude?.hasError('required') ? 'is-invalid' : '' || 
+        ((attitude?.touched || attitude?.dirty) && !attitude?.invalid) ? 'is-valid' : ''" placeholder="Actitud"
+                                aria-label="Actitud" aria-describedby="button-attitude">
+                            <button class="btn btn-primary" type="button" id="button-objective"
+                                (click)="savePlanningAttitude({oa: planningAddAttitude.value.number_oaa, name: planningAddAttitude.value.attitude})"
+                                [disabled]="disabledButton([planningAddAttitude.value.number_oaa, planningAddAttitude.value.attitude])"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-plus">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>Agregar</button>
+                        </div>
+                        <div class="invalid-feedback">
+                            {{ attitude?.hasError('required') ? 'La Actitud es requerido' : '' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

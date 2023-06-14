@@ -1,0 +1,41 @@
+<div [formGroup]="planningAddAxiObjective">
+    <div class="mb-3">
+        <input class="form-control" list="datalistAxis" formControlName="select_axi" [ngClass]="(select_axi?.touched || select_axi?.dirty) && select_axi?.hasError('required') ? 'is-invalid' : '' || 
+                ((select_axi?.touched || select_axi?.dirty) && !select_axi?.invalid) ? 'is-valid' : ''"
+            placeholder="Buscar la Eje">
+        <datalist id="datalistAxis">
+            <option *ngFor="let select_axi of select_axis" [value]="select_axi.name" [id]="select_axi.id">
+        </datalist>
+
+        <div class="invalid-feedback">
+            {{ select_axi?.hasError('required') ? 'El eje es requerida' : '' }}
+        </div>
+    </div>
+    <div class="mb-3">
+        <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}"
+            (scroll)="onScroll($event)">
+            <div class="col-2">
+                <div class="form-check" *ngFor="let objective of list_objectives_axis">
+                    <input class="form-check-input" type="checkbox" formControlName="objective_axi" [id]="objective.id"
+                        (click)="checkBox($event)">
+                    <label class="form-check-label" [for]="objective.id"
+                        (mouseover)="previewObjective(objective.name)">{{ objective.oa }}
+                    </label>
+
+                </div>
+            </div>
+            <div class="col w-100 text-preview" #stickyElement>
+                <div class="shadow-none p-3 bg-light rounded">{{ text_objective }}</div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary"
+        (click)="savePlanningAxiObjective({id: checkboxs, axi: planningAddAxiObjective.value.select_axi})"
+        [disabled]="disabledButton([planningAddAxiObjective.value.select_axi, planningAddAxiObjective.value.objective_axi])"><svg
+            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="feather feather-plus">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg> Agregar</button>
+</div>

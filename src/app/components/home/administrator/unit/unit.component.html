@@ -1,0 +1,64 @@
+<div [formGroup]="planningAddUnit">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div class="row">
+            <div class="col">
+                <label class="fw-semibold mb-3">Niveles</label>
+                <select class="form-select" formControlName="level" [ngClass]="(level?.touched || level?.dirty) && level?.hasError('required') ? 'is-invalid' : '' || 
+                ((level?.touched || level?.dirty) && !level?.invalid) ? 'is-valid' : ''"
+                    (change)="loadCourses($event)">
+                    <option value="">Seleccione el nivel</option>
+                    <option *ngFor="let level of list_niveles" [value]="level.id">{{ level.name }}</option>
+                </select>
+
+                <div class="invalid-feedback">
+                    {{ level?.hasError('required') ? 'El nivel es requerido' : '' }}
+                </div>
+            </div>
+            <div class="col">
+                <label class="fw-semibold mb-3">Cursos</label>
+                <select class="form-select" formControlName="course" [ngClass]="(course?.touched || course?.dirty) && course?.hasError('required') ? 'is-invalid' : '' || 
+                ((course?.touched || course?.dirty) && !course?.invalid) ? 'is-valid' : ''"
+                    (change)="loadSubjects($event)">
+                    <option value="">Seleccione el curso</option>
+                    <option *ngFor="let course of list_courses" [value]="course.id">{{ course.name }}</option>
+                </select>
+
+                <div class="invalid-feedback">
+                    {{ course?.hasError('required') ? 'El curso es requerido' : '' }}
+                </div>
+            </div>
+            <div class="col">
+                <label class="fw-semibold mb-3">Asignaturas</label>
+                <select class="form-select" formControlName="subject" [ngClass]="(subject?.touched || subject?.dirty) && subject?.hasError('required') ? 'is-invalid' : '' || 
+                ((subject?.touched || subject?.dirty) && !subject?.invalid) ? 'is-valid' : ''">
+                    <option value="">Seleccione la asignatura</option>
+                    <option *ngFor="let subject of list_subjects" [value]="subject.id">{{ subject.name }}</option>
+                </select>
+
+                <div class="invalid-feedback">
+                    {{ subject?.hasError('required') ? 'La asignatura es requerido' : '' }}
+                </div>
+            </div>
+            <div class="col-12 my-3">
+                <label class="fw-semibold mb-3">Unidad</label>
+                <input type="text" class="form-control" formControlName="unit" [ngClass]="(unit?.touched || unit?.dirty) && unit?.hasError('required') ? 'is-invalid' : '' || 
+                    ((unit?.touched || unit?.dirty) && !unit?.invalid) ? 'is-valid' : ''" placeholder="Unidad"
+                    aria-label="Unidad" aria-describedby="button-unit">
+                <div class="invalid-feedback">
+                    {{ unit?.hasError('required') ? 'La unidad es requerido' : '' }}
+                </div>
+            </div>
+            <div class="col-12 my-3">
+                <button class="btn btn-primary" type="button" id="button-unit"
+                    (click)="savePlanningUnit({name: planningAddUnit.value.unit, subject: planningAddUnit.value.subject})"
+                    [disabled]="disabledButton([planningAddUnit.value.unit, planningAddUnit.value.subject])"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-plus">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -30,6 +30,15 @@ import { NOTYF, notyfFactory } from './services/notyf/notyf.token';
 
 //AG-GRID
 import { AgGridModule } from 'ag-grid-angular';
+import { UnitComponent } from './components/home/administrator/unit/unit.component';
+import { AxiComponent } from './components/home/administrator/axi/axi.component';
+import { ObjectiveComponent } from './components/home/administrator/objective/objective.component';
+import { AttitudeComponent } from './components/home/administrator/attitude/attitude.component';
+import { SkillComponent } from './components/home/administrator/skill/skill.component';
+import { AxiObjectiveComponent } from './components/home/administrator/planning/axi-objective/axi-objective.component';
+import { UnitObjectiveComponent } from './components/home/administrator/planning/unit-objective/unit-objective.component';
+import { SubobjectiveComponent } from './components/home/administrator/planning/subobjective/subobjective.component';
+import { UnitSkillComponent } from './components/home/administrator/planning/unit-skill/unit-skill.component';
 
 
 
@@ -38,6 +47,15 @@ import { AgGridModule } from 'ag-grid-angular';
         AppComponent,
         ArrayOfComponents,
         OrderByPipe,
+        UnitComponent,
+        AxiComponent,
+        ObjectiveComponent,
+        AttitudeComponent,
+        SkillComponent,
+        AxiObjectiveComponent,
+        UnitObjectiveComponent,
+        SubobjectiveComponent,
+        UnitSkillComponent,
     ],
     imports: [
         BrowserModule,

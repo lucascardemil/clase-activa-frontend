@@ -1,6 +1,10 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
+import { Component, ElementRef, Input, Inject, OnInit, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlanningService } from 'src/app/services/teacher/planning.service';
+import { PlanningComponent } from '../planning/planning.component';
+
+import { NOTYF } from 'src/app/services/notyf/notyf.token';
+import { Notyf } from 'notyf';
 
 @Component({
     selector: 'app-edit-planning',
@@ -15,6 +19,7 @@ export class EditPlanningComponent implements OnInit {
     select_edit_axis: any = []
     list_edit_objectives: any = []
     checkboxs: any = []
+    text_axi: any = []
 
 
     text_objective: string = ''
@@ -44,7 +49,9 @@ export class EditPlanningComponent implements OnInit {
 
     constructor(
         private formBuilder: FormBuilder,
-        private planningService: PlanningService
+        private planningService: PlanningService,
+        @Inject(NOTYF) private notyf: Notyf,
+        private planningComponent: PlanningComponent
     ) {
         this.planningUpdateForm = this.formBuilder.group(
             {
@@ -83,8 +90,9 @@ export class EditPlanningComponent implements OnInit {
                 console.log(this.selectedItem)
                 for (let key in this.selectedItem) {
                     if (key === 'id_axi') {
-                        let selectedValue = this.select_edit_axis.find((item: any) => item.id === this.selectedItem[key]).name;
-                        this.planningUpdateForm.get('select_edit_axi')?.setValue(selectedValue);
+                        let selectedValue = this.select_edit_axis.find((item: any) => item.id === this.selectedItem[key]);
+                        // this.planningUpdateForm.get('select_edit_axi')?.setValue(selectedValue);
+                        this.text_axi = selectedValue
                     }
                     if (key === 'objetivo') {
                         for (let objective of this.selectedItem[key]) {
@@ -113,30 +121,28 @@ export class EditPlanningComponent implements OnInit {
     }
 
     updatePlanningAxiObjective(planning: any) {
-        console.log(planning)
+    
+        this.checkboxs.map((element: any) => {
+            element.axi = planning.axi
+        })
 
-        // this.checkboxs.map((element: any) => {
-        //     element.axi = this.listAxis(planning.axi)
-        // })
+        this.planningService.addPlanningAxiObjective(this.checkboxs).subscribe((res: any) => {
+            if (res.status === 'success') {
+                // this.planningUpdateForm.patchValue({ objective_edit_axi: false });
+                this.checkboxs = []
 
-        // this.planningService.addPlanningAxiObjective(this.checkboxs).subscribe((res: any) => {
-        //     if (res.status === 'success') {
-        //         this.planningAddForm.patchValue({ objective_axi: false });
-        //         this.planningAddForm.patchValue({ select_axi: '' });
-        //         this.checkboxs = []
+                const { insertedRecords, existingRecords } = res.result;
+                this.planningComponent.loadPlannings();
 
-        //         const { insertedRecords, existingRecords } = res.result;
-        //         this.loadPlannings();
+                insertedRecords.forEach((record: any) => {
+                    this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
+                });
 
-        //         insertedRecords.forEach((record: any) => {
-        //             this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
-        //         });
-
-        //         existingRecords.forEach((record: any) => {
-        //             this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
-        //         });
-        //     }
-        // });
+                existingRecords.forEach((record: any) => {
+                    this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
+                });
+            }
+        });
     }
 
     loadEditAxis() {
