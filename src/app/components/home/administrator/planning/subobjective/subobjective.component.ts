@@ -1,23 +1,25 @@
-import { Component, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { PlanningComponent } from '../planning.component';
 import { PlanningService } from 'src/app/services/teacher/planning.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ObjectiveService } from 'src/app/services/teacher/objective.service';
 
 @Component({
     selector: 'app-subobjective',
     templateUrl: './subobjective.component.html',
     styleUrls: ['./subobjective.component.css']
 })
-export class SubobjectiveComponent implements OnInit {
+export class SubobjectiveComponent implements OnInit, DoCheck {
 
     list_objectives: any = []
     list_objectives_subobjectives: any = []
     checkboxs: any = []
     text_objective: string = ''
     list_preview_subobjectives: any = []
+    savedPlanningObjective: any
 
     @ViewChildren('stickyElement')
     stickyElements!: QueryList<ElementRef>;
@@ -28,6 +30,7 @@ export class SubobjectiveComponent implements OnInit {
     });
 
     constructor(
+        private objectiveService: ObjectiveService,
         private planningComponent: PlanningComponent,
         private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
@@ -42,6 +45,16 @@ export class SubobjectiveComponent implements OnInit {
                 objective_unit: ['', [Validators.required]]
             })
         this.loadObjectives();
+    }
+
+    ngDoCheck(): void {
+
+        if (this.objectiveService.savedPlanningObjective !== this.savedPlanningObjective) {
+            this.savedPlanningObjective = this.objectiveService.savedPlanningObjective;
+            if (this.savedPlanningObjective) {
+                this.list_objectives_subobjectives.push(this.savedPlanningObjective);
+            }
+        }
     }
 
     savePlanningSubObjective(planning: any) {

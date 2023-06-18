@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { PlanningService } from 'src/app/services/teacher/planning.service';
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
+import { AttitudeService } from 'src/app/services/teacher/attitude.service';
 
 @Component({
     selector: 'app-attitude',
@@ -19,6 +20,7 @@ export class AttitudeComponent implements OnInit {
     });
 
     constructor(
+        private attitudeService: AttitudeService,
         private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
         private formBuilder: FormBuilder
@@ -38,11 +40,12 @@ export class AttitudeComponent implements OnInit {
                 this.clearForm();
                 this.notyf.success(res.message);
 
-                this.list_attitudes.push({
+                this.attitudeService.savePlanningAttitude({
                     id: res.result.id,
                     oa: 'OAA' + res.result.oa,
                     name: res.result.name
                 })
+
             } else {
                 this.notyf.error(res.message);
             }

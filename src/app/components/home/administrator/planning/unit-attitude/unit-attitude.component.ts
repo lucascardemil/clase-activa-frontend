@@ -1,32 +1,32 @@
 import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { PlanningService } from 'src/app/services/teacher/planning.service';
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
+import { PlanningService } from 'src/app/services/teacher/planning.service';
 import { PlanningComponent } from '../planning.component';
 import { UnitService } from 'src/app/services/teacher/unit.service';
-import { SkillService } from 'src/app/services/teacher/skill.service';
+import { AttitudeService } from 'src/app/services/teacher/attitude.service';
 
 @Component({
-    selector: 'app-unit-skill',
-    templateUrl: './unit-skill.component.html',
-    styleUrls: ['./unit-skill.component.css']
+    selector: 'app-unit-attitude',
+    templateUrl: './unit-attitude.component.html',
+    styleUrls: ['./unit-attitude.component.css']
 })
-export class UnitSkillComponent implements OnInit, DoCheck {
+export class UnitAttitudeComponent implements OnInit, DoCheck {
 
     select_units: any = []
-    list_skills: any = []
+    list_attitudes: any = []
     checkboxs: any = []
-    text_skill: string = ''
+    text_attitude: string = ''
     savedPlanningUnit: any
-    savedPlanningSkill: any
+    savedPlanningAttitude: any
 
     @ViewChildren('stickyElement')
     stickyElements!: QueryList<ElementRef>;
 
     constructor(
-        private skillService: SkillService,
+        private attitudeService: AttitudeService,
         private unitService: UnitService,
         private planningComponent: PlanningComponent,
         private planningService: PlanningService,
@@ -34,19 +34,18 @@ export class UnitSkillComponent implements OnInit, DoCheck {
         private formBuilder: FormBuilder
     ) { }
 
-
-    planningAddUnitSkill = new FormGroup({
+    planningAddUnitAttitude = new FormGroup({
         select_unit: new FormControl(),
-        skill_unit: new FormControl(),
+        attitude_unit: new FormControl(),
     });
 
     ngOnInit(): void {
-        this.planningAddUnitSkill = this.formBuilder.group(
+        this.planningAddUnitAttitude = this.formBuilder.group(
             {
-                skill_unit: ['', [Validators.required]],
+                attitude_unit: ['', [Validators.required]],
                 select_unit: ['', [Validators.required]],
             })
-        this.loadSkills()
+        this.loadAttitudes()
     }
 
     ngDoCheck(): void {
@@ -56,35 +55,36 @@ export class UnitSkillComponent implements OnInit, DoCheck {
                 this.select_units.push(this.savedPlanningUnit);
             }
         }
-        if (this.skillService.savedPlanningSkill !== this.savedPlanningSkill) {
-            this.savedPlanningUnit = this.skillService.savedPlanningSkill;
-            if (this.savedPlanningSkill) {
-                this.list_skills.push(this.savedPlanningSkill);
+
+        if (this.attitudeService.savedPlanningAttitude !== this.savedPlanningAttitude) {
+            this.savedPlanningAttitude = this.attitudeService.savedPlanningAttitude;
+            if (this.savedPlanningAttitude) {
+                this.list_attitudes.push(this.savedPlanningAttitude);
             }
         }
     }
 
-    loadSkills() {
-        this.list_skills = []
-        let table = 'skills'
-        this.planningService.getIdPlanning(table).subscribe((skills: any) => {
-            skills.map((skill: any) => {
-                this.list_skills.push({
-                    id: skill.id,
-                    oa: 'OAH' + skill.oa,
-                    name: skill.name
+    loadAttitudes() {
+        this.list_attitudes = []
+        let table = 'attitudes'
+        this.planningService.getIdPlanning(table).subscribe((attitudes: any) => {
+            attitudes.map((attitude: any) => {
+                this.list_attitudes.push({
+                    id: attitude.id,
+                    oa: 'OAA' + attitude.oa,
+                    name: attitude.name
                 })
             })
         })
     }
 
-    savePlanningUnitSkill(planning: any) {
+    savePlanningUnitAttitude(planning: any) {
 
         this.checkboxs.map((element: any) => {
             element.unit = this.listUnits(planning.unit)
         })
 
-        this.planningService.addPlanningUnitSkill(this.checkboxs).subscribe(async (res: any) => {
+        this.planningService.addPlanningUnitAttitude(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -98,8 +98,8 @@ export class UnitSkillComponent implements OnInit, DoCheck {
 
                 await this.planningComponent.loadPlannings();
 
-                this.planningAddUnitSkill.patchValue({ skill_unit: false });
-                this.planningAddUnitSkill.patchValue({ select_unit: '' });
+                this.planningAddUnitAttitude.patchValue({ attitude_unit: false });
+                this.planningAddUnitAttitude.patchValue({ select_unit: '' });
                 this.checkboxs = []
             }
         });
@@ -123,13 +123,12 @@ export class UnitSkillComponent implements OnInit, DoCheck {
 
         } else {
             this.checkboxs = this.checkboxs.filter((element: any) => element.id !== id)
-            this.text_skill = ''
         }
 
     }
 
-    previewSkill(name: string) {
-        this.text_skill = name
+    previewAttitude(name: string) {
+        this.text_attitude = name
     }
 
     disabledButton(planning: any) {
@@ -146,10 +145,11 @@ export class UnitSkillComponent implements OnInit, DoCheck {
     }
 
     get select_unit() {
-        return this.planningAddUnitSkill.get('select_unit');
+        return this.planningAddUnitAttitude.get('select_unit');
     }
 
-    get skill_unit() {
-        return this.planningAddUnitSkill.get('skill_unit');
+    get attitude_unit() {
+        return this.planningAddUnitAttitude.get('attitude_unit');
     }
+
 }

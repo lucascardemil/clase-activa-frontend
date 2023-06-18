@@ -4,6 +4,7 @@ import { PlanningService } from 'src/app/services/teacher/planning.service';
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
+import { SkillService } from 'src/app/services/teacher/skill.service';
 
 @Component({
     selector: 'app-skill',
@@ -12,18 +13,17 @@ import { Notyf } from 'notyf';
 })
 export class SkillComponent implements OnInit {
 
-    list_skills: any = []
-
     planningAddSkill = new FormGroup({
         skill: new FormControl(),
         number_oah: new FormControl(),
     });
 
-    constructor(private planningService: PlanningService,
+    constructor(
+        private skillService: SkillService,
+        private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
-        private formBuilder: FormBuilder) {
-
-    }
+        private formBuilder: FormBuilder) 
+        {}
 
     ngOnInit(): void {
         this.planningAddSkill = this.formBuilder.group(
@@ -38,11 +38,12 @@ export class SkillComponent implements OnInit {
             if (res.status === 'success') {
                 this.notyf.success(res.message);
 
-                this.list_skills.push({
+                this.skillService.savePlanningSkill({
                     id: res.result.id,
                     oa: 'OAH' + res.result.oa,
                     name: res.result.name
                 })
+
             } else {
                 this.notyf.error(res.message);
             }

@@ -4,6 +4,7 @@ import { PlanningService } from 'src/app/services/teacher/planning.service';
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ObjectiveService } from 'src/app/services/teacher/objective.service';
 
 @Component({
     selector: 'app-objective',
@@ -12,15 +13,13 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 })
 export class ObjectiveComponent implements OnInit {
 
-    list_objectives: any = []
-
-
     planningAddObjective = new FormGroup({
         objective: new FormControl(),
         number_oa: new FormControl(),
     });
 
     constructor(
+        private objectiveService: ObjectiveService,
         private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
         private formBuilder: FormBuilder
@@ -29,7 +28,7 @@ export class ObjectiveComponent implements OnInit {
     ngOnInit(): void {
         this.planningAddObjective = this.formBuilder.group(
             {
-                objective: [],
+                objective: ['', [Validators.required]],
                 number_oa: ['', [Validators.required]],
             })
     }
@@ -41,11 +40,12 @@ export class ObjectiveComponent implements OnInit {
                 this.clearForm();
                 this.notyf.success(res.message);
 
-                this.list_objectives.push({
+                this.objectiveService.savePlanningObjective({
                     id: res.result.id,
                     oa: 'OA' + res.result.oa,
                     name: res.result.name
                 })
+
             } else {
                 this.notyf.error(res.message);
             }

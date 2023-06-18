@@ -1,23 +1,27 @@
-import { Component, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlanningService } from 'src/app/services/teacher/planning.service';
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { PlanningComponent } from '../planning.component';
+import { AxiService } from 'src/app/services/teacher/axi.service';
+import { ObjectiveService } from 'src/app/services/teacher/objective.service';
 
 @Component({
     selector: 'app-axi-objective',
     templateUrl: './axi-objective.component.html',
     styleUrls: ['./axi-objective.component.css']
 })
-export class AxiObjectiveComponent implements OnInit {
+export class AxiObjectiveComponent implements OnInit, DoCheck {
 
     select_axis: any = []
     list_objectives: any = []
     list_objectives_axis: any = []
     checkboxs: any = []
     text_objective: string = ''
+    savedPlanningSubjectAxi: any;
+    savedPlanningObjective: any;
 
     @ViewChildren('stickyElement')
     stickyElements!: QueryList<ElementRef>;
@@ -29,6 +33,8 @@ export class AxiObjectiveComponent implements OnInit {
 
 
     constructor(
+        private objectiveService: ObjectiveService,
+        private axiService: AxiService,
         private planningComponent: PlanningComponent,
         private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
@@ -44,6 +50,22 @@ export class AxiObjectiveComponent implements OnInit {
 
         this.selectAxis()
         this.loadObjectives()
+    }
+
+    ngDoCheck(): void {
+        if (this.axiService.savedPlanningSubjectAxi !== this.savedPlanningSubjectAxi) {
+            this.savedPlanningSubjectAxi = this.axiService.savedPlanningSubjectAxi;
+            if (this.savedPlanningSubjectAxi) {
+                this.select_axis.push(this.savedPlanningSubjectAxi);
+            }
+        }
+
+        if (this.objectiveService.savedPlanningObjective !== this.savedPlanningObjective) {
+            this.savedPlanningObjective = this.objectiveService.savedPlanningObjective;
+            if (this.savedPlanningObjective) {
+                this.list_objectives_axis.push(this.savedPlanningObjective);
+            }
+        }
     }
 
     savePlanningAxiObjective(planning: any) {

@@ -1,23 +1,27 @@
-import { Component, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, DoCheck, ElementRef, Inject, OnChanges, OnInit, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
 import { PlanningComponent } from '../planning.component';
 import { PlanningService } from 'src/app/services/teacher/planning.service';
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UnitService } from 'src/app/services/teacher/unit.service';
+import { ObjectiveService } from 'src/app/services/teacher/objective.service';
 
 @Component({
     selector: 'app-unit-objective',
     templateUrl: './unit-objective.component.html',
     styleUrls: ['./unit-objective.component.css']
 })
-export class UnitObjectiveComponent implements OnInit {
+export class UnitObjectiveComponent implements OnInit, DoCheck {
 
     select_units: any = []
     list_objectives: any = []
     list_objectives_units: any = []
     checkboxs: any = []
     text_objective: string = ''
+    savedPlanningUnit: any
+    savedPlanningObjective: any
 
     @ViewChildren('stickyElement')
     stickyElements!: QueryList<ElementRef>;
@@ -28,11 +32,15 @@ export class UnitObjectiveComponent implements OnInit {
     });
 
     constructor(
+        private objectiveService: ObjectiveService,
+        private unitService: UnitService,
         private planningComponent: PlanningComponent,
         private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
         private formBuilder: FormBuilder
-    ) { }
+    ) {
+
+    }
 
     ngOnInit(): void {
 
@@ -44,6 +52,23 @@ export class UnitObjectiveComponent implements OnInit {
         this.selectUnits()
         this.loadObjectives()
     }
+
+    ngDoCheck(): void {
+        if (this.unitService.savedPlanningUnit !== this.savedPlanningUnit) {
+            this.savedPlanningUnit = this.unitService.savedPlanningUnit;
+            if (this.savedPlanningUnit) {
+                this.select_units.push(this.savedPlanningUnit);
+            }
+        }
+
+        if (this.objectiveService.savedPlanningObjective !== this.savedPlanningObjective) {
+            this.savedPlanningObjective = this.objectiveService.savedPlanningObjective;
+            if (this.savedPlanningObjective) {
+                this.list_objectives_units.push(this.savedPlanningObjective);
+            }
+        }
+    }
+
 
     savePlanningUnitObjective(planning: any) {
 
@@ -142,7 +167,7 @@ export class UnitObjectiveComponent implements OnInit {
     get select_unit() {
         return this.planningAddUnitObjective.get('select_unit');
     }
-    
+
     get objective_unit() {
         return this.planningAddUnitObjective.get('objective_unit');
     }

@@ -1,4 +1,4 @@
-<div [formGroup]="planningAddUnitSkill">
+<div [formGroup]="planningAddUnitAttitude">
     <div class="mb-3">
         <input class="form-control" list="datalistUnits" formControlName="select_unit" [ngClass]="(select_unit?.touched || select_unit?.dirty) && select_unit?.hasError('required') ? 'is-invalid' : '' || 
                             ((select_unit?.touched || select_unit?.dirty) && !select_unit?.invalid) ? 'is-valid' : ''"
@@ -13,26 +13,26 @@
     </div>
 
     <div class="mb-3">
-        <div class="row container-scroll" [ngClass]="{'scroll': list_skills.length > 10}" (scroll)="onScroll($event)">
+        <div class="row container-scroll" [ngClass]="{'scroll': list_attitudes.length > 10}" (scroll)="onScroll($event)">
             <div class="col-2">
-                <div class="form-check" *ngFor="let skill of list_skills">
-                    <input class="form-check-input" type="checkbox" formControlName="skill_unit" [id]="skill.id"
+                <div class="form-check" *ngFor="let attitude of list_attitudes">
+                    <input class="form-check-input" type="checkbox" formControlName="attitude_unit" [id]="attitude.id"
                         (click)="checkBox($event)">
-                    <label class="form-check-label" [for]="skill.id" (mouseover)="previewSkill(skill.name)">{{ skill.oa
-                        }}
+                    <label class="form-check-label" [for]="attitude.id" (mouseover)="previewAttitude(attitude.name)">{{
+                        attitude.oa }}
                     </label>
 
                 </div>
             </div>
             <div class="col w-100 text-preview" #stickyElement>
-                <div class="shadow-none p-3 bg-light rounded">{{ text_skill }}</div>
+                <div class="shadow-none p-3 bg-light rounded">{{ text_attitude }}</div>
             </div>
         </div>
     </div>
 
     <button type="submit" class="btn btn-primary"
-        (click)="savePlanningUnitSkill({id: checkboxs, unit: planningAddUnitSkill.value.select_unit})"
-        [disabled]="disabledButton([planningAddUnitSkill.value.select_unit, planningAddUnitSkill.value.skill_unit])"><svg
+        (click)="savePlanningUnitAttitude({id: checkboxs, unit: planningAddUnitAttitude.value.select_unit})"
+        [disabled]="disabledButton([planningAddUnitAttitude.value.select_unit, planningAddUnitAttitude.value.attitude_unit])"><svg
             xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="feather feather-plus">

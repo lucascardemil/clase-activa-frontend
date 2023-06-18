@@ -17,7 +17,6 @@ export class UnitComponent implements OnInit {
     list_niveles: any = []
     list_courses: any = []
     list_subjects: any = []
-    select_units: any = []
 
     planningAddUnit = new FormGroup({
         level: new FormControl(),
@@ -29,7 +28,6 @@ export class UnitComponent implements OnInit {
 
     constructor(
         private unitService: UnitService,
-        private courseService: CourseService,
         private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
         private formBuilder: FormBuilder
@@ -65,10 +63,11 @@ export class UnitComponent implements OnInit {
                 if (res.status === 'success') {
                     this.unit?.setValue('');
                     this.notyf.success(res.message);
-                    this.select_units.push({
+
+                    this.unitService.savePlanningUnit({
                         id: res.result.id,
                         name: res.result.level + '/' + res.result.course + '/' + res.result.subject + '/' + res.result.unit
-                    })
+                    });
                 } else {
                     this.notyf.error(res.message);
                 }

@@ -14,6 +14,7 @@ export class UnitService {
     list_niveles: any = [];
     list_courses: any = [];
     list_units: any = [];
+    savedPlanningUnit: any;
 
     constructor(
         private courseService: CourseService,
@@ -49,7 +50,7 @@ export class UnitService {
 
         return this.list_courses;
     }
-    
+
     loadSubjects(event: any) {
         this.list_subjects = []
         let id = event.target.value
@@ -78,5 +79,9 @@ export class UnitService {
         })
 
         return this.list_units;
+    }
+
+    savePlanningUnit(planning: any) {
+        this.savedPlanningUnit = planning;
     }
 }

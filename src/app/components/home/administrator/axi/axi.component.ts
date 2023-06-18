@@ -6,6 +6,7 @@ import { Notyf } from 'notyf';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { SubjectService } from 'src/app/services/teacher/subject.service';
 import { Subject } from 'src/app/models/Subject';
+import { AxiService } from 'src/app/services/teacher/axi.service';
 
 @Component({
     selector: 'app-axi',
@@ -15,7 +16,6 @@ import { Subject } from 'src/app/models/Subject';
 export class AxiComponent implements OnInit {
 
     list_all_subjects: any = []
-    select_axis: any = []
 
     planningAddAxi = new FormGroup({
         subject: new FormControl(),
@@ -23,6 +23,7 @@ export class AxiComponent implements OnInit {
     });
 
     constructor(
+        private axiService: AxiService,
         private subjectService: SubjectService,
         private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
@@ -59,7 +60,7 @@ export class AxiComponent implements OnInit {
 
                 this.planningService.getIdAxisSubjects(res.result.name, res.result.subject).subscribe((axis: any) => {
                     axis.map((axi: any) => {
-                        this.select_axis.push({
+                        this.axiService.savePlanningSubjectAxi({
                             id: axi.id,
                             name: axi.subject + '/' + axi.name
                         })

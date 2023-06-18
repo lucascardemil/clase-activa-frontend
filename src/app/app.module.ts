@@ -39,6 +39,8 @@ import { AxiObjectiveComponent } from './components/home/administrator/planning/
 import { UnitObjectiveComponent } from './components/home/administrator/planning/unit-objective/unit-objective.component';
 import { SubobjectiveComponent } from './components/home/administrator/planning/subobjective/subobjective.component';
 import { UnitSkillComponent } from './components/home/administrator/planning/unit-skill/unit-skill.component';
+import { UnitAttitudeComponent } from './components/home/administrator/planning/unit-attitude/unit-attitude.component';
+import { ObjectiveIndicatorComponent } from './components/home/administrator/planning/objective-indicator/objective-indicator.component';
 
 
 
@@ -56,6 +58,8 @@ import { UnitSkillComponent } from './components/home/administrator/planning/uni
         UnitObjectiveComponent,
         SubobjectiveComponent,
         UnitSkillComponent,
+        UnitAttitudeComponent,
+        ObjectiveIndicatorComponent,
     ],
     imports: [
         BrowserModule,
