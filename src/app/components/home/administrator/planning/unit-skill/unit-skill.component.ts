@@ -1,12 +1,13 @@
 import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { PlanningService } from 'src/app/services/teacher/planning.service';
+import { PlanningService } from 'src/app/services/admin/planning.service';
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { PlanningComponent } from '../planning.component';
-import { UnitService } from 'src/app/services/teacher/unit.service';
-import { SkillService } from 'src/app/services/teacher/skill.service';
+import { UnitService } from 'src/app/services/admin/unit.service';
+import { SkillService } from 'src/app/services/admin/skill.service';
+import { ResourcesService } from 'src/app/services/resources/resources.service';
 
 @Component({
     selector: 'app-unit-skill',
@@ -26,6 +27,7 @@ export class UnitSkillComponent implements OnInit, DoCheck {
     stickyElements!: QueryList<ElementRef>;
 
     constructor(
+        private resourcesService: ResourcesService,
         private skillService: SkillService,
         private unitService: UnitService,
         private planningComponent: PlanningComponent,
@@ -50,18 +52,20 @@ export class UnitSkillComponent implements OnInit, DoCheck {
     }
 
     ngDoCheck(): void {
-        if (this.unitService.savedPlanningUnit !== this.savedPlanningUnit) {
-            this.savedPlanningUnit = this.unitService.savedPlanningUnit;
-            if (this.savedPlanningUnit) {
-                this.select_units.push(this.savedPlanningUnit);
-            }
-        }
-        if (this.skillService.savedPlanningSkill !== this.savedPlanningSkill) {
-            this.savedPlanningUnit = this.skillService.savedPlanningSkill;
-            if (this.savedPlanningSkill) {
-                this.list_skills.push(this.savedPlanningSkill);
-            }
-        }
+        // if (this.unitService.savedPlanningUnit !== this.savedPlanningUnit) {
+        //     this.savedPlanningUnit = this.unitService.savedPlanningUnit;
+        //     if (this.savedPlanningUnit) {
+        //         this.select_units.push(this.savedPlanningUnit);
+        //     }
+        // }
+        // if (this.skillService.savedPlanningSkill !== this.savedPlanningSkill) {
+        //     this.savedPlanningUnit = this.skillService.savedPlanningSkill;
+        //     if (this.savedPlanningSkill) {
+        //         this.list_skills.push(this.savedPlanningSkill);
+        //     }
+        // }
+        this.resourcesService.datalist(this.unitService.savedPlanningUnit, this.savedPlanningUnit, this.select_units);
+        this.resourcesService.datalist(this.skillService.savedPlanningSkill, this.savedPlanningSkill, this.list_skills);
     }
 
     loadSkills() {
@@ -84,7 +88,7 @@ export class UnitSkillComponent implements OnInit, DoCheck {
             element.unit = this.listUnits(planning.unit)
         })
 
-        this.planningService.addPlanningUnitSkill(this.checkboxs).subscribe(async (res: any) => {
+        this.unitService.addPlanningUnitSkill(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 

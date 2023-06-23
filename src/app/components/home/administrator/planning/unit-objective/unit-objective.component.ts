@@ -1,12 +1,13 @@
 import { Component, DoCheck, ElementRef, Inject, OnChanges, OnInit, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
 import { PlanningComponent } from '../planning.component';
-import { PlanningService } from 'src/app/services/teacher/planning.service';
+import { PlanningService } from 'src/app/services/admin/planning.service';
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { UnitService } from 'src/app/services/teacher/unit.service';
-import { ObjectiveService } from 'src/app/services/teacher/objective.service';
+import { UnitService } from 'src/app/services/admin/unit.service';
+import { ObjectiveService } from 'src/app/services/admin/objective.service';
+import { ResourcesService } from 'src/app/services/resources/resources.service';
 
 @Component({
     selector: 'app-unit-objective',
@@ -32,6 +33,7 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
     });
 
     constructor(
+        private resourcesService: ResourcesService,
         private objectiveService: ObjectiveService,
         private unitService: UnitService,
         private planningComponent: PlanningComponent,
@@ -54,19 +56,8 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
     }
 
     ngDoCheck(): void {
-        if (this.unitService.savedPlanningUnit !== this.savedPlanningUnit) {
-            this.savedPlanningUnit = this.unitService.savedPlanningUnit;
-            if (this.savedPlanningUnit) {
-                this.select_units.push(this.savedPlanningUnit);
-            }
-        }
-
-        if (this.objectiveService.savedPlanningObjective !== this.savedPlanningObjective) {
-            this.savedPlanningObjective = this.objectiveService.savedPlanningObjective;
-            if (this.savedPlanningObjective) {
-                this.list_objectives_units.push(this.savedPlanningObjective);
-            }
-        }
+        this.resourcesService.datalist(this.unitService.savedPlanningUnit, this.savedPlanningUnit, this.select_units);
+        this.resourcesService.datalist(this.objectiveService.savedPlanningObjective, this.savedPlanningObjective, this.list_objectives_units);
     }
 
 
@@ -76,7 +67,7 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
             element.unit = this.listUnits(planning.unit)
         })
 
-        this.planningService.addPlanningUnitObjective(this.checkboxs).subscribe(async (res: any) => {
+        this.unitService.addPlanningUnitObjective(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -99,7 +90,7 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
 
     selectUnits() {
         this.select_units = []
-        this.planningService.getSelectUnits().subscribe((units: any) => {
+        this.unitService.getSelectUnits().subscribe((units: any) => {
             units.map((unit: any) => {
                 this.select_units.push({
                     id: unit.id,

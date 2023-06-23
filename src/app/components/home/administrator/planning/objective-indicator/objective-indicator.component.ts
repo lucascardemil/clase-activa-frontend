@@ -1,12 +1,13 @@
 import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { PlanningComponent } from '../planning.component';
-import { PlanningService } from 'src/app/services/teacher/planning.service';
+import { PlanningService } from 'src/app/services/admin/planning.service';
 
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { UnitService } from 'src/app/services/teacher/unit.service';
+import { UnitService } from 'src/app/services/admin/unit.service';
+import { ResourcesService } from 'src/app/services/resources/resources.service';
 
 @Component({
     selector: 'app-objective-indicator',
@@ -30,6 +31,7 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
     });
 
     constructor(
+        private resourcesService: ResourcesService,
         private unitService: UnitService,
         private planningComponent: PlanningComponent,
         private planningService: PlanningService,
@@ -48,17 +50,18 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
     }
 
     ngDoCheck(): void {
-        if (this.unitService.savedPlanningUnit !== this.savedPlanningUnit) {
-            this.savedPlanningUnit = this.unitService.savedPlanningUnit;
-            if (this.savedPlanningUnit) {
-                this.select_units.push(this.savedPlanningUnit);
-            }
-        }
+        // if (this.unitService.savedPlanningUnit !== this.savedPlanningUnit) {
+        //     this.savedPlanningUnit = this.unitService.savedPlanningUnit;
+        //     if (this.savedPlanningUnit) {
+        //         this.select_units.push(this.savedPlanningUnit);
+        //     }
+        // }
+        this.resourcesService.datalist(this.unitService.savedPlanningUnit, this.savedPlanningUnit, this.select_units);
     }
 
     selectUnits() {
         this.select_units = []
-        this.planningService.getSelectUnits().subscribe((units: any) => {
+        this.unitService.getSelectUnits().subscribe((units: any) => {
             units.map((unit: any) => {
                 this.select_units.push({
                     id: unit.id,

@@ -2,10 +2,10 @@ import { Component, ElementRef, Inject, OnInit, QueryList, ViewChild, ViewChildr
 import { Course } from 'src/app/models/Course';
 import { CourseService } from 'src/app/services/teacher/course.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { PlanningService } from 'src/app/services/teacher/planning.service';
+import { PlanningService } from 'src/app/services/admin/planning.service';
 
 import { firstValueFrom, lastValueFrom } from 'rxjs';
-import { UnitService } from 'src/app/services/teacher/unit.service';
+import { UnitService } from 'src/app/services/admin/unit.service';
 
 
 @Component({

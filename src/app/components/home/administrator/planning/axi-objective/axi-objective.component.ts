@@ -1,12 +1,13 @@
 import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { PlanningService } from 'src/app/services/teacher/planning.service';
+import { PlanningService } from 'src/app/services/admin/planning.service';
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { PlanningComponent } from '../planning.component';
-import { AxiService } from 'src/app/services/teacher/axi.service';
-import { ObjectiveService } from 'src/app/services/teacher/objective.service';
+import { AxiService } from 'src/app/services/admin/axi.service';
+import { ObjectiveService } from 'src/app/services/admin/objective.service';
+import { ResourcesService } from 'src/app/services/resources/resources.service';
 
 @Component({
     selector: 'app-axi-objective',
@@ -33,6 +34,7 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
 
 
     constructor(
+        private resourcesService: ResourcesService,
         private objectiveService: ObjectiveService,
         private axiService: AxiService,
         private planningComponent: PlanningComponent,
@@ -53,19 +55,22 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
     }
 
     ngDoCheck(): void {
-        if (this.axiService.savedPlanningSubjectAxi !== this.savedPlanningSubjectAxi) {
-            this.savedPlanningSubjectAxi = this.axiService.savedPlanningSubjectAxi;
-            if (this.savedPlanningSubjectAxi) {
-                this.select_axis.push(this.savedPlanningSubjectAxi);
-            }
-        }
+        // if (this.axiService.savedPlanningSubjectAxi !== this.savedPlanningSubjectAxi) {
+        //     this.savedPlanningSubjectAxi = this.axiService.savedPlanningSubjectAxi;
+        //     if (this.savedPlanningSubjectAxi) {
+        //         this.select_axis.push(this.savedPlanningSubjectAxi);
+        //     }
+        // }
 
-        if (this.objectiveService.savedPlanningObjective !== this.savedPlanningObjective) {
-            this.savedPlanningObjective = this.objectiveService.savedPlanningObjective;
-            if (this.savedPlanningObjective) {
-                this.list_objectives_axis.push(this.savedPlanningObjective);
-            }
-        }
+        // if (this.objectiveService.savedPlanningObjective !== this.savedPlanningObjective) {
+        //     this.savedPlanningObjective = this.objectiveService.savedPlanningObjective;
+        //     if (this.savedPlanningObjective) {
+        //         this.list_objectives_axis.push(this.savedPlanningObjective);
+        //     }
+        // }
+
+        this.resourcesService.datalist(this.axiService.savedPlanningSubjectAxi, this.savedPlanningSubjectAxi, this.select_axis);
+        this.resourcesService.datalist(this.objectiveService.savedPlanningObjective, this.savedPlanningObjective, this.list_objectives_axis);
     }
 
     savePlanningAxiObjective(planning: any) {
@@ -74,7 +79,7 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
             element.axi = this.listAxis(planning.axi)
         })
 
-        this.planningService.addPlanningAxiObjective(this.checkboxs).subscribe(async (res: any) => {
+        this.axiService.addPlanningAxiObjective(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -98,7 +103,7 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
 
     selectAxis() {
         this.select_axis = []
-        this.planningService.getSelectAxis().subscribe((axis: any) => {
+        this.axiService.getSelectAxis().subscribe((axis: any) => {
             axis.map((axi: any) => {
                 this.select_axis.push({
                     id: axi.id,

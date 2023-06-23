@@ -3,9 +3,9 @@ import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, ViewChildren
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
 import { PlanningComponent } from '../planning.component';
-import { PlanningService } from 'src/app/services/teacher/planning.service';
+import { PlanningService } from 'src/app/services/admin/planning.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ObjectiveService } from 'src/app/services/teacher/objective.service';
+import { ObjectiveService } from 'src/app/services/admin/objective.service';
 
 @Component({
     selector: 'app-subobjective',

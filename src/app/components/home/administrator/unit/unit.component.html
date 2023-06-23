@@ -51,13 +51,135 @@
             <div class="col-12 my-3">
                 <button class="btn btn-primary" type="button" id="button-unit"
                     (click)="savePlanningUnit({name: planningAddUnit.value.unit, subject: planningAddUnit.value.subject})"
-                    [disabled]="disabledButton([planningAddUnit.value.unit, planningAddUnit.value.subject])"><svg
+                    [disabled]="this.resourcesService.disabledButton([planningAddUnit.value.unit, planningAddUnit.value.subject])"><svg
                         xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="feather feather-plus">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>Agregar</button>
+            </div>
+
+            <div class="col-12 my-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Niveles</th>
+                            <th scope="col">Cursos</th>
+                            <th scope="col">Asignaturas</th>
+                            <th scope="col">Unidad</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+                        <tr *ngFor="let unit of pagedItems">
+                            <td>{{ unit.level }}</td>
+                            <td>{{ unit.course }}</td>
+                            <td>{{ unit.subject }}</td>
+                            <td>{{ unit.unit }}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                    [attr.data-bs-target]="'#edit_modal_' + unit.id" (click)="editUnit(unit)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="{{ 'edit_modal_' + unit.id }}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Unidad</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form [formGroup]="planningUpdateUnit">
+                                                <input type="text" class="form-control" formControlName="id" hidden>
+
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold">Niveles</label>
+                                                    <select class="form-select" formControlName="update_level"
+                                                        [ngClass]="(update_level?.touched || update_level?.dirty) && update_level?.hasError('required') ? 'is-invalid' : '' || 
+                                                    ((update_level?.touched || update_level?.dirty) && !update_level?.invalid) ? 'is-valid' : ''"
+                                                        (change)="loadCourses($event)">
+                                                        <option value="">Seleccione el nivel</option>
+                                                        <option *ngFor="let level of list_niveles" [value]="level.id">{{
+                                                            level.name }}</option>
+                                                    </select>
+
+                                                    <div class="invalid-feedback">
+                                                        {{ update_level?.hasError('required') ? 'El nivel es requerido':
+                                                        '' }}
+                                                    </div>
+                                                </div>
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold">Cursos</label>
+                                                    <select class="form-select" formControlName="update_course"
+                                                        [ngClass]="(update_course?.touched || update_course?.dirty) && update_course?.hasError('required') ? 'is-invalid' : '' || 
+                                                    ((update_course?.touched || update_course?.dirty) && !update_course?.invalid) ? 'is-valid' : ''"
+                                                        (change)="loadSubjects($event)">
+                                                        <option value="">Seleccione el curso</option>
+                                                        <option *ngFor="let course of list_courses" [value]="course.id">
+                                                            {{ course.name }}</option>
+                                                    </select>
+
+                                                    <div class="invalid-feedback">
+                                                        {{ update_course?.hasError('required') ? 'El curso es requerido'
+                                                        : ''}}
+                                                    </div>
+                                                </div>
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold">Asignaturas</label>
+                                                    <select class="form-select" formControlName="update_subject"
+                                                        [ngClass]="(update_subject?.touched || update_subject?.dirty) && update_subject?.hasError('required') ? 'is-invalid' : '' || 
+                                                    ((update_subject?.touched || update_subject?.dirty) && !update_subject?.invalid) ? 'is-valid' : ''">
+                                                        <option value="">Seleccione la asignatura</option>
+                                                        <option *ngFor="let subject of list_subjects"
+                                                            [value]="subject.id">{{ subject.name }}</option>
+                                                    </select>
+
+                                                    <div class="invalid-feedback">
+                                                        {{ update_subject?.hasError('required') ? 'La asignatura es requerido' : '' }}
+                                                    </div>
+                                                </div>
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold">Unidad</label>
+                                                    <input type="text" class="form-control"
+                                                        formControlName="update_unit"
+                                                        [ngClass]="(unit?.touched || update_unit?.dirty) && update_unit?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_unit?.touched || update_unit?.dirty) && !update_unit?.invalid) ? 'is-valid' : ''"
+                                                        placeholder="Unidad" aria-label="Unidad"
+                                                        aria-describedby="button-unit">
+
+                                                    <div class="invalid-feedback">
+                                                        {{ update_unit?.hasError('required') ? 'La unidad es requerido'
+                                                        : '' }}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="d-grid gap-2 d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-primary"
+                                                        (click)="updatePlanningUnit({id: planningUpdateUnit.value.id, name: planningUpdateUnit.value.update_unit, subject: planningUpdateUnit.value.update_subject})"
+                                                        [disabled]="this.resourcesService.disabledButton([planningUpdateUnit.value.update_unit, planningUpdateUnit.value.update_subject])"
+                                                        data-bs-dismiss="modal"
+                                                        [disabled]="!planningUpdateUnit.valid">Actualizar</button>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+                    (pageChange)="pageChanged($event)"></app-pagination>
+
             </div>
         </div>
     </div>

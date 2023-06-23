@@ -3,10 +3,11 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
-import { PlanningService } from 'src/app/services/teacher/planning.service';
+import { PlanningService } from 'src/app/services/admin/planning.service';
 import { PlanningComponent } from '../planning.component';
-import { UnitService } from 'src/app/services/teacher/unit.service';
-import { AttitudeService } from 'src/app/services/teacher/attitude.service';
+import { UnitService } from 'src/app/services/admin/unit.service';
+import { AttitudeService } from 'src/app/services/admin/attitude.service';
+import { ResourcesService } from 'src/app/services/resources/resources.service';
 
 @Component({
     selector: 'app-unit-attitude',
@@ -26,6 +27,7 @@ export class UnitAttitudeComponent implements OnInit, DoCheck {
     stickyElements!: QueryList<ElementRef>;
 
     constructor(
+        private resourcesService: ResourcesService,
         private attitudeService: AttitudeService,
         private unitService: UnitService,
         private planningComponent: PlanningComponent,
@@ -49,19 +51,22 @@ export class UnitAttitudeComponent implements OnInit, DoCheck {
     }
 
     ngDoCheck(): void {
-        if (this.unitService.savedPlanningUnit !== this.savedPlanningUnit) {
-            this.savedPlanningUnit = this.unitService.savedPlanningUnit;
-            if (this.savedPlanningUnit) {
-                this.select_units.push(this.savedPlanningUnit);
-            }
-        }
+        // if (this.unitService.savedPlanningUnit !== this.savedPlanningUnit) {
+        //     this.savedPlanningUnit = this.unitService.savedPlanningUnit;
+        //     if (this.savedPlanningUnit) {
+        //         this.select_units.push(this.savedPlanningUnit);
+        //     }
+        // }
 
-        if (this.attitudeService.savedPlanningAttitude !== this.savedPlanningAttitude) {
-            this.savedPlanningAttitude = this.attitudeService.savedPlanningAttitude;
-            if (this.savedPlanningAttitude) {
-                this.list_attitudes.push(this.savedPlanningAttitude);
-            }
-        }
+        // if (this.attitudeService.savedPlanningAttitude !== this.savedPlanningAttitude) {
+        //     this.savedPlanningAttitude = this.attitudeService.savedPlanningAttitude;
+        //     if (this.savedPlanningAttitude) {
+        //         this.list_attitudes.push(this.savedPlanningAttitude);
+        //     }
+        // }
+
+        this.resourcesService.datalist(this.unitService.savedPlanningUnit, this.savedPlanningUnit, this.select_units);
+        this.resourcesService.datalist(this.attitudeService.savedPlanningAttitude, this.savedPlanningAttitude, this.list_attitudes);
     }
 
     loadAttitudes() {
@@ -84,7 +89,7 @@ export class UnitAttitudeComponent implements OnInit, DoCheck {
             element.unit = this.listUnits(planning.unit)
         })
 
-        this.planningService.addPlanningUnitAttitude(this.checkboxs).subscribe(async (res: any) => {
+        this.unitService.addPlanningUnitAttitude(this.checkboxs).subscribe(async (res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 

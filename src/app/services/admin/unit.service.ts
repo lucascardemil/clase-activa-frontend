@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
-import { SubjectService } from './subject.service';
+import { SubjectService } from '../teacher/subject.service';
 import { Subject } from 'src/app/models/Subject';
 import { Level } from 'src/app/models/Level';
 import { Course } from 'src/app/models/Course';
-import { CourseService } from './course.service';
+import { CourseService } from '../teacher/course.service';
 import { PlanningService } from './planning.service';
+import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { Planning } from 'src/app/models/Planning';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UnitService {
+    private url = environment.apiUrl;
     list_subjects: any = [];
     list_niveles: any = [];
     list_courses: any = [];
@@ -19,8 +23,33 @@ export class UnitService {
     constructor(
         private courseService: CourseService,
         private subjectService: SubjectService,
-        private planningService: PlanningService
+        private planningService: PlanningService,
+        private http: HttpClient,
     ) { }
+
+    getSelectUnits() {
+        return this.http.get(`${this.url}/units/getSelectUnits`);
+    }
+
+    addPlanningUnit(planning: Planning) {
+        return this.http.post(`${this.url}/units/addPlanningUnit`, planning);
+    }
+
+    updatePlanningUnit(planning: Planning) {
+        return this.http.put(`${this.url}/units/updatePlanningUnit`, planning);
+    }
+
+    addPlanningUnitSkill(planning: Planning) {
+        return this.http.post(`${this.url}/units/addPlanningUnitSkill`, planning);
+    }
+    
+    addPlanningUnitAttitude(planning: Planning) {
+        return this.http.post(`${this.url}/units/addPlanningUnitAttitude`, planning);
+    }
+
+    addPlanningUnitObjective(planning: Planning) {
+        return this.http.post(`${this.url}/units/addPlanningUnitObjective`, planning);
+    }
 
     loadLevels() {
         this.subjectService.getAllLevelsWithoutCourses().subscribe((niveles: any) => {

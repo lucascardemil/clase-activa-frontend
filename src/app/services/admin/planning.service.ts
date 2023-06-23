@@ -16,14 +16,6 @@ export class PlanningService {
     getAllPlanning(id?: number) {
         return this.http.get(`${this.url}/plannings/getAllPlanning/${id}`);
     }
-
-    getSelectUnits() {
-        return this.http.get(`${this.url}/plannings/getSelectUnits`);
-    }
-
-    getSelectAxis() {
-        return this.http.get(`${this.url}/plannings/getSelectAxis`);
-    }
     
     getIdPlanning(table: string) {
         return this.http.get(`${this.url}/plannings/getIdPlanning/${table}`);
@@ -49,16 +41,8 @@ export class PlanningService {
         return this.http.get(`${this.url}/plannings/getIdIndicator/${objective}/${unit}`);
     }
 
-    getIdAxisSubjects(name: string, subject: string) {
-        return this.http.get(`${this.url}/plannings/getIdAxisSubjects/${name}/${subject}`);
-    }
-
     getSubjectForUnit(id: number) {
         return this.http.get(`${this.url}/plannings/getSubjectForUnit/${id}`);
-    }
-
-    addPlaningSubjectAxi(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlaningSubjectAxi`, planning);
     }
 
     addPlaningObjective(planning: Planning) {
@@ -77,28 +61,8 @@ export class PlanningService {
         return this.http.post(`${this.url}/plannings/addPlaning`, planning);
     }
 
-    addPlanningUnit(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningUnit`, planning);
-    }
-
-    addPlanningAxiObjective(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningAxiObjective`, planning);
-    }
-
-    addPlanningUnitObjective(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningUnitObjective`, planning);
-    }
-
     addPlanningSubObjective(planning: Planning) {
         return this.http.post(`${this.url}/plannings/addPlanningSubObjective`, planning);
-    }
-
-    addPlanningUnitSkill(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningUnitSkill`, planning);
-    }
-    
-    addPlanningUnitAttitude(planning: Planning) {
-        return this.http.post(`${this.url}/plannings/addPlanningUnitAttitude`, planning);
     }
 
     addPlanningObjectiveIndicator(planning: Planning) {
