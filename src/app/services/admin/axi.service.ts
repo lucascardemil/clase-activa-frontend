@@ -12,7 +12,13 @@ export class AxiService {
     constructor(private http: HttpClient,) { }
 
     getSelectAxis() {
-        return this.http.get(`${this.url}/axis/getSelectAxis`);
+        const timestamp = new Date().getTime();
+        return this.http.get(`${this.url}/axis/getSelectAxis?timestamp=${timestamp}`);
+    }
+
+    getSelectAxisObjectives() {
+        const timestamp = new Date().getTime();
+        return this.http.get(`${this.url}/axis/getSelectAxisObjectives?timestamp=${timestamp}`);
     }
 
     getIdAxisSubjects(name: string, subject: string) {
@@ -29,6 +35,14 @@ export class AxiService {
 
     updatePlaningSubjectAxi(axis: any) {
         return this.http.put(`${this.url}/axis/updatePlaningSubjectAxi`, axis);
+    }
+
+    updatePlanningAxiObjective(axis: any) {
+        return this.http.put(`${this.url}/axis/updatePlanningAxiObjective`, axis);
+    }
+
+    deletePlanningAxiObjective(axis: any) {
+        return this.http.post(`${this.url}/axis/deletePlanningAxiObjective`, axis);
     }
 
     savePlanningSubjectAxi(planning: any) {

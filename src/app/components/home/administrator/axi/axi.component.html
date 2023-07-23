@@ -52,13 +52,13 @@
                             <td>{{ axi.name}}</td>
                             <td>
                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                    [attr.data-bs-target]="'#edit_modal_' + axi.id" (click)="editAxi(axi)">
+                                    [attr.data-bs-target]="'#edit_modal_axi_' + axi.id" (click)="editAxi(axi)">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
                             </td>
 
                             <!-- Modal -->
-                            <div class="modal fade" id="{{ 'edit_modal_' + axi.id }}" tabindex="-1"
+                            <div class="modal fade" id="{{ 'edit_modal_axi_' + axi.id }}" tabindex="-1"
                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">

@@ -1,4 +1,4 @@
-import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PlanningService } from 'src/app/services/admin/planning.service';
 
@@ -19,10 +19,17 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
     select_axis: any = []
     list_objectives: any = []
     list_objectives_axis: any = []
+    list_update_objectives_axis: any = []
     checkboxs: any = []
+    nocheckboxs: any = []
     text_objective: string = ''
     savedPlanningSubjectAxi: any;
     savedPlanningObjective: any;
+    list_objectives_table: any[] = []
+    pagedItems: any[] = []; // Lista de elementos paginados
+
+    currentPage: number = 1; // Página actual
+    itemsPerPage: number = 5; // Elementos por página
 
     @ViewChildren('stickyElement')
     stickyElements!: QueryList<ElementRef>;
@@ -32,16 +39,22 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
         objective_axi: new FormControl(),
     });
 
+    planningUpdateAxiObjective = new FormGroup({
+        update_select_axi: new FormControl(),
+        update_objective_axi: new FormControl(),
+    });
+
 
     constructor(
-        private resourcesService: ResourcesService,
+        public resourcesService: ResourcesService,
         private objectiveService: ObjectiveService,
         private axiService: AxiService,
         private planningComponent: PlanningComponent,
         private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
         private formBuilder: FormBuilder
-    ) { }
+    ) {
+    }
 
     ngOnInit(): void {
         this.planningAddAxiObjective = this.formBuilder.group(
@@ -49,56 +62,110 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
                 select_axi: ['', [Validators.required]],
                 objective_axi: [],
             })
-
+        this.planningUpdateAxiObjective = this.formBuilder.group(
+            {
+                update_select_axi: ['', [Validators.required]],
+                update_objective_axi: [],
+            })
         this.selectAxis()
         this.loadObjectives()
+        this.getAxiObjectiveForTable()
     }
 
     ngDoCheck(): void {
-        // if (this.axiService.savedPlanningSubjectAxi !== this.savedPlanningSubjectAxi) {
-        //     this.savedPlanningSubjectAxi = this.axiService.savedPlanningSubjectAxi;
-        //     if (this.savedPlanningSubjectAxi) {
-        //         this.select_axis.push(this.savedPlanningSubjectAxi);
-        //     }
-        // }
-
-        // if (this.objectiveService.savedPlanningObjective !== this.savedPlanningObjective) {
-        //     this.savedPlanningObjective = this.objectiveService.savedPlanningObjective;
-        //     if (this.savedPlanningObjective) {
-        //         this.list_objectives_axis.push(this.savedPlanningObjective);
-        //     }
-        // }
 
         this.resourcesService.datalist(this.axiService.savedPlanningSubjectAxi, this.savedPlanningSubjectAxi, this.select_axis);
         this.resourcesService.datalist(this.objectiveService.savedPlanningObjective, this.savedPlanningObjective, this.list_objectives_axis);
+        // this.resourcesService.datalist(this.objectiveService.savedPlanningObjective, this.savedPlanningObjective, this.list_update_objectives_axis);
     }
 
-    savePlanningAxiObjective(planning: any) {
+    getAxiObjectiveForTable() {
+        this.axiService.getSelectAxisObjectives().subscribe((data) => {
+            this.list_objectives_table = this.groupObjectivesTable(data);
+            this.calculatePagedItems();
+        });
+    }
+
+    editAxiObjective(data: any) {
+        this.planningUpdateAxiObjective.get('id')?.setValue(data.id);
+
+        let selectedAxi = this.select_axis.find((item: any) => item.id === data.id_axi).name;
+        this.planningUpdateAxiObjective.get('update_select_axi')?.setValue(selectedAxi);
+
+        this.checkboxs = [];
+
+        for (let objective of data.objectives) {
+            let edit_selected = this.list_update_objectives_axis.find((item: any) => item.id === objective.id_objective);
+            if (edit_selected) {
+                edit_selected.checked = true;
+                this.checkboxs.push({
+                    id: edit_selected.id,
+                    checked: edit_selected.checked
+                })
+            }
+        }
+
+        for (let objective of this.list_update_objectives_axis) {
+            let edit_deselect = data.objectives.find((item: any) => item.id_objective === objective.id);
+            if (!edit_deselect) {
+                objective.checked = false;
+            }
+        }
+    }
+
+    async savePlanningAxiObjective(data: any) {
 
         this.checkboxs.map((element: any) => {
-            element.axi = this.listAxis(planning.axi)
+            element.axi = this.resourcesService.list(data.axi, this.select_axis)
         })
 
-        this.axiService.addPlanningAxiObjective(this.checkboxs).subscribe(async (res: any) => {
+        this.axiService.addPlanningAxiObjective(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
                 insertedRecords.forEach((record: any) => {
                     this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
-
                 });
 
                 existingRecords.forEach((record: any) => {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
 
-                await this.planningComponent.loadPlannings();
+                this.getAxiObjectiveForTable();
 
                 this.planningAddAxiObjective.patchValue({ objective_axi: false });
                 this.planningAddAxiObjective.patchValue({ select_axi: '' });
                 this.checkboxs = []
             }
         });
+
+        await this.planningComponent.loadPlannings();
+    }
+
+
+    async updatePlanningAxiObjective(data: any) {
+        this.checkboxs.map((element: any) => {
+            element.axi = this.resourcesService.list(data.axi, this.select_axis)
+        })
+
+        this.axiService.updatePlanningAxiObjective(this.checkboxs).subscribe((res: any) => {
+            if (res.status === 'success') {
+
+                const { insertedRecords, existingRecords} = res.result;
+
+                insertedRecords.forEach((record: any) => {
+                    this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
+                });
+
+                existingRecords.forEach((record: any) => {
+                    this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
+                });
+                this.getAxiObjectiveForTable();
+
+                this.checkboxs = []
+            }
+        });
+        await this.planningComponent.loadPlannings();
     }
 
     selectAxis() {
@@ -115,56 +182,101 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
 
     loadObjectives() {
         this.list_objectives_axis = []
+        this.list_update_objectives_axis = []
         this.planningService.getIdPlanning('objectives').subscribe((objectives: any) => {
             objectives.map((objective: any) => {
                 this.list_objectives_axis.push({
                     id: objective.id,
                     oa: 'OA' + objective.oa,
-                    name: objective.name
+                    name: objective.name,
+                    checked: false
+                })
+
+                this.list_update_objectives_axis.push({
+                    id: objective.id,
+                    oa: 'OA' + objective.oa,
+                    name: objective.name,
+                    checked: false
                 })
             })
         })
     }
 
-    onScroll(event: any) {
-        const maxScrollTop = event.target.scrollHeight - event.target.clientHeight;
-        let scrollTop = event.target.scrollTop;
-        this.stickyElements.forEach(stickyElement => {
-            stickyElement.nativeElement.style.top = `${Math.min(scrollTop, maxScrollTop)}px`;
-        });
-    }
-
-
     checkBox(event: any) {
-        let id = event.target.id
+        let id = parseInt(event.target.id)
 
         if (event.target.checked === true) {
             this.checkboxs.push({
-                id: id
+                id: id,
+                checked: true
             })
+
+            let selected = this.list_update_objectives_axis.find((item: any) => item.id === id);
+            if (selected) {
+                selected.checked = true;
+            }
 
         } else {
             this.checkboxs = this.checkboxs.filter((element: any) => element.id !== id)
             this.text_objective = ''
-        }
 
+            let deselect = this.list_update_objectives_axis.find((item: any) => item.id === id);
+            if (deselect) {
+                deselect.checked = false;
+                this.checkboxs.push({
+                    id: deselect.id,
+                    checked: deselect.checked
+                })
+            }
+        }
     }
 
     previewObjective(name: string) {
-        this.text_objective = name
+        this.text_objective = name;
     }
 
-    disabledButton(planning: any) {
-        const result = planning.every((elemento: any) => {
-            return Boolean(elemento);
+    get totalPages(): number {
+        return Math.ceil(this.list_objectives_table.length / this.itemsPerPage);
+    }
+
+    calculatePagedItems() {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        this.pagedItems = this.list_objectives_table.slice(startIndex, endIndex);
+    }
+
+    pageChanged(pageNumber: number) {
+        this.currentPage = pageNumber;
+        this.calculatePagedItems();
+    }
+
+    groupObjectivesTable(data: any) {
+        const result: any[] = [];
+        const seenIds = new Set();
+
+        data.forEach((item: any) => {
+            const idAxi = item.id_axi;
+            if (!seenIds.has(idAxi)) {
+                seenIds.add(idAxi);
+                result.push({
+                    id_axi: idAxi,
+                    name_axi: item.name_axi,
+                    name_subject: item.name_subject,
+                    objectives: []
+                });
+            }
+
+            result.forEach(res => {
+                if (res.id_axi === idAxi) {
+                    res.objectives.push({
+                        id_objective: item.id_objective,
+                        oa: item.oa
+                    });
+                }
+            });
         });
 
-        return !result;
-    }
-
-    listAxis(name: any) {
-        let list = this.select_axis.filter((x: any) => x.name === name)[0];
-        return list.id;
+        return result;
     }
 
     get select_axi() {
@@ -173,6 +285,14 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
 
     get objective_axi() {
         return this.planningAddAxiObjective.get('objective_axi');
+    }
+
+    get update_select_axi() {
+        return this.planningUpdateAxiObjective.get('update_select_axi');
+    }
+
+    get update_objective_axi() {
+        return this.planningUpdateAxiObjective.get('update_objective_axi');
     }
 
 }

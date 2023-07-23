@@ -1,25 +1,27 @@
-<div [formGroup]="planningAddObjectiveIndicator">
+<div [formGroup]="planningAddObjectiveSubObjective">
     <div class="mb-3">
-        <input class="form-control" list="datalistIndicators" formControlName="select_indicator"
-            [ngClass]="(select_indicator?.touched || select_indicator?.dirty) && select_indicator?.hasError('required') ? 'is-invalid' : '' || 
-                ((select_indicator?.touched || select_indicator?.dirty) && !select_indicator?.invalid) ? 'is-valid' : ''" placeholder="Buscar el Indicador">
-        <datalist id="datalistIndicators">
-            <option *ngFor="let indicator of select_indicators" [value]="indicator.name" [id]="indicator.id">
+        <input class="form-control" list="datalistSubObjectives" formControlName="select_subobjective"
+            [ngClass]="(select_subobjective?.touched || select_subobjective?.dirty) && select_subobjective?.hasError('required') ? 'is-invalid' : '' || 
+                ((select_subobjective?.touched || select_subobjective?.dirty) && !select_subobjective?.invalid) ? 'is-valid' : ''" placeholder="Buscar la Sub-Objetivo">
+        <datalist id="datalistSubObjectives">
+            <option *ngFor="let subobjective of select_subobjectives" [value]="subobjective.name"
+                [id]="subobjective.id">
         </datalist>
 
         <div class="invalid-feedback">
-            {{ select_indicator?.hasError('required') ? 'El indicador es requerido' : '' }}
+            {{ select_subobjective?.hasError('required') ? 'El subobjetivo es requerido' : '' }}
         </div>
     </div>
     <div class="mb-3">
-        <div class="row container-scroll" [ngClass]="{'scroll': list_objectives_indicators.length > 10}"
+        <div class="row container-scroll" [ngClass]="{'scroll': list_objectives_subobjectives.length > 10}"
             (scroll)="this.resourcesService.onScroll($event, stickyElements)">
             <div class="col-2">
-                <div class="form-check" *ngFor="let objective of list_objectives_indicators">
+                <div class="form-check"
+                    *ngFor="let objective of list_objectives_subobjectives">
                     <input class="form-check-input" type="checkbox" formControlName="objective" [id]="objective.id"
                         (click)="checkBox($event)">
                     <label class="form-check-label" [for]="objective.id"
-                        (mouseover)="previewObjectiveIndicators(objective.id, objective.name)">{{
+                        (mouseover)="previewObjectiveSubObjectives(objective.id, objective.name)">{{
                         objective.oa }}
                     </label>
 
@@ -29,7 +31,7 @@
                 <div class="shadow-none p-3 bg-light rounded">
                     <p>{{text_objective}}</p>
                     <ul>
-                        <li *ngFor="let objective of list_preview_indicators">{{ objective.name }}</li>
+                        <li *ngFor="let objective of list_preview_subobjectives">{{ objective.name }}</li>
                     </ul>
                 </div>
             </div>
@@ -37,8 +39,8 @@
     </div>
 
     <button type="submit" class="btn btn-primary"
-        (click)="savePlanningObjectiveIndicator({id: checkboxs, indicator: planningAddObjectiveIndicator.value.select_indicator})"
-        [disabled]="this.resourcesService.disabledButton([checkboxs, planningAddObjectiveIndicator.value.objective])"><svg
+        (click)="savePlanningSubObjective({id: checkboxs, subObjective: planningAddObjectiveSubObjective.value.select_subobjective})"
+        [disabled]="this.resourcesService.disabledButton([checkboxs, planningAddObjectiveSubObjective.value.objective])"><svg
             xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="feather feather-plus">
@@ -50,7 +52,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th scope="col">Indicador</th>
+                <th scope="col">Sub-Objetivo</th>
                 <th scope="col">Objetivo</th>
                 <th scope="col">Accion</th>
             </tr>
@@ -58,7 +60,7 @@
         <tbody>
             <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
             <tr *ngFor="let data of pagedItems">
-                <td>{{ data.name_indicator }}</td>
+                <td>{{ data.name_subobjective }}</td>
                 <td>
                     <div *ngFor="let objective of data.objectives">
                         <span>OA{{ objective.oa }}</span>
@@ -66,7 +68,7 @@
                 </td>
                 <td>
                     <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#modal_indicator_objective" (click)="editObjectiveIndicator(data)">
+                        data-bs-target="#modal_subobjective_objective" (click)="editObjectiveSubObjective(data)">
                         <i class="bi bi-pencil-square"></i>
                     </button>
                 </td>
@@ -75,28 +77,28 @@
     </table>
 
     <!-- Modal -->
-    <div class="modal fade" id="modal_indicator_objective" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modal_subobjective_objective" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Indicador/Objetivo</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Sub-Objetivo/Objetivo</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form [formGroup]="planningUpdateObjectiveIndicator">
+                    <form [formGroup]="planningUpdateObjectiveSubObjective">
                         <div class="mb-3 visually-hidden">
-                            <input class="form-control" list="datalistIndicators"
-                                formControlName="update_select_indicator"
-                                [ngClass]="(update_select_indicator?.touched || update_select_indicator?.dirty) && update_select_indicator?.hasError('required') ? 'is-invalid' : '' || 
-                                ((update_select_indicator?.touched || update_select_indicator?.dirty) && !update_select_indicator?.invalid) ? 'is-valid' : ''"
+                            <input class="form-control" list="datalistSubObjectives"
+                                formControlName="update_select_subobjective"
+                                [ngClass]="(update_select_subobjective?.touched || update_select_subobjective?.dirty) && update_select_subobjective?.hasError('required') ? 'is-invalid' : '' || 
+                                ((update_select_subobjective?.touched || update_select_subobjective?.dirty) && !update_select_subobjective?.invalid) ? 'is-valid' : ''"
                                 placeholder="Buscar la Sub-Objetivo">
-                            <datalist id="datalistIndicators">
-                                <option *ngFor="let subobjective of select_indicators" [value]="subobjective.name"
+                            <datalist id="datalistSubObjectives">
+                                <option *ngFor="let subobjective of select_subobjectives" [value]="subobjective.name"
                                     [id]="subobjective.id">
                             </datalist>
 
                             <div class="invalid-feedback">
-                                {{ update_select_indicator?.hasError('required') ? 'El indicador es requerido' : ''
+                                {{ update_select_subobjective?.hasError('required') ? 'El subobjetivo es requerido' : ''
                                 }}
                             </div>
                         </div>
@@ -105,12 +107,12 @@
                                 (scroll)="this.resourcesService.onScroll($event, stickyElements)">
                                 <div class="col-2">
                                     <div class="form-check"
-                                        *ngFor="let objective of list_update_objectives_indicators">
+                                        *ngFor="let objective of list_update_objectives_subobjectives">
                                         <input class="form-check-input" type="checkbox"
                                             formControlName="update_objective" [id]="objective.id"
                                             [checked]="objective.checked" (click)="checkBox($event)">
                                         <label class="form-check-label" [for]="objective.id"
-                                            (mouseover)="previewObjectiveIndicators(objective.id, objective.name)">{{
+                                            (mouseover)="previewObjectiveSubObjectives(objective.id, objective.name)">{{
                                             objective.oa }}
                                         </label>
 
@@ -120,7 +122,7 @@
                                     <div class="shadow-none p-3 bg-light rounded">
                                         <p>{{text_objective}}</p>
                                         <ul>
-                                            <li *ngFor="let objective of list_preview_indicators">{{
+                                            <li *ngFor="let objective of list_preview_subobjectives">{{
                                                 objective.name }}</li>
                                         </ul>
                                     </div>
@@ -131,8 +133,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary"
-                        (click)="updatePlanningIndicator({id: checkboxs, indicator: planningUpdateObjectiveIndicator.value.update_select_indicator})"
-                        [disabled]="this.resourcesService.disabledButton([checkboxs, planningUpdateObjectiveIndicator.value.update_select_indicator])"
+                        (click)="updatePlanningSubObjective({id: checkboxs, subObjective: planningUpdateObjectiveSubObjective.value.update_select_subobjective})"
+                        [disabled]="this.resourcesService.disabledButton([checkboxs, planningUpdateObjectiveSubObjective.value.update_select_subobjective])"
                         [disabled]="this.resourcesService.isArrayEmpty(checkboxs)"
                         data-bs-dismiss="modal">Actualizar</button>
                 </div>

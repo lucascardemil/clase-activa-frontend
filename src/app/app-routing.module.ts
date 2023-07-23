@@ -25,10 +25,12 @@ import { AttitudeComponent } from './components/home/administrator/attitude/atti
 import { SkillComponent } from './components/home/administrator/skill/skill.component';
 import { AxiObjectiveComponent } from './components/home/administrator/planning/axi-objective/axi-objective.component';
 import { UnitObjectiveComponent } from './components/home/administrator/planning/unit-objective/unit-objective.component';
-import { SubobjectiveComponent } from './components/home/administrator/planning/subobjective/subobjective.component';
+import { SubobjectiveComponent } from './components/home/administrator/subobjective/subobjective.component';
+import { SubobjectiveObjectiveComponent } from './components/home/administrator/planning/subobjective-objective/subobjective-objective.component';
 import { UnitSkillComponent } from './components/home/administrator/planning/unit-skill/unit-skill.component';
 import { UnitAttitudeComponent } from './components/home/administrator/planning/unit-attitude/unit-attitude.component';
 import { ObjectiveIndicatorComponent } from './components/home/administrator/planning/objective-indicator/objective-indicator.component';
+import { IndicatorComponent } from './components/home/administrator/indicator/indicator.component';
 
 const routes: Routes = [
     {
@@ -121,4 +123,6 @@ export const ArrayOfComponents = [
     UnitSkillComponent,
     UnitAttitudeComponent,
     ObjectiveIndicatorComponent,
+    SubobjectiveObjectiveComponent,
+    IndicatorComponent
 ]

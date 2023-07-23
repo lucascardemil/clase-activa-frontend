@@ -80,13 +80,13 @@
                             <td>{{ unit.unit }}</td>
                             <td>
                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                    [attr.data-bs-target]="'#edit_modal_' + unit.id" (click)="editUnit(unit)">
+                                    [attr.data-bs-target]="'#edit_modal_unit_' + unit.id" (click)="editUnit(unit)">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
                             </td>
 
                             <!-- Modal -->
-                            <div class="modal fade" id="{{ 'edit_modal_' + unit.id }}" tabindex="-1"
+                            <div class="modal fade" id="{{ 'edit_modal_unit_' + unit.id }}" tabindex="-1"
                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-lg">
                                     <div class="modal-content">

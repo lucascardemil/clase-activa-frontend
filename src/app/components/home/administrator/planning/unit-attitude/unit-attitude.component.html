@@ -4,7 +4,7 @@
                             ((select_unit?.touched || select_unit?.dirty) && !select_unit?.invalid) ? 'is-valid' : ''"
             placeholder="Buscar la Unidad">
         <datalist id="datalistUnits">
-            <option *ngFor="let unit of select_units" [value]="unit.name" [id]="unit.id">
+            <option *ngFor="let unit of select_units_attitudes" [value]="unit.name" [id]="unit.id">
         </datalist>
 
         <div class="invalid-feedback">
@@ -13,14 +13,13 @@
     </div>
 
     <div class="mb-3">
-        <div class="row container-scroll" [ngClass]="{'scroll': list_attitudes.length > 10}" (scroll)="onScroll($event)">
+        <div class="row container-scroll" [ngClass]="{'scroll': list_attitudes.length > 10}"
+            (scroll)="this.resourcesService.onScroll($event, stickyElements)">
             <div class="col-2">
                 <div class="form-check" *ngFor="let attitude of list_attitudes">
                     <input class="form-check-input" type="checkbox" formControlName="attitude_unit" [id]="attitude.id"
                         (click)="checkBox($event)">
-                    <label class="form-check-label" [for]="attitude.id" (mouseover)="previewAttitude(attitude.name)">{{
-                        attitude.oa }}
-                    </label>
+                    <label class="form-check-label" [for]="attitude.id">{{attitude.oa }}</label>
 
                 </div>
             </div>
@@ -32,11 +31,92 @@
 
     <button type="submit" class="btn btn-primary"
         (click)="savePlanningUnitAttitude({id: checkboxs, unit: planningAddUnitAttitude.value.select_unit})"
-        [disabled]="disabledButton([planningAddUnitAttitude.value.select_unit, planningAddUnitAttitude.value.attitude_unit])"><svg
+        [disabled]="this.resourcesService.disabledButton([checkboxs, planningAddUnitAttitude.value.attitude_unit])"><svg
             xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="feather feather-plus">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg> Agregar</button>
+</div>
+<div class="col-12 my-3">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Unidad</th>
+                <th scope="col">Actitud</th>
+                <th scope="col">Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+            <tr *ngFor="let data of pagedItems">
+                <td>{{ data.name_level }}/{{ data.name_course }}/{{ data.name_subject }}/{{ data.name_unit }}</td>
+                <td>
+                    <div *ngFor="let attitude of data.attitudes">
+                        <span>OAA{{ attitude.oa }}</span>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#modal_unit_attitude" (click)="editUnitAttitude(data)">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Modal -->
+    <div class="modal fade" id="modal_unit_attitude" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Unidad/Actitud</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="planningUpdateUnitAttitude">
+                        <div class="col mb-3 visually-hidden">
+                            <input class="form-control" list="datalistUnits" formControlName="update_select_unit"
+                                [ngClass]="(update_select_unit?.touched || update_select_unit?.dirty) && update_select_unit?.hasError('required') ? 'is-invalid' : '' || 
+                        ((update_select_unit?.touched || update_select_unit?.dirty) && !update_select_unit?.invalid) ? 'is-valid' : ''"
+                                placeholder="Buscar la Eje">
+                            <datalist id="datalistUnits">
+                                <option *ngFor="let update_unit of select_units_attitudes" [value]="update_unit.name"
+                                    [id]="update_unit.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ update_select_unit?.hasError('required') ? 'La Unidad es requerida' : '' }}
+                            </div>
+                        </div>
+                        <div class="col mb-3">
+                            <div class="row container-scroll"
+                                [ngClass]="{'scroll': list_update_attitudes_units.length > 10}"
+                                (scroll)="this.resourcesService.onScroll($event, stickyElements)">
+                                <div class="col-2">
+                                    <div class="form-check" *ngFor="let attitude of list_update_attitudes_units">
+                                        <input class="form-check-input" type="checkbox"
+                                            formControlName="update_attitude_unit" [id]="attitude.id"
+                                            [checked]="attitude.checked" (click)="checkBox($event)">
+                                        <label class="form-check-label" [for]="attitude.id">{{ attitude.oa}}</label>
+                                    </div>
+                                </div>
+                                <div class="col w-100 text-preview" #stickyElement>
+                                    <div class="shadow-none p-3 bg-light rounded">{{ text_update_attitude }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"
+                        (click)="updatePlanningUnitAttitude({id: checkboxs, unit: planningUpdateUnitAttitude.value.update_select_unit})"
+                        [disabled]="this.resourcesService.disabledButton([planningUpdateUnitAttitude.value.update_attitude_unit])"
+                        [disabled]="this.resourcesService.isArrayEmpty(checkboxs)"
+                        data-bs-dismiss="modal">Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

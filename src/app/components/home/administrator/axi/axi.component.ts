@@ -8,6 +8,7 @@ import { SubjectService } from 'src/app/services/teacher/subject.service';
 import { Subject } from 'src/app/models/Subject';
 import { AxiService } from 'src/app/services/admin/axi.service';
 import { ResourcesService } from 'src/app/services/resources/resources.service';
+import { PlanningComponent } from '../planning/planning.component';
 
 @Component({
     selector: 'app-axi',
@@ -35,6 +36,7 @@ export class AxiComponent implements OnInit {
     });
 
     constructor(
+        private planningComponent: PlanningComponent,
         public resourcesService: ResourcesService,
         private axiService: AxiService,
         private subjectService: SubjectService,
@@ -112,7 +114,7 @@ export class AxiComponent implements OnInit {
 
     updatePlanningSubjectAxi(axis: any) {
         this.axiService.updatePlaningSubjectAxi(axis).subscribe(
-            (res: any) => {
+            async (res: any) => {
                 if (res.status === 'success') {
                     this.notyf.success(res.message);
                     this.getAxisForTable();
@@ -121,6 +123,8 @@ export class AxiComponent implements OnInit {
                         id: res.result.id,
                         name: res.result.subject + '/' + res.result.name
                     })
+
+                    await this.planningComponent.loadPlannings();
                     
                 } else {
                     this.notyf.error(res.message);

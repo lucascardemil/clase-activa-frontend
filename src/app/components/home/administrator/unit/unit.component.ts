@@ -6,6 +6,7 @@ import { UnitService } from 'src/app/services/admin/unit.service';
 import { CourseService } from 'src/app/services/teacher/course.service';
 import { SubjectService } from 'src/app/services/teacher/subject.service';
 import { ResourcesService } from 'src/app/services/resources/resources.service';
+import { PlanningComponent } from '../planning/planning.component';
 
 @Component({
     selector: 'app-unit',
@@ -40,6 +41,7 @@ export class UnitComponent implements OnInit {
     });
 
     constructor(
+        private planningComponent: PlanningComponent,
         public resourcesService: ResourcesService,
         private subjectService: SubjectService,
         private courseService: CourseService,
@@ -148,7 +150,7 @@ export class UnitComponent implements OnInit {
 
     updatePlanningUnit(planning: any) {
         this.unitService.updatePlanningUnit(planning).subscribe(
-            (res: any) => {
+            async (res: any) => {
                 if (res.status === 'success') {
                     this.notyf.success(res.message);
                     this.getUnitsForTable();
@@ -157,6 +159,9 @@ export class UnitComponent implements OnInit {
                         id: res.result.id,
                         name: res.result.level + '/' + res.result.course + '/' + res.result.subject + '/' + res.result.unit
                     });
+
+                    await this.planningComponent.loadPlannings();
+
                 } else {
                     this.notyf.error(res.message);
                 }

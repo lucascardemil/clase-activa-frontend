@@ -31,10 +31,6 @@ import { NOTYF, notyfFactory } from './services/notyf/notyf.token';
 //AG-GRID
 import { AgGridModule } from 'ag-grid-angular';
 
-
-
-
-
 @NgModule({
     declarations: [
         AppComponent,

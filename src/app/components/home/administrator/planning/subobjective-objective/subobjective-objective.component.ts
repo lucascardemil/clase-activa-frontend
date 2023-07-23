@@ -1,31 +1,31 @@
 import { Component, DoCheck, ElementRef, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { PlanningComponent } from '../planning.component';
-import { PlanningService } from 'src/app/services/admin/planning.service';
-
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
+import { PlanningComponent } from '../planning.component';
+import { PlanningService } from 'src/app/services/admin/planning.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { IndicatorService } from 'src/app/services/admin/indicator.service';
-import { ResourcesService } from 'src/app/services/resources/resources.service';
 import { ObjectiveService } from 'src/app/services/admin/objective.service';
+import { ResourcesService } from 'src/app/services/resources/resources.service';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { SubobjectiveService } from 'src/app/services/admin/subobjective.service';
 
 @Component({
-    selector: 'app-objective-indicator',
-    templateUrl: './objective-indicator.component.html',
-    styleUrls: ['./objective-indicator.component.css']
+    selector: 'app-subobjective-objective',
+    templateUrl: './subobjective-objective.component.html',
+    styleUrls: ['./subobjective-objective.component.css']
 })
-export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
+export class SubobjectiveObjectiveComponent implements OnInit {
 
-    select_indicators: any = []
+    select_subobjectives: any = []
     list_objectives: any = []
-    list_objectives_indicators: any = []
-    list_update_objectives_indicators: any = []
+    list_objectives_subobjectives: any = []
+    list_update_objectives_subobjectives: any = []
     checkboxs: any = []
     text_objective: string = ''
-    list_preview_indicators: any = []
+    list_preview_subobjectives: any = []
     savedPlanningObjective: any
-    savedPlanningIndicator: any;
+    savedPlanningSubObjective: any;
     list_table: any[] = []
 
     pagedItems: any[] = []; // Lista de elementos paginados
@@ -36,20 +36,20 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
     @ViewChildren('stickyElement')
     stickyElements!: QueryList<ElementRef>;
 
-    planningAddObjectiveIndicator = new FormGroup({
-        select_indicator: new FormControl(),
+    planningAddObjectiveSubObjective = new FormGroup({
+        select_subobjective: new FormControl(),
         objective: new FormControl()
     });
 
-    planningUpdateObjectiveIndicator = new FormGroup({
-        update_indicator: new FormControl(),
+    planningUpdateObjectiveSubObjective = new FormGroup({
+        update_subObjective: new FormControl(),
         update_objective: new FormControl()
     });
 
     constructor(
         public resourcesService: ResourcesService,
         private objectiveService: ObjectiveService,
-        private indictorService: IndicatorService,
+        private subobjectiveService: SubobjectiveService,
         private planningComponent: PlanningComponent,
         private planningService: PlanningService,
         @Inject(NOTYF) private notyf: Notyf,
@@ -58,45 +58,45 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
 
     ngOnInit(): void {
 
-        this.planningAddObjectiveIndicator = this.formBuilder.group(
+        this.planningAddObjectiveSubObjective = this.formBuilder.group(
             {
-                select_indicator: ['', [Validators.required]],
+                select_subobjective: ['', [Validators.required]],
                 objective: ['', [Validators.required]]
             })
 
-        this.planningUpdateObjectiveIndicator = this.formBuilder.group(
+        this.planningUpdateObjectiveSubObjective = this.formBuilder.group(
             {
                 update_id: 0,
-                update_select_indicator: ['', [Validators.required]],
+                update_select_subobjective: ['', [Validators.required]],
                 update_objective: ['', [Validators.required]]
             })
-        this.selectIndicators();
+        this.selectSubObjectives();
         this.loadObjectives();
-        this.getIndicatorForTable();
+        this.getSubObjectiveForTable();
     }
 
     ngDoCheck(): void {
-        this.resourcesService.datalist(this.indictorService.savedPlanningIndicator, this.savedPlanningIndicator, this.select_indicators);
-        this.resourcesService.datalist(this.objectiveService.savedPlanningObjective, this.savedPlanningObjective, this.list_objectives_indicators);
+        this.resourcesService.datalist(this.subobjectiveService.savedPlanningSubObjective, this.savedPlanningSubObjective, this.select_subobjectives);
+        this.resourcesService.datalist(this.objectiveService.savedPlanningObjective, this.savedPlanningObjective, this.list_objectives_subobjectives);
     }
 
-    getIndicatorForTable() {
-        this.indictorService.getSelectIndicatorsObjectives().subscribe((data) => {
+    getSubObjectiveForTable() {
+        this.subobjectiveService.getSelectSubObjectivesObjectives().subscribe((data) => {
             this.list_table = this.groupObjectivesTable(data);
             this.calculatePagedItems();
         });
     }
 
-    editObjectiveIndicator(data: any) {
-        this.planningUpdateObjectiveIndicator.get('id')?.setValue(data.id);
+    editObjectiveSubObjective(data: any) {
+        this.planningUpdateObjectiveSubObjective.get('id')?.setValue(data.id);
 
-        let selectedIndicator = this.select_indicators.find((item: any) => item.id === data.id_indicator).name;
-        this.planningUpdateObjectiveIndicator.get('update_select_indicator')?.setValue(selectedIndicator);
+        let selectedSubObjective = this.select_subobjectives.find((item: any) => item.id === data.id_subobjective).name;
+        this.planningUpdateObjectiveSubObjective.get('update_select_subobjective')?.setValue(selectedSubObjective);
 
         this.checkboxs = [];
 
         for (let objective of data.objectives) {
-            let edit_selected = this.list_update_objectives_indicators.find((item: any) => item.id === objective.id_objective);
+            let edit_selected = this.list_update_objectives_subobjectives.find((item: any) => item.id === objective.id_objective);
             if (edit_selected) {
                 edit_selected.checked = true;
                 this.checkboxs.push({
@@ -106,7 +106,7 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
             }
         }
 
-        for (let objective of this.list_update_objectives_indicators) {
+        for (let objective of this.list_update_objectives_subobjectives) {
             let edit_deselect = data.objectives.find((item: any) => item.id_objective === objective.id);
             if (!edit_deselect) {
                 objective.checked = false;
@@ -114,27 +114,27 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
         }
     }
 
-    async savePlanningObjectiveIndicator(data: any) {
+    async savePlanningSubObjective(data: any) {
         this.checkboxs.map((element: any) => {
-            element.indicator = this.resourcesService.list(data.indicator, this.select_indicators)
+            element.subObjective = this.resourcesService.list(data.subObjective, this.select_subobjectives)
         });
 
-        this.indictorService.addPlanningIndicator(this.checkboxs).subscribe((res: any) => {
+        this.subobjectiveService.addPlanningSubObjective(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
                 insertedRecords.forEach((record: any) => {
-                    this.notyf.success('¡El OA' + record.oa + ' con el indicador fue creado con exito!');
+                    this.notyf.success('¡El OA' + record.oa + ' con el subjetivo fue creado con exito!');
                 });
 
                 existingRecords.forEach((record: any) => {
-                    this.notyf.error('¡El OA' + record.oa + ' con el indicador ya está creado!');
+                    this.notyf.error('¡El OA' + record.oa + ' con el subjetivo ya está creado!');
                 });
                 
-                this.getIndicatorForTable();
+                this.getSubObjectiveForTable();
 
-                this.planningAddObjectiveIndicator.patchValue({ objective: false });
-                this.planningAddObjectiveIndicator.patchValue({ select_indicator: '' });
+                this.planningAddObjectiveSubObjective.patchValue({ objective: false });
+                this.planningAddObjectiveSubObjective.patchValue({ select_subobjective: '' });
                 this.checkboxs = []
             }
         });
@@ -142,56 +142,56 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
     }
 
 
-    async updatePlanningIndicator(data: any) {
+    async updatePlanningSubObjective(data: any) {
         this.checkboxs.map((element: any) => {
-            element.indicator = this.resourcesService.list(data.indicator, this.select_indicators)
+            element.subObjective = this.resourcesService.list(data.subObjective, this.select_subobjectives)
         });
 
-        this.indictorService.updatePlanningIndicator(this.checkboxs).subscribe((res: any) => {
+        this.subobjectiveService.updatePlanningSubObjective(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
                 insertedRecords.forEach((record: any) => {
-                    this.notyf.success('¡El OA' + record.oa + ' con el indicador fue creado con exito!');
+                    this.notyf.success('¡El OA' + record.oa + ' con el subjetivo fue creado con exito!');
                 });
 
 
                 existingRecords.forEach((record: any) => {
-                    this.notyf.error('¡El OA' + record.oa + ' con el indicador ya está creado!');
+                    this.notyf.error('¡El OA' + record.oa + ' con el subjetivo ya está creado!');
                 });
 
-                this.getIndicatorForTable();
+                this.getSubObjectiveForTable();
                 this.checkboxs = []
             }
         });
         await this.planningComponent.loadPlannings();
     }
 
-    selectIndicators() {
-        this.select_indicators = []
-        this.indictorService.getSelectIndicators().subscribe((indicators: any) => {
-            indicators.map((indicator: any) => {
-                this.select_indicators.push({
-                    id: indicator.id,
-                    name: indicator.name.replace(/\n/g, "")
+    selectSubObjectives() {
+        this.select_subobjectives = []
+        this.subobjectiveService.getSelectSubObjectives().subscribe((subobjectives: any) => {
+            subobjectives.map((subobjective: any) => {
+                this.select_subobjectives.push({
+                    id: subobjective.id,
+                    name: subobjective.name.replace(/\n/g, "")
                 })
             })
         })
     }
 
     loadObjectives() {
-        this.list_objectives_indicators = []
-        this.list_update_objectives_indicators = []
+        this.list_objectives_subobjectives = []
+        this.list_update_objectives_subobjectives = []
         this.planningService.getIdPlanning('objectives').subscribe((objectives: any) => {
             objectives.map((objective: any) => {
-                this.list_objectives_indicators.push({
+                this.list_objectives_subobjectives.push({
                     id: objective.id,
                     oa: 'OA' + objective.oa,
                     name: objective.name,
                     checked: false
                 })
 
-                this.list_update_objectives_indicators.push({
+                this.list_update_objectives_subobjectives.push({
                     id: objective.id,
                     oa: 'OA' + objective.oa,
                     name: objective.name,
@@ -210,7 +210,7 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
                 checked: true
             })
 
-            let selected = this.list_update_objectives_indicators.find((item: any) => item.id === id);
+            let selected = this.list_update_objectives_subobjectives.find((item: any) => item.id === id);
             if (selected) {
                 selected.checked = true;
             }
@@ -219,7 +219,7 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
             this.checkboxs = this.checkboxs.filter((element: any) => element.id !== id)
             this.text_objective = ''
 
-            let deselect = this.list_update_objectives_indicators.find((item: any) => item.id === id);
+            let deselect = this.list_update_objectives_subobjectives.find((item: any) => item.id === id);
             if (deselect) {
                 deselect.checked = false;
                 this.checkboxs.push({
@@ -230,9 +230,9 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
         }
     }
 
-    previewObjectiveIndicators(objective: number, name: string) {
+    previewObjectiveSubObjectives(objective: number, name: string) {
         this.text_objective = name
-        this.indictorService.getPreviewIndicator(objective).subscribe((objectives: any) => this.list_preview_indicators = objectives)
+        this.subobjectiveService.getPreviewSubObjective(objective).subscribe((objectives: any) => this.list_preview_subobjectives = objectives)
     }
 
     get totalPages(): number {
@@ -256,18 +256,18 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
         const seenIds = new Set();
 
         data.forEach((item: any) => {
-            const id_indicator = item.id_indicator;
-            if (!seenIds.has(id_indicator)) {
-                seenIds.add(id_indicator);
+            const id_subobjective = item.id_subobjective;
+            if (!seenIds.has(id_subobjective)) {
+                seenIds.add(id_subobjective);
                 result.push({
-                    id_indicator: id_indicator,
-                    name_indicator: item.name,
+                    id_subobjective: id_subobjective,
+                    name_subobjective: item.name,
                     objectives: []
                 });
             }
 
             result.forEach(res => {
-                if (res.id_indicator === id_indicator) {
+                if (res.id_subobjective === id_subobjective) {
                     res.objectives.push({
                         id_objective: item.id_objective,
                         oa: item.oa,
@@ -280,19 +280,20 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
         return result;
     }
 
-    get select_indicator() {
-        return this.planningAddObjectiveIndicator.get('select_indicator');
+    get select_subobjective() {
+        return this.planningAddObjectiveSubObjective.get('select_subobjective');
     }
 
     get objective() {
-        return this.planningAddObjectiveIndicator.get('objective');
+        return this.planningAddObjectiveSubObjective.get('objective');
     }
 
-    get update_select_indicator() {
-        return this.planningUpdateObjectiveIndicator.get('update_select_indicator');
+    get update_select_subobjective() {
+        return this.planningUpdateObjectiveSubObjective.get('update_select_subobjective');
     }
 
     get update_objective() {
-        return this.planningUpdateObjectiveIndicator.get('update_objective');
+        return this.planningUpdateObjectiveSubObjective.get('update_objective');
     }
+
 }

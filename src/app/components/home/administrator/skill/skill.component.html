@@ -23,7 +23,7 @@
                                 aria-label="Actitud" aria-describedby="button-skill">
                             <button class="btn btn-primary" type="button" id="button-objective"
                                 (click)="savePlanningSkill({oa: planningAddSkill.value.number_oah, name: planningAddSkill.value.skill})"
-                                [disabled]="disabledButton([planningAddSkill.value.number_oah, planningAddSkill.value.skill])"><svg
+                                [disabled]="this.resourcesService.disabledButton([planningAddSkill.value.number_oah, planningAddSkill.value.skill])"><svg
                                     xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" class="feather feather-plus">
@@ -36,6 +36,84 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="col-12 my-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">N° OAH</th>
+                            <th scope="col">Objetivo</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+                        <tr *ngFor="let skill of pagedItems">
+                            <td>OAH{{ skill.oa}}</td>
+                            <td>{{ skill.name}}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                    [attr.data-bs-target]="'#edit_modal_skill_' + skill.id"
+                                    (click)="editSkill(skill)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="{{ 'edit_modal_skill_' + skill.id }}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Habilidad</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form [formGroup]="planningUpdateSkill">
+                                                <input type="text" class="form-control" formControlName="id" hidden>
+
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold mb-3">N° OAH</label>
+                                                    <input type="text" class="form-control"
+                                                        formControlName="update_number_oah"
+                                                        [ngClass]="(update_number_oah?.touched || update_number_oah?.dirty) && update_number_oah?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_number_oah?.touched || update_number_oah?.dirty) && !update_number_oah?.invalid) ? 'is-valid' : ''"
+                                                        placeholder="A">
+                                                    <div class="invalid-feedback">
+                                                        {{ update_number_oah?.hasError('required') ? 'El OAA es requerido': '' }}
+                                                    </div>
+                                                </div>
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold mb-3">Objetivo</label>
+                                                    <input type="text" class="form-control"
+                                                        formControlName="update_skill"
+                                                        [ngClass]="(update_skill?.touched || update_skill?.dirty) && update_skill?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_skill?.touched || update_skill?.dirty) && !update_skill?.invalid) ? 'is-valid' : ''"
+                                                        placeholder="Objetivo">
+                                                    <div class="invalid-feedback">
+                                                        {{ update_skill?.hasError('required') ? 'El objetivo es requerido': '' }}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="d-grid gap-2 d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-primary"
+                                                        (click)="updatePlanningSkill({id: planningUpdateSkill.value.id, oa: planningUpdateSkill.value.update_number_oah, name: planningUpdateSkill.value.update_skill})"
+                                                        [disabled]="this.resourcesService.disabledButton([planningUpdateSkill.value.update_number_oah, planningUpdateSkill.value.update_skill])"
+                                                        data-bs-dismiss="modal"
+                                                        [disabled]="!planningUpdateSkill.valid">Actualizar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+                    (pageChange)="pageChanged($event)"></app-pagination>
             </div>
         </div>
     </div>

@@ -19,10 +19,16 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
     select_units: any = []
     list_objectives: any = []
     list_objectives_units: any = []
+    list_update_objectives_units: any = []
     checkboxs: any = []
     text_objective: string = ''
     savedPlanningUnit: any
     savedPlanningObjective: any
+    list_table: any[] = []
+    pagedItems: any[] = []; // Lista de elementos paginados
+
+    currentPage: number = 1; // Página actual
+    itemsPerPage: number = 5; // Elementos por página
 
     @ViewChildren('stickyElement')
     stickyElements!: QueryList<ElementRef>;
@@ -32,8 +38,13 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
         objective_unit: new FormControl()
     });
 
+    planningUpdateUnitObjective = new FormGroup({
+        update_select_unit: new FormControl(),
+        update_objective_unit: new FormControl()
+    });
+
     constructor(
-        private resourcesService: ResourcesService,
+        public resourcesService: ResourcesService,
         private objectiveService: ObjectiveService,
         private unitService: UnitService,
         private planningComponent: PlanningComponent,
@@ -51,8 +62,14 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
                 objective_unit: ['', [Validators.required]],
                 select_unit: ['', [Validators.required]],
             })
-        this.selectUnits()
+        this.planningUpdateUnitObjective = this.formBuilder.group(
+            {
+                update_select_unit: ['', [Validators.required]],
+                update_objective_unit: [],
+            })
+        this.selectUnitsObjectives()
         this.loadObjectives()
+        this.getUnitObjectiveForTable()
     }
 
     ngDoCheck(): void {
@@ -60,14 +77,48 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
         this.resourcesService.datalist(this.objectiveService.savedPlanningObjective, this.savedPlanningObjective, this.list_objectives_units);
     }
 
+    getUnitObjectiveForTable() {
+        this.unitService.getSelectUnitsObjectives().subscribe((data) => {
+            this.list_table = this.groupObjectivesTable(data);
+            this.calculatePagedItems();
+        });
+    }
 
-    savePlanningUnitObjective(planning: any) {
+    editUnitObjective(data: any) {
+        this.planningUpdateUnitObjective.get('id')?.setValue(data.id);
+
+        let selectedUnit = this.select_units.find((item: any) => item.id === data.id_unit).name;
+        this.planningUpdateUnitObjective.get('update_select_unit')?.setValue(selectedUnit);
+
+        this.checkboxs = [];
+
+        for (let objective of data.objectives) {
+            let edit_selected = this.list_update_objectives_units.find((item: any) => item.id === objective.id_objective);
+            if (edit_selected) {
+                edit_selected.checked = true;
+                this.checkboxs.push({
+                    id: edit_selected.id,
+                    checked: edit_selected.checked,
+                })
+            }
+        }
+
+        for (let objective of this.list_update_objectives_units) {
+            let edit_deselect = data.objectives.find((item: any) => item.id_objective === objective.id);
+            if (!edit_deselect) {
+                objective.checked = false;
+            }
+        }
+    }
+
+
+    async savePlanningUnitObjective(planning: any) {
 
         this.checkboxs.map((element: any) => {
-            element.unit = this.listUnits(planning.unit)
+            element.unit = this.resourcesService.list(planning.unit, this.select_units)
         })
 
-        this.unitService.addPlanningUnitObjective(this.checkboxs).subscribe(async (res: any) => {
+        this.unitService.addPlanningUnitObjective(this.checkboxs).subscribe((res: any) => {
             if (res.status === 'success') {
                 const { insertedRecords, existingRecords } = res.result;
 
@@ -79,16 +130,67 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
                     this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
                 });
 
-                await this.planningComponent.loadPlannings();
+                this.getUnitObjectiveForTable();
 
                 this.planningAddUnitObjective.patchValue({ objective_unit: false });
                 this.planningAddUnitObjective.patchValue({ select_unit: '' });
                 this.checkboxs = []
             }
         });
+        await this.planningComponent.loadPlannings();
     }
 
-    selectUnits() {
+    async updatePlanningUnitObjective(data: any) {
+        this.checkboxs.map((element: any) => {
+            element.unit = this.resourcesService.list(data.unit, this.select_units)
+        })
+
+        this.unitService.updatePlanningUnitObjective(this.checkboxs).subscribe((res: any) => {
+            if (res.status === 'success') {
+
+                const { insertedRecords, existingRecords } = res.result;
+
+                insertedRecords.forEach((record: any) => {
+                    this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
+                });
+
+                existingRecords.forEach((record: any) => {
+                    this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
+                });
+
+                this.getUnitObjectiveForTable();
+                this.checkboxs = []
+            }
+        });
+
+        await this.planningComponent.loadPlannings();
+    }
+
+    
+
+    loadObjectives() {
+        this.list_objectives_units = []
+        this.list_update_objectives_units = []
+        this.planningService.getIdPlanning('objectives').subscribe((objectives: any) => {
+            objectives.map((objective: any) => {
+                this.list_objectives_units.push({
+                    id: objective.id,
+                    oa: 'OA' + objective.oa,
+                    name: objective.name,
+                    checked: false
+                })
+
+                this.list_update_objectives_units.push({
+                    id: objective.id,
+                    oa: 'OA' + objective.oa,
+                    name: objective.name,
+                    checked: false
+                })
+            })
+        })
+    }
+
+    selectUnitsObjectives(){
         this.select_units = []
         this.unitService.getSelectUnits().subscribe((units: any) => {
             units.map((unit: any) => {
@@ -100,60 +202,86 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
         })
     }
 
-    loadObjectives() {
-        this.list_objectives_units = []
-        this.planningService.getIdPlanning('objectives').subscribe((objectives: any) => {
-            objectives.map((objective: any) => {
-                this.list_objectives_units.push({
-                    id: objective.id,
-                    oa: 'OA' + objective.oa,
-                    name: objective.name
-                })
-            })
-        })
-    }
-
-
-    onScroll(event: any) {
-        const maxScrollTop = event.target.scrollHeight - event.target.clientHeight;
-        let scrollTop = event.target.scrollTop;
-        this.stickyElements.forEach(stickyElement => {
-            stickyElement.nativeElement.style.top = `${Math.min(scrollTop, maxScrollTop)}px`;
-        });
-    }
 
     checkBox(event: any) {
-        let id = event.target.id
+        let id = parseInt(event.target.id)
 
         if (event.target.checked === true) {
             this.checkboxs.push({
-                id: id
+                id: id,
+                checked: true
             })
+
+            let selected = this.list_update_objectives_units.find((item: any) => item.id === id);
+            if (selected) {
+                selected.checked = true;
+            }
 
         } else {
             this.checkboxs = this.checkboxs.filter((element: any) => element.id !== id)
             this.text_objective = ''
-        }
 
+            let deselect = this.list_update_objectives_units.find((item: any) => item.id === id);
+            if (deselect) {
+                deselect.checked = false;
+                this.checkboxs.push({
+                    id: deselect.id,
+                    checked: deselect.checked
+                })
+            }
+        }
     }
 
     previewObjective(name: string) {
         this.text_objective = name
     }
 
-    disabledButton(planning: any) {
-        const result = planning.every((elemento: any) => {
-            return Boolean(elemento);
+    get totalPages(): number {
+        return Math.ceil(this.list_table.length / this.itemsPerPage);
+    }
+
+    calculatePagedItems() {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        this.pagedItems = this.list_table.slice(startIndex, endIndex);
+    }
+
+    pageChanged(pageNumber: number) {
+        this.currentPage = pageNumber;
+        this.calculatePagedItems();
+    }
+
+
+    groupObjectivesTable(data: any) {
+        const result: any[] = [];
+        const seenIds = new Set();
+
+        data.forEach((item: any) => {
+            const id = item.id_unit;
+            if (!seenIds.has(id)) {
+                seenIds.add(id);
+                result.push({
+                    id_unit: id,
+                    name_unit: item.name_unit,
+                    name_level: item.name_level,
+                    name_course: item.name_course,
+                    name_subject: item.name_subject,
+                    objectives: []
+                });
+            }
+
+            result.forEach(res => {
+                if (res.id_unit === id) {
+                    res.objectives.push({
+                        id_objective: item.id_objective,
+                        oa: item.oa
+                    });
+                }
+            });
         });
 
-        return !result;
+        return result;
     }
-
-    listUnits(name: any) {
-        let list = this.select_units.filter((x: any) => x.name === name)[0];
-        return list.id;
-    }
-
 
     get select_unit() {
         return this.planningAddUnitObjective.get('select_unit');
@@ -161,5 +289,13 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
 
     get objective_unit() {
         return this.planningAddUnitObjective.get('objective_unit');
+    }
+
+    get update_select_unit() {
+        return this.planningUpdateUnitObjective.get('update_select_unit');
+    }
+
+    get update_objective_unit() {
+        return this.planningUpdateUnitObjective.get('update_objective_unit');
     }
 }

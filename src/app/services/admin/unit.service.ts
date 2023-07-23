@@ -28,9 +28,24 @@ export class UnitService {
     ) { }
 
     getSelectUnits() {
-        return this.http.get(`${this.url}/units/getSelectUnits`);
+        const timestamp = new Date().getTime();
+        return this.http.get(`${this.url}/units/getSelectUnits?timestamp=${timestamp}`);
     }
 
+    getSelectUnitsObjectives() {
+        const timestamp = new Date().getTime();
+        return this.http.get(`${this.url}/units/getSelectUnitsObjectives?timestamp=${timestamp}`);
+    }
+
+    getSelectUnitsSkills() {
+        const timestamp = new Date().getTime();
+        return this.http.get(`${this.url}/units/getSelectUnitsSkills?timestamp=${timestamp}`);
+    }
+
+    getSelectUnitsAttitudes() {
+        const timestamp = new Date().getTime();
+        return this.http.get(`${this.url}/units/getSelectUnitsAttitudes?timestamp=${timestamp}`);
+    }
     addPlanningUnit(planning: Planning) {
         return this.http.post(`${this.url}/units/addPlanningUnit`, planning);
     }
@@ -42,13 +57,25 @@ export class UnitService {
     addPlanningUnitSkill(planning: Planning) {
         return this.http.post(`${this.url}/units/addPlanningUnitSkill`, planning);
     }
-    
+
+    updatePlanningUnitSkill(planning: Planning) {
+        return this.http.put(`${this.url}/units/updatePlanningUnitSkill`, planning);
+    }
+
     addPlanningUnitAttitude(planning: Planning) {
         return this.http.post(`${this.url}/units/addPlanningUnitAttitude`, planning);
     }
 
+    updatePlanningUnitAttitude(planning: Planning) {
+        return this.http.put(`${this.url}/units/updatePlanningUnitAttitude`, planning);
+    }
+
     addPlanningUnitObjective(planning: Planning) {
         return this.http.post(`${this.url}/units/addPlanningUnitObjective`, planning);
+    }
+
+    updatePlanningUnitObjective(units: any) {
+        return this.http.put(`${this.url}/units/updatePlanningUnitObjective`, units);
     }
 
     loadLevels() {

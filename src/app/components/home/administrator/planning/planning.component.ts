@@ -6,6 +6,8 @@ import { PlanningService } from 'src/app/services/admin/planning.service';
 
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { UnitService } from 'src/app/services/admin/unit.service';
+import { AttitudeService } from 'src/app/services/admin/attitude.service';
+import { SkillService } from 'src/app/services/admin/skill.service';
 
 
 @Component({
@@ -41,6 +43,8 @@ export class PlanningComponent implements OnInit {
     });
 
     constructor(
+        private skillService: SkillService,
+        private attitudeService: AttitudeService,
         private courseService: CourseService,
         private planningService: PlanningService,
         private unitService: UnitService,
@@ -56,9 +60,9 @@ export class PlanningComponent implements OnInit {
                 select_filter_unit: ['']
             })
 
-        this.loadPlannings()
-        this.loadFilterCourses()
-        this.calculatePagedItems()
+        // this.loadPlannings()
+        // this.loadFilterCourses()
+        // this.calculatePagedItems()
     }
 
 
@@ -94,8 +98,8 @@ export class PlanningComponent implements OnInit {
 
             for (let planning of plannings) {
                 const list_subobjectives = await firstValueFrom(this.planningService.getIdSubObjective(planning.id_objective));
-                const list_skills = await firstValueFrom(this.planningService.getIdSkill(planning.id_unit));
-                const list_attitudes = await firstValueFrom(this.planningService.getIdAttitude(planning.id_unit));
+                const list_skills = await firstValueFrom(this.skillService.getIdSkill(planning.id_unit));
+                const list_attitudes = await firstValueFrom(this.attitudeService.getIdAttitude(planning.id_unit));
                 const list_indicators = await firstValueFrom(this.planningService.getIdIndicator(planning.id_objective, planning.id_unit));
 
                 const indicatorsForThisPlanning = Object.values(list_indicators).filter((indicator: any) => indicator.objective === planning.id_objective && indicator.unit === planning.id_unit);
@@ -204,7 +208,6 @@ export class PlanningComponent implements OnInit {
         const startIndex = (this.currentPage - 1) * this.itemsPerPage;
         const endIndex = startIndex + this.itemsPerPage;
         this.pagedItems = this.rowData.slice(startIndex, endIndex);
-        console.log(this.pagedItems)
     }
 
     pageChanged(pageNumber: number) {
