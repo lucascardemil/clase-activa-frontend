@@ -1,0 +1,130 @@
+<div [formGroup]="planningAddUnitObjective">
+    <div class="mb-3">
+        <input class="form-control" list="datalistUnits" formControlName="select_unit" [ngClass]="(select_unit?.touched || select_unit?.dirty) && select_unit?.hasError('required') ? 'is-invalid' : '' || 
+                            ((select_unit?.touched || select_unit?.dirty) && !select_unit?.invalid) ? 'is-valid' : ''"
+            placeholder="Buscar la Unidad">
+        <datalist id="datalistUnits">
+            <option *ngFor="let unit of select_units" [value]="unit.name" [id]="unit.id">
+        </datalist>
+
+        <div class="invalid-feedback">
+            {{ select_unit?.hasError('required') ? 'La unidad es requerida' : '' }}
+        </div>
+    </div>
+    <div class="mb-3">
+        <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}"
+            (scroll)="this.resourcesService.onScroll($event, stickyElements )">
+            <div class="col-2">
+                <div class="form-check" *ngFor="let objective of list_objectives_units">
+                    <input class="form-check-input" type="checkbox" formControlName="objective_unit" [id]="objective.id"
+                        (click)="checkBox($event)">
+                    <label class="form-check-label" [for]="objective.id"
+                        (mouseover)="previewObjective(objective.name)">{{
+                        objective.oa }}
+                    </label>
+
+                </div>
+            </div>
+            <div class="col w-100 text-preview" #stickyElement>
+                <div class="shadow-none p-3 bg-light rounded">{{ text_objective }}</div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary"
+        (click)="savePlanningUnitObjective({id: checkboxs, unit: planningAddUnitObjective.value.select_unit})"
+        [disabled]="this.resourcesService.disabledButton([planningAddUnitObjective.value.select_unit, planningAddUnitObjective.value.objective_unit])"><svg
+            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="feather feather-plus">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg> Agregar</button>
+</div>
+<div class="col-12 my-3">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Unidad</th>
+                <th scope="col">Objetivo</th>
+                <th scope="col">Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+            <tr *ngFor="let data of pagedItems">
+                <td>{{ data.name_level }}/{{ data.name_course }}/{{ data.name_subject }}/{{ data.name_unit }}</td>
+                <td>
+                    <div *ngFor="let objective of data.objectives">
+                        <span>OA{{ objective.oa }}</span>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#modal_unit_objective" (click)="editUnitObjective(data)">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Modal -->
+    <div class="modal fade" id="modal_unit_objective" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Unidad/Objetivo</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="planningUpdateUnitObjective">
+                        <div class="col mb-3 visually-hidden">
+                            <input class="form-control" list="datalistUnits" formControlName="update_select_unit"
+                                [ngClass]="(update_select_unit?.touched || update_select_unit?.dirty) && update_select_unit?.hasError('required') ? 'is-invalid' : '' || 
+                            ((update_select_unit?.touched || update_select_unit?.dirty) && !update_select_unit?.invalid) ? 'is-valid' : ''"
+                                placeholder="Buscar la Eje">
+                            <datalist id="datalistUnits">
+                                <option *ngFor="let update_select_unit of select_units"
+                                    [value]="update_select_unit.name" [id]="update_select_unit.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ update_select_unit?.hasError('required') ? 'El eje es requerida' : '' }}
+                            </div>
+                        </div>
+                        <div class="col mb-3">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives_units.length > 10}"
+                                (scroll)="this.resourcesService.onScroll($event, stickyElements)">
+                                <div class="col-2">
+                                    <div class="form-check" *ngFor="let objective of list_update_objectives_units">
+                                        <input class="form-check-input" type="checkbox"
+                                            formControlName="update_objective_unit" [id]="objective.id"
+                                            [checked]="objective.checked" (click)="checkBox($event)">
+                                        <label class="form-check-label" [for]="objective.id"
+                                            (mouseover)="previewObjective(objective.name)">{{ objective.oa
+                                            }}
+                                        </label>
+
+                                    </div>
+                                </div>
+                                <div class="col w-100 text-preview" #stickyElement>
+                                    <div class="shadow-none p-3 bg-light rounded">{{ text_objective }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"
+                        (click)="updatePlanningUnitObjective({id: checkboxs, unit: planningUpdateUnitObjective.value.update_select_unit})"
+                        [disabled]="this.resourcesService.disabledButton([planningUpdateUnitObjective.value.update_select_unit])"
+                        [disabled]="this.resourcesService.isArrayEmpty(checkboxs)"
+                        data-bs-dismiss="modal">Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+        (pageChange)="pageChanged($event)"></app-pagination>
+</div>

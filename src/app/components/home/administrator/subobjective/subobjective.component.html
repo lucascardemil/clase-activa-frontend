@@ -1,0 +1,98 @@
+<div [formGroup]="planningAddSubObjective">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div class="row">
+            <div class="col-12 my-3">
+                <div class="row g-3">
+                    <div class="col-10">
+                        <label class="fw-semibold mb-3">Sub-Objetivo</label>
+
+                        <div class="input-group">
+                            <input type="text" class="form-control" formControlName="subobjective" [ngClass]="(subobjective?.touched || subobjective?.dirty) && subobjective?.hasError('required') ? 'is-invalid' : '' || 
+                            ((subobjective?.touched || subobjective?.dirty) && !subobjective?.invalid) ? 'is-valid' : ''"
+                                placeholder="Sub-Objetivo" aria-label="Objetivo" aria-describedby="button-subobjective">
+
+                            <button class="btn btn-primary" type="button" id="button-subobjective"
+                                (click)="saveSubObjective({name: planningAddSubObjective.value.subobjective})"
+                                [disabled]="this.resourcesService.disabledButton([planningAddSubObjective.value.subobjective])"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-plus">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>Agregar</button>
+
+                            <div class="invalid-feedback">
+                                {{ subobjective?.hasError('required') ? 'El subobjetivo es requerido' : '' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 my-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Sub-Objetivo</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+                        <tr *ngFor="let subobjective of pagedItems">
+                            <td>{{ subobjective.name}}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                    [attr.data-bs-target]="'#edit_modal_subobjective_' + subobjective.id"
+                                    (click)="editSubObjective(subobjective)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+
+                            <div class="modal fade" id="{{ 'edit_modal_subobjective_' + subobjective.id }}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Sub-Objetivo</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>  
+                                        </div>
+                                        <div class="modal-body">
+                                            <form [formGroup]="planningUpdateSubObjective">
+                                                <input type="text" class="form-control" formControlName="id" hidden>
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold mb-3">Sub-Objetivo</label>
+                                                    <input type="text" class="form-control" formControlName="update_subobjective"
+                                                        [ngClass]="(update_subobjective?.touched || update_subobjective?.dirty) && update_subobjective?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_subobjective?.touched || update_subobjective?.dirty) && !update_subobjective?.invalid) ? 'is-valid' : ''"
+                                                        placeholder="Objetivo">
+                                                    <div class="invalid-feedback">
+                                                        {{ update_subobjective?.hasError('required') ? 'El objetivo es requerido'
+                                                        : '' }}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="d-grid gap-2 d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-primary"
+                                                        (click)="updatePlanningSubObjective({id: planningUpdateSubObjective.value.id, name: planningUpdateSubObjective.value.update_subobjective})"
+                                                        [disabled]="this.resourcesService.disabledButton([planningUpdateSubObjective.value.update_subobjective])"
+                                                        data-bs-dismiss="modal"
+                                                        [disabled]="!planningUpdateSubObjective.valid">Actualizar</button>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+                    (pageChange)="pageChanged($event)"></app-pagination>
+            </div>
+        </div>
+    </div>
+</div>

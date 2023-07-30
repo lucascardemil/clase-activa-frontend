@@ -1,0 +1,125 @@
+<div [formGroup]="planningAddAxi">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div class="row">
+            <div class="col">
+                <label class="fw-semibold mb-3">Asignaturas</label>
+                <select class="form-select" formControlName="subject" [ngClass]="(subject?.touched || subject?.dirty) && subject?.hasError('required') ? 'is-invalid' : '' || 
+        ((subject?.touched || subject?.dirty) && !subject?.invalid) ? 'is-valid' : ''">
+                    <option value="">Seleccione la asignatura</option>
+                    <option *ngFor="let subject of list_all_subjects" [value]="subject.id">{{ subject.name }} - {{
+                        subject.course }}
+                    </option>
+                </select>
+
+                <div class="invalid-feedback">
+                    {{ subject?.hasError('required') ? 'La asignatura es requerido' : '' }}
+                </div>
+            </div>
+            <div class="col-12 my-3">
+                <label class="fw-semibold mb-3">Eje</label>
+                <input type="text" class="form-control" formControlName="axi" [ngClass]="(axi?.touched || axi?.dirty) && axi?.hasError('required') ? 'is-invalid' : '' || 
+        ((axi?.touched || axi?.dirty) && !axi?.invalid) ? 'is-valid' : ''" placeholder="Eje" aria-label="Unidad"
+                    aria-describedby="button-axi">
+                <div class="invalid-feedback">
+                    {{ axi?.hasError('required') ? 'El eje es requerido' : '' }}
+                </div>
+            </div>
+            <div class="col-12 my-3">
+                <button class="btn btn-primary" type="button" id="button-axi"
+                    (click)="savePlanningSubjectAxi({name: planningAddAxi.value.axi, subject: planningAddAxi.value.subject})"
+                    [disabled]="this.resourcesService.disabledButton([planningAddAxi.value.axi, planningAddAxi.value.subject])"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-plus">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>Agregar</button>
+            </div>
+
+            <div class="col-12 my-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Asignaturas</th>
+                            <th scope="col">Ejes</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+                        <tr *ngFor="let axi of pagedItems">
+                            <td>{{ axi.subject }} - {{ axi.course }}</td>
+                            <td>{{ axi.name}}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                    [attr.data-bs-target]="'#edit_modal_axi_' + axi.id" (click)="editAxi(axi)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="{{ 'edit_modal_axi_' + axi.id }}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Eje</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form [formGroup]="planningUpdateAxi">
+                                                <input type="text" class="form-control" formControlName="id" hidden>
+
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold mb-3">Asignaturas</label>
+                                                    <select class="form-select" formControlName="update_subject"
+                                                        [ngClass]="(update_subject?.touched || update_subject?.dirty) && update_subject?.hasError('required') ? 'is-invalid' : '' || 
+                                                    ((update_subject?.touched || update_subject?.dirty) && !update_subject?.invalid) ? 'is-valid' : ''">
+                                                        <option value="">Seleccione la asignatura</option>
+                                                        <option *ngFor="let subject of list_all_subjects"
+                                                            [value]="subject.id">{{ subject.name }} - {{
+                                                            subject.course }}
+                                                        </option>
+                                                    </select>
+
+                                                    <div class="invalid-feedback">
+                                                        {{ update_subject?.hasError('required') ? 'La asignatura es requerido'
+                                                        : '' }}
+                                                    </div>
+                                                </div>
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold mb-3">Eje</label>
+                                                    <input type="text" class="form-control" formControlName="update_axi"
+                                                        [ngClass]="(update_axi?.touched || update_axi?.dirty) && update_axi?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_axi?.touched || update_axi?.dirty) && !update_axi?.invalid) ? 'is-valid' : ''"
+                                                        placeholder="Eje" aria-label="Unidad"
+                                                        aria-describedby="button-axi">
+                                                    <div class="invalid-feedback">
+                                                        {{ update_axi?.hasError('required') ? 'El eje es requerido' : '' }}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="d-grid gap-2 d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-primary"
+                                                        (click)="updatePlanningSubjectAxi({id: planningUpdateAxi.value.id, name: planningUpdateAxi.value.update_axi, subject: planningUpdateAxi.value.update_subject})"
+                                                        [disabled]="this.resourcesService.disabledButton([planningUpdateAxi.value.update_axi, planningUpdateAxi.value.update_subject])"
+                                                        data-bs-dismiss="modal"
+                                                        [disabled]="!planningUpdateAxi.valid">Actualizar</button>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+                    (pageChange)="pageChanged($event)"></app-pagination>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,125 @@
+<div [formGroup]="planningAddObjective">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div class="row">
+            <div class="col-12 my-3">
+                <div class="row g-3">
+                    <div class="col-2">
+                        <label class="fw-semibold mb-3">N° OA</label>
+
+                        <input type="number" class="form-control" formControlName="number_oa" [ngClass]="(number_oa?.touched || number_oa?.dirty) && number_oa?.hasError('required') ? 'is-invalid' : '' || 
+            ((number_oa?.touched || number_oa?.dirty) && !number_oa?.invalid) ? 'is-valid' : ''" placeholder="1"
+                            min="1">
+                        <div class="invalid-feedback">
+                            {{ number_oa?.hasError('required') ? 'El OA es requerido' : '' }}
+                        </div>
+
+                    </div>
+                    <div class="col-10">
+                        <label class="fw-semibold mb-3">Objetivo</label>
+
+                        <div class="input-group">
+                            <input type="text" class="form-control" formControlName="objective" [ngClass]="(objective?.touched || objective?.dirty) && objective?.hasError('required') ? 'is-invalid' : '' || 
+                            ((objective?.touched || objective?.dirty) && !objective?.invalid) ? 'is-valid' : ''"
+                                placeholder="Objetivo" aria-label="Objetivo" aria-describedby="button-objective">
+
+                            <button class="btn btn-primary" type="button" id="button-objective"
+                                (click)="savePlanningObjective({oa: planningAddObjective.value.number_oa, name: planningAddObjective.value.objective})"
+                                [disabled]="this.resourcesService.disabledButton([planningAddObjective.value.number_oa, planningAddObjective.value.objective])"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-plus">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>Agregar</button>
+
+                            <div class="invalid-feedback">
+                                {{ objective?.hasError('required') ? 'El objetivo es requerido' : '' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 my-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">N° OA</th>
+                            <th scope="col">Objetivo</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+                        <tr *ngFor="let objective of pagedItems">
+                            <td>OA{{ objective.oa}}</td>
+                            <td>{{ objective.name}}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                    [attr.data-bs-target]="'#edit_modal_objective_' + objective.id"
+                                    (click)="editObjective(objective)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="{{ 'edit_modal_objective_' + objective.id }}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Objetivo</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>  
+                                        </div>
+                                        <div class="modal-body">
+                                            <form [formGroup]="planningUpdateObjective">
+                                                <input type="text" class="form-control" formControlName="id" hidden>
+
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold mb-3">N° OA</label>
+                                                    <input type="number" class="form-control"
+                                                        formControlName="update_number_oa"
+                                                        [ngClass]="(update_number_oa?.touched || update_number_oa?.dirty) && update_number_oa?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_number_oa?.touched || update_number_oa?.dirty) && !update_number_oa?.invalid) ? 'is-valid' : ''"
+                                                        placeholder="1" min="1">
+                                                    <div class="invalid-feedback">
+                                                        {{ update_number_oa?.hasError('required') ? 'El OA es requerido' : ''
+                                                        }}
+                                                    </div>
+                                                </div>
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold mb-3">Objetivo</label>
+                                                    <input type="text" class="form-control" formControlName="update_objective"
+                                                        [ngClass]="(update_objective?.touched || update_objective?.dirty) && update_objective?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_objective?.touched || update_objective?.dirty) && !update_objective?.invalid) ? 'is-valid' : ''"
+                                                        placeholder="Objetivo">
+                                                    <div class="invalid-feedback">
+                                                        {{ update_objective?.hasError('required') ? 'El objetivo es requerido'
+                                                        : '' }}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="d-grid gap-2 d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-primary"
+                                                        (click)="updatePlanningObjective({id: planningUpdateObjective.value.id, oa: planningUpdateObjective.value.update_number_oa, name: planningUpdateObjective.value.update_objective})"
+                                                        [disabled]="this.resourcesService.disabledButton([planningUpdateObjective.value.update_number_oa, planningUpdateObjective.value.update_objective])"
+                                                        data-bs-dismiss="modal"
+                                                        [disabled]="!planningUpdateObjective.valid">Actualizar</button>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+                    (pageChange)="pageChanged($event)"></app-pagination>
+            </div>
+        </div>
+    </div>
+</div>

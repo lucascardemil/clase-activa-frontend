@@ -17,7 +17,20 @@ import { TestComponent } from './components/home/teacher/test/test.component';
 import { AddQuestionsComponent } from './components/home/teacher/test/add-questions/add-questions.component';
 import { PlanningComponent } from './components/home/administrator/planning/planning.component';
 import { AdministratorComponent } from './components/home/administrator/administrator.component';
-
+import { PaginationComponent } from './components/pagination/pagination.component';
+import { UnitComponent } from './components/home/administrator/unit/unit.component';
+import { AxiComponent } from './components/home/administrator/axi/axi.component';
+import { ObjectiveComponent } from './components/home/administrator/objective/objective.component';
+import { AttitudeComponent } from './components/home/administrator/attitude/attitude.component';
+import { SkillComponent } from './components/home/administrator/skill/skill.component';
+import { AxiObjectiveComponent } from './components/home/administrator/planning/axi-objective/axi-objective.component';
+import { UnitObjectiveComponent } from './components/home/administrator/planning/unit-objective/unit-objective.component';
+import { SubobjectiveComponent } from './components/home/administrator/subobjective/subobjective.component';
+import { SubobjectiveObjectiveComponent } from './components/home/administrator/planning/subobjective-objective/subobjective-objective.component';
+import { UnitSkillComponent } from './components/home/administrator/planning/unit-skill/unit-skill.component';
+import { UnitAttitudeComponent } from './components/home/administrator/planning/unit-attitude/unit-attitude.component';
+import { ObjectiveIndicatorComponent } from './components/home/administrator/planning/objective-indicator/objective-indicator.component';
+import { IndicatorComponent } from './components/home/administrator/indicator/indicator.component';
 
 const routes: Routes = [
     {
@@ -97,5 +110,19 @@ export const ArrayOfComponents = [
     LoginComponent,
     RegisterComponent,
     EditProfileComponent,
-    AdministratorComponent
+    AdministratorComponent,
+    PaginationComponent,
+    UnitComponent,
+    AxiComponent,
+    ObjectiveComponent,
+    AttitudeComponent,
+    SkillComponent,
+    AxiObjectiveComponent,
+    UnitObjectiveComponent,
+    SubobjectiveComponent,
+    UnitSkillComponent,
+    UnitAttitudeComponent,
+    ObjectiveIndicatorComponent,
+    SubobjectiveObjectiveComponent,
+    IndicatorComponent
 ]

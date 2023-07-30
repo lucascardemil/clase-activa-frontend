@@ -1,0 +1,121 @@
+<div [formGroup]="planningAddAttitude">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div class="row">
+            <div class="col-12 my-3">
+                <div class="row g-3">
+                    <div class="col-2">
+                        <label class="fw-semibold mb-3">N° OAA</label>
+
+                        <input type="text" class="form-control" oninput="this.value = this.value.toUpperCase()"
+                            formControlName="number_oaa" [ngClass]="(number_oaa?.touched || number_oaa?.dirty) && number_oaa?.hasError('required') ? 'is-invalid' : '' || 
+    ((number_oaa?.touched || number_oaa?.dirty) && !number_oaa?.invalid) ? 'is-valid' : ''" placeholder="A" min="1">
+                        <div class="invalid-feedback">
+                            {{ number_oaa?.hasError('required') ? 'El OAA es requerido' : '' }}
+                        </div>
+
+                    </div>
+                    <div class="col-10">
+                        <label class="fw-semibold mb-3">Actitud</label>
+
+                        <div class="input-group">
+                            <input type="text" class="form-control" formControlName="attitude" [ngClass]="(attitude?.touched || attitude?.dirty) && attitude?.hasError('required') ? 'is-invalid' : '' || 
+        ((attitude?.touched || attitude?.dirty) && !attitude?.invalid) ? 'is-valid' : ''" placeholder="Actitud"
+                                aria-label="Actitud" aria-describedby="button-attitude">
+                            <button class="btn btn-primary" type="button" id="button-attitude"
+                                (click)="savePlanningAttitude({oa: planningAddAttitude.value.number_oaa, name: planningAddAttitude.value.attitude})"
+                                [disabled]="this.resourcesService.disabledButton([planningAddAttitude.value.number_oaa, planningAddAttitude.value.attitude])"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-plus">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>Agregar</button>
+                            <div class="invalid-feedback">
+                                {{ attitude?.hasError('required') ? 'La Actitud es requerido' : '' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 my-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">N° OAA</th>
+                            <th scope="col">Objetivo</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+                        <tr *ngFor="let attitude of pagedItems">
+                            <td>OAA{{ attitude.oa}}</td>
+                            <td>{{ attitude.name}}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                    [attr.data-bs-target]="'#edit_modal_attitude_' + attitude.id"
+                                    (click)="editAttitude(attitude)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="{{ 'edit_modal_attitude_' + attitude.id }}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Actitud</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form [formGroup]="planningUpdateAttitude">
+                                                <input type="text" class="form-control" formControlName="id" hidden>
+
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold mb-3">N° OAA</label>
+                                                    <input type="text" class="form-control"
+                                                        formControlName="update_number_oaa"
+                                                        [ngClass]="(update_number_oaa?.touched || update_number_oaa?.dirty) && update_number_oaa?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_number_oaa?.touched || update_number_oaa?.dirty) && !update_number_oaa?.invalid) ? 'is-valid' : ''"
+                                                        placeholder="A">
+                                                    <div class="invalid-feedback">
+                                                        {{ update_number_oaa?.hasError('required') ? 'El OAA es requerido': '' }}
+                                                    </div>
+                                                </div>
+                                                <div class="col mb-3">
+                                                    <label class="fw-semibold mb-3">Objetivo</label>
+                                                    <input type="text" class="form-control"
+                                                        formControlName="update_attitude"
+                                                        [ngClass]="(update_attitude?.touched || update_attitude?.dirty) && update_attitude?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_attitude?.touched || update_attitude?.dirty) && !update_attitude?.invalid) ? 'is-valid' : ''"
+                                                        placeholder="Objetivo">
+                                                    <div class="invalid-feedback">
+                                                        {{ update_attitude?.hasError('required') ? 'El objetivo es requerido': '' }}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="d-grid gap-2 d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-primary"
+                                                        (click)="updatePlanningAttitude({id: planningUpdateAttitude.value.id, oa: planningUpdateAttitude.value.update_number_oaa, name: planningUpdateAttitude.value.update_attitude})"
+                                                        [disabled]="this.resourcesService.disabledButton([planningUpdateAttitude.value.update_number_oaa, planningUpdateAttitude.value.update_attitude])"
+                                                        data-bs-dismiss="modal"
+                                                        [disabled]="!planningUpdateAttitude.valid">Actualizar</button>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+                <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+                    (pageChange)="pageChanged($event)"></app-pagination>
+            </div>
+        </div>
+    </div>
+</div>

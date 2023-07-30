@@ -30,15 +30,12 @@ import { NOTYF, notyfFactory } from './services/notyf/notyf.token';
 
 //AG-GRID
 import { AgGridModule } from 'ag-grid-angular';
-import { EditPlanningComponent } from './components/home/administrator/edit-planning/edit-planning.component';
-
 
 @NgModule({
     declarations: [
         AppComponent,
         ArrayOfComponents,
         OrderByPipe,
-        EditPlanningComponent
     ],
     imports: [
         BrowserModule,

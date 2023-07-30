@@ -1,0 +1,95 @@
+<div [formGroup]="planningAddIndicator">
+    <div class="shadow p-3 mb-5 bg-body rounded">
+        <div class="row">
+            <div class="col-12 my-3">
+                <div class="row g-3">
+                    <div class="col-10">
+                        <label class="fw-semibold mb-3">Indicador</label>
+
+                        <div class="input-group">
+                            <input type="text" class="form-control" formControlName="indicator" [ngClass]="(indicator?.touched || indicator?.dirty) && indicator?.hasError('required') ? 'is-invalid' : '' || 
+                            ((indicator?.touched || indicator?.dirty) && !indicator?.invalid) ? 'is-valid' : ''"
+                                placeholder="Indicador" aria-label="Indicador" aria-describedby="button-indicator">
+
+                            <button class="btn btn-primary" type="button" id="button-indicator"
+                                (click)="saveIndicator({name: planningAddIndicator.value.indicator})"
+                                [disabled]="this.resourcesService.disabledButton([planningAddIndicator.value.indicator])"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-plus">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>Agregar</button>
+
+                            <div class="invalid-feedback">
+                                {{ indicator?.hasError('required') ? 'El indicador es requerido' : '' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 my-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Indicador</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+                        <tr *ngFor="let indicator of pagedItems">
+                            <td>{{ indicator.name}}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#modal_indicator" (click)="editIndicator(indicator)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="modal fade" id="modal_indicator" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Indicador</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form [formGroup]="planningUpdateIndicator">
+                                    <input type="text" class="form-control" formControlName="id" hidden>
+                                    <div class="col mb-3">
+                                        <label class="fw-semibold mb-3">Indicador</label>
+                                        <input type="text" class="form-control" formControlName="update_indicator"
+                                            [ngClass]="(update_indicator?.touched || update_indicator?.dirty) && update_indicator?.hasError('required') ? 'is-invalid' : '' || 
+                                                        ((update_indicator?.touched || update_indicator?.dirty) && !update_indicator?.invalid) ? 'is-valid' : ''"
+                                            placeholder="Indicador">
+                                        <div class="invalid-feedback">
+                                            {{ update_indicator?.hasError('required') ? 'El indicador es requerido'
+                                            : '' }}
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary"
+                                    (click)="updatePlanningIndicator({id: planningUpdateIndicator.value.id, name: planningUpdateIndicator.value.update_indicator})"
+                                    [disabled]="this.resourcesService.disabledButton([planningUpdateIndicator.value.update_indicator])"
+                                    data-bs-dismiss="modal"
+                                    [disabled]="!planningUpdateIndicator.valid">Actualizar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+                    (pageChange)="pageChanged($event)"></app-pagination>
+            </div>
+        </div>
+    </div>
+</div>

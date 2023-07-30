@@ -1,0 +1,144 @@
+<div [formGroup]="planningAddObjectiveIndicator">
+    <div class="mb-3">
+        <input class="form-control" list="datalistIndicators" formControlName="select_indicator"
+            [ngClass]="(select_indicator?.touched || select_indicator?.dirty) && select_indicator?.hasError('required') ? 'is-invalid' : '' || 
+                ((select_indicator?.touched || select_indicator?.dirty) && !select_indicator?.invalid) ? 'is-valid' : ''" placeholder="Buscar el Indicador">
+        <datalist id="datalistIndicators">
+            <option *ngFor="let indicator of select_indicators" [value]="indicator.name" [id]="indicator.id">
+        </datalist>
+
+        <div class="invalid-feedback">
+            {{ select_indicator?.hasError('required') ? 'El indicador es requerido' : '' }}
+        </div>
+    </div>
+    <div class="mb-3">
+        <div class="row container-scroll" [ngClass]="{'scroll': list_objectives_indicators.length > 10}"
+            (scroll)="this.resourcesService.onScroll($event, stickyElements)">
+            <div class="col-2">
+                <div class="form-check" *ngFor="let objective of list_objectives_indicators">
+                    <input class="form-check-input" type="checkbox" formControlName="objective" [id]="objective.id"
+                        (click)="checkBox($event)">
+                    <label class="form-check-label" [for]="objective.id"
+                        (mouseover)="previewObjectiveIndicators(objective.id, objective.name)">{{
+                        objective.oa }}
+                    </label>
+
+                </div>
+            </div>
+            <div class="col w-100 text-preview" #stickyElement>
+                <div class="shadow-none p-3 bg-light rounded">
+                    <p>{{text_objective}}</p>
+                    <ul>
+                        <li *ngFor="let objective of list_preview_indicators">{{ objective.name }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary"
+        (click)="savePlanningObjectiveIndicator({id: checkboxs, indicator: planningAddObjectiveIndicator.value.select_indicator})"
+        [disabled]="this.resourcesService.disabledButton([checkboxs, planningAddObjectiveIndicator.value.objective])"><svg
+            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="feather feather-plus">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg> Agregar</button>
+</div>
+<div class="col-12 my-3">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Indicador</th>
+                <th scope="col">Objetivo</th>
+                <th scope="col">Accion</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
+            <tr *ngFor="let data of pagedItems">
+                <td>{{ data.name_indicator }}</td>
+                <td>
+                    <div *ngFor="let objective of data.objectives">
+                        <span>OA{{ objective.oa }}</span>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#modal_indicator_objective" (click)="editObjectiveIndicator(data)">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modal_indicator_objective" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Indicador/Objetivo</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="planningUpdateObjectiveIndicator">
+                        <div class="mb-3 visually-hidden">
+                            <input class="form-control" list="datalistIndicators"
+                                formControlName="update_select_indicator"
+                                [ngClass]="(update_select_indicator?.touched || update_select_indicator?.dirty) && update_select_indicator?.hasError('required') ? 'is-invalid' : '' || 
+                                ((update_select_indicator?.touched || update_select_indicator?.dirty) && !update_select_indicator?.invalid) ? 'is-valid' : ''"
+                                placeholder="Buscar la Sub-Objetivo">
+                            <datalist id="datalistIndicators">
+                                <option *ngFor="let subobjective of select_indicators" [value]="subobjective.name"
+                                    [id]="subobjective.id">
+                            </datalist>
+
+                            <div class="invalid-feedback">
+                                {{ update_select_indicator?.hasError('required') ? 'El indicador es requerido' : ''
+                                }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row container-scroll" [ngClass]="{'scroll': list_objectives.length > 10}"
+                                (scroll)="this.resourcesService.onScroll($event, stickyElements)">
+                                <div class="col-2">
+                                    <div class="form-check"
+                                        *ngFor="let objective of list_update_objectives_indicators">
+                                        <input class="form-check-input" type="checkbox"
+                                            formControlName="update_objective" [id]="objective.id"
+                                            [checked]="objective.checked" (click)="checkBox($event)">
+                                        <label class="form-check-label" [for]="objective.id"
+                                            (mouseover)="previewObjectiveIndicators(objective.id, objective.name)">{{
+                                            objective.oa }}
+                                        </label>
+
+                                    </div>
+                                </div>
+                                <div class="col w-100 text-preview" #stickyElement>
+                                    <div class="shadow-none p-3 bg-light rounded">
+                                        <p>{{text_objective}}</p>
+                                        <ul>
+                                            <li *ngFor="let objective of list_preview_indicators">{{
+                                                objective.name }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"
+                        (click)="updatePlanningIndicator({id: checkboxs, indicator: planningUpdateObjectiveIndicator.value.update_select_indicator})"
+                        [disabled]="this.resourcesService.disabledButton([checkboxs, planningUpdateObjectiveIndicator.value.update_select_indicator])"
+                        [disabled]="this.resourcesService.isArrayEmpty(checkboxs)"
+                        data-bs-dismiss="modal">Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+        (pageChange)="pageChanged($event)"></app-pagination>
+</div>
