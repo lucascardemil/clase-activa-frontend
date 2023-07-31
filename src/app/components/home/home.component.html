@@ -31,7 +31,7 @@
                         </li>
                     </div>
 
-                    <div *ngIf="this.userService.getUserlogged('role') === 'profesor'">
+                    <div *ngIf="this.userService.getUserlogged('role') === 'profesor' || this.userService.getUserlogged('role') === 'administrador'">
                         <li class="nav-item">
                             <a class="nav-link" routerLinkActive="active" routerLink="/home/profesor/niveles"
                                 (click)="hiddenMenuMobile()">
