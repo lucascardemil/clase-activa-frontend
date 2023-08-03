@@ -54,65 +54,61 @@
                             <td>{{ attitude.name}}</td>
                             <td>
                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                    [attr.data-bs-target]="'#edit_modal_attitude_' + attitude.id"
-                                    (click)="editAttitude(attitude)">
+                                    data-bs-target="#edit_modal_attitude" (click)="editAttitude(attitude)">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
                             </td>
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="{{ 'edit_modal_attitude_' + attitude.id }}" tabindex="-1"
-                                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Actitud</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form [formGroup]="planningUpdateAttitude">
-                                                <input type="text" class="form-control" formControlName="id" hidden>
-
-                                                <div class="col mb-3">
-                                                    <label class="fw-semibold mb-3">N° OAA</label>
-                                                    <input type="text" class="form-control"
-                                                        formControlName="update_number_oaa"
-                                                        [ngClass]="(update_number_oaa?.touched || update_number_oaa?.dirty) && update_number_oaa?.hasError('required') ? 'is-invalid' : '' || 
-                                                        ((update_number_oaa?.touched || update_number_oaa?.dirty) && !update_number_oaa?.invalid) ? 'is-valid' : ''"
-                                                        placeholder="A">
-                                                    <div class="invalid-feedback">
-                                                        {{ update_number_oaa?.hasError('required') ? 'El OAA es requerido': '' }}
-                                                    </div>
-                                                </div>
-                                                <div class="col mb-3">
-                                                    <label class="fw-semibold mb-3">Objetivo</label>
-                                                    <input type="text" class="form-control"
-                                                        formControlName="update_attitude"
-                                                        [ngClass]="(update_attitude?.touched || update_attitude?.dirty) && update_attitude?.hasError('required') ? 'is-invalid' : '' || 
-                                                        ((update_attitude?.touched || update_attitude?.dirty) && !update_attitude?.invalid) ? 'is-valid' : ''"
-                                                        placeholder="Objetivo">
-                                                    <div class="invalid-feedback">
-                                                        {{ update_attitude?.hasError('required') ? 'El objetivo es requerido': '' }}
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="d-grid gap-2 d-flex justify-content-end">
-                                                    <button type="submit" class="btn btn-primary"
-                                                        (click)="updatePlanningAttitude({id: planningUpdateAttitude.value.id, oa: planningUpdateAttitude.value.update_number_oaa, name: planningUpdateAttitude.value.update_attitude})"
-                                                        [disabled]="this.resourcesService.disabledButton([planningUpdateAttitude.value.update_number_oaa, planningUpdateAttitude.value.update_attitude])"
-                                                        data-bs-dismiss="modal"
-                                                        [disabled]="!planningUpdateAttitude.valid">Actualizar</button>
-                                                </div>
-                                            </form>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </tr>
                     </tbody>
                 </table>
+                <!-- Modal -->
+                <div class="modal fade" id="edit_modal_attitude" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Actitud</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form [formGroup]="planningUpdateAttitude">
+                                    <input type="text" class="form-control" formControlName="id" hidden>
+
+                                    <div class="col mb-3">
+                                        <label class="fw-semibold mb-3">N° OAA</label>
+                                        <input type="text" class="form-control" formControlName="update_number_oaa"
+                                            [ngClass]="(update_number_oaa?.touched || update_number_oaa?.dirty) && update_number_oaa?.hasError('required') ? 'is-invalid' : '' || 
+                                ((update_number_oaa?.touched || update_number_oaa?.dirty) && !update_number_oaa?.invalid) ? 'is-valid' : ''"
+                                            placeholder="A">
+                                        <div class="invalid-feedback">
+                                            {{ update_number_oaa?.hasError('required') ? 'El OAA es requerido': '' }}
+                                        </div>
+                                    </div>
+                                    <div class="col mb-3">
+                                        <label class="fw-semibold mb-3">Objetivo</label>
+                                        <input type="text" class="form-control" formControlName="update_attitude"
+                                            [ngClass]="(update_attitude?.touched || update_attitude?.dirty) && update_attitude?.hasError('required') ? 'is-invalid' : '' || 
+                                ((update_attitude?.touched || update_attitude?.dirty) && !update_attitude?.invalid) ? 'is-valid' : ''"
+                                            placeholder="Objetivo">
+                                        <div class="invalid-feedback">
+                                            {{ update_attitude?.hasError('required') ? 'El objetivo es requerido': '' }}
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+
+                                <button type="submit" class="btn btn-primary"
+                                    (click)="updatePlanningAttitude({id: planningUpdateAttitude.value.id, oa: planningUpdateAttitude.value.update_number_oaa, name: planningUpdateAttitude.value.update_attitude})"
+                                    [disabled]="this.resourcesService.disabledButton([planningUpdateAttitude.value.update_number_oaa, planningUpdateAttitude.value.update_attitude])"
+                                    data-bs-dismiss="modal"
+                                    [disabled]="!planningUpdateAttitude.valid">Actualizar</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
                     (pageChange)="pageChanged($event)"></app-pagination>
             </div>

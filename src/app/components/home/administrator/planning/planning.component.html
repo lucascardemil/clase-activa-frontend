@@ -163,9 +163,9 @@
                         </div>
                     </td>
                     <td>
-                        <div *ngFor="let indicador of planning.indicador">
-                            <p>{{ indicador }}</p>
-                        </div>
+                        <ul>
+                            <li *ngFor="let indicador of planning.indicador">{{ indicador }}</li>
+                        </ul>
                     </td>
                     <td>
                         <div *ngFor="let habilidad of planning.habilidad">
@@ -179,11 +179,6 @@
                             <p>{{ actitud.name }}</p>
                         </div>
                     </td>
-                    <!-- <td>
-                        <button type="button" class="btn btn-warning" data-bs-toggle='modal'
-                            data-bs-target="#edit_modal" (click)="selectItem(planning.id)"><i
-                                class="bi bi-pencil-square"></i></button>
-                    </td> -->
                 </tr>
             </tbody>
         </table>

@@ -8,6 +8,8 @@ import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { UnitService } from 'src/app/services/admin/unit.service';
 import { AttitudeService } from 'src/app/services/admin/attitude.service';
 import { SkillService } from 'src/app/services/admin/skill.service';
+import { IndicatorService } from 'src/app/services/admin/indicator.service';
+import { SubobjectiveService } from 'src/app/services/admin/subobjective.service';
 
 
 @Component({
@@ -43,8 +45,6 @@ export class PlanningComponent implements OnInit {
     });
 
     constructor(
-        private skillService: SkillService,
-        private attitudeService: AttitudeService,
         private courseService: CourseService,
         private planningService: PlanningService,
         private unitService: UnitService,
@@ -59,10 +59,8 @@ export class PlanningComponent implements OnInit {
                 select_filter_subject: [''],
                 select_filter_unit: ['']
             })
-
-        // this.loadPlannings()
-        // this.loadFilterCourses()
-        // this.calculatePagedItems()
+        this.loadFilterCourses()
+        this.calculatePagedItems()
     }
 
 
@@ -98,18 +96,18 @@ export class PlanningComponent implements OnInit {
 
             for (let planning of plannings) {
                 const list_subobjectives = await firstValueFrom(this.planningService.getIdSubObjective(planning.id_objective));
-                const list_skills = await firstValueFrom(this.skillService.getIdSkill(planning.id_unit));
-                const list_attitudes = await firstValueFrom(this.attitudeService.getIdAttitude(planning.id_unit));
-                const list_indicators = await firstValueFrom(this.planningService.getIdIndicator(planning.id_objective, planning.id_unit));
+                const list_skills = await firstValueFrom(this.planningService.getIdSkill(planning.id_unit));
+                const list_attitudes = await firstValueFrom(this.planningService.getIdAttitude(planning.id_unit));
+                const list_indicators = await firstValueFrom(this.planningService.getIdIndicator(planning.id_objective));
 
-                const indicatorsForThisPlanning = Object.values(list_indicators).filter((indicator: any) => indicator.objective === planning.id_objective && indicator.unit === planning.id_unit);
+                const indicatorsForThisPlanning = Object.values(list_indicators).filter((indicator: any) => indicator.id_objective === planning.id_objective);
                 const indicator = indicatorsForThisPlanning.map((indicator: any) => {
                     return this.truncateChar(indicator.name)
                 });
 
-                const subobjectivesForThisPlanning = Object.values(list_subobjectives).filter((subobjective: any) => subobjective.objective === planning.id_objective);
+                const subobjectivesForThisPlanning = Object.values(list_subobjectives).filter((subobjective: any) => subobjective.id_objective === planning.id_objective);
                 const subobjective = subobjectivesForThisPlanning.reduce((result, item) => {
-                    const { oa, name, name_subobjective, objective } = item;
+                    const { oa, name, name_subobjective, id_objective } = item;
                     const existingItem = result.find((obj: any) => obj.oa === oa);
                     if (existingItem) {
                         existingItem.subobjective.push(name_subobjective);
@@ -118,7 +116,7 @@ export class PlanningComponent implements OnInit {
                             oa,
                             name,
                             subobjective: [name_subobjective],
-                            objective
+                            id_objective
                         });
                     }
                     return result;
@@ -157,7 +155,6 @@ export class PlanningComponent implements OnInit {
             }
 
             this.rowData = this.groupObjectives(list_plannings);
-
             this.calculatePagedItems();
 
         } catch (error) {

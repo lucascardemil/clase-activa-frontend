@@ -7,9 +7,10 @@
                         <label class="fw-semibold mb-3">Sub-Objetivo</label>
 
                         <div class="input-group">
-                            <input type="text" class="form-control" formControlName="subobjective" [ngClass]="(subobjective?.touched || subobjective?.dirty) && subobjective?.hasError('required') ? 'is-invalid' : '' || 
-                            ((subobjective?.touched || subobjective?.dirty) && !subobjective?.invalid) ? 'is-valid' : ''"
-                                placeholder="Sub-Objetivo" aria-label="Objetivo" aria-describedby="button-subobjective">
+                            <input type="text" class="form-control" formControlName="subobjective"
+                                [ngClass]="(subobjective?.touched || subobjective?.dirty) && subobjective?.hasError('required') ? 'is-invalid' : '' || 
+                            ((subobjective?.touched || subobjective?.dirty) && !subobjective?.invalid) ? 'is-valid' : ''" placeholder="Sub-Objetivo" aria-label="Objetivo"
+                                aria-describedby="button-subobjective">
 
                             <button class="btn btn-primary" type="button" id="button-subobjective"
                                 (click)="saveSubObjective({name: planningAddSubObjective.value.subobjective})"
@@ -43,53 +44,49 @@
                             <td>{{ subobjective.name}}</td>
                             <td>
                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                    [attr.data-bs-target]="'#edit_modal_subobjective_' + subobjective.id"
-                                    (click)="editSubObjective(subobjective)">
+                                    data-bs-target="#edit_modal_subobjective" (click)="editSubObjective(subobjective)">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
                             </td>
-
-                            <div class="modal fade" id="{{ 'edit_modal_subobjective_' + subobjective.id }}" tabindex="-1"
-                                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Sub-Objetivo</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>  
-                                        </div>
-                                        <div class="modal-body">
-                                            <form [formGroup]="planningUpdateSubObjective">
-                                                <input type="text" class="form-control" formControlName="id" hidden>
-                                                <div class="col mb-3">
-                                                    <label class="fw-semibold mb-3">Sub-Objetivo</label>
-                                                    <input type="text" class="form-control" formControlName="update_subobjective"
-                                                        [ngClass]="(update_subobjective?.touched || update_subobjective?.dirty) && update_subobjective?.hasError('required') ? 'is-invalid' : '' || 
-                                                        ((update_subobjective?.touched || update_subobjective?.dirty) && !update_subobjective?.invalid) ? 'is-valid' : ''"
-                                                        placeholder="Objetivo">
-                                                    <div class="invalid-feedback">
-                                                        {{ update_subobjective?.hasError('required') ? 'El objetivo es requerido'
-                                                        : '' }}
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="d-grid gap-2 d-flex justify-content-end">
-                                                    <button type="submit" class="btn btn-primary"
-                                                        (click)="updatePlanningSubObjective({id: planningUpdateSubObjective.value.id, name: planningUpdateSubObjective.value.update_subobjective})"
-                                                        [disabled]="this.resourcesService.disabledButton([planningUpdateSubObjective.value.update_subobjective])"
-                                                        data-bs-dismiss="modal"
-                                                        [disabled]="!planningUpdateSubObjective.valid">Actualizar</button>
-                                                </div>
-                                            </form>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </tr>
                     </tbody>
                 </table>
-
+                <!-- modal -->
+                <div class="modal fade" id="edit_modal_subobjective" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Sub-Objetivo</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form [formGroup]="planningUpdateSubObjective">
+                                    <input type="text" class="form-control" formControlName="id" hidden>
+                                    <div class="col mb-3">
+                                        <label class="fw-semibold mb-3">Sub-Objetivo</label>
+                                        <input type="text" class="form-control" formControlName="update_subobjective"
+                                            [ngClass]="(update_subobjective?.touched || update_subobjective?.dirty) && update_subobjective?.hasError('required') ? 'is-invalid' : '' || 
+                                        ((update_subobjective?.touched || update_subobjective?.dirty) && !update_subobjective?.invalid) ? 'is-valid' : ''"
+                                            placeholder="Objetivo">
+                                        <div class="invalid-feedback">
+                                            {{ update_subobjective?.hasError('required') ? 'El objetivo es requerido'
+                                            : '' }}
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary"
+                                    (click)="updatePlanningSubObjective({id: planningUpdateSubObjective.value.id, name: planningUpdateSubObjective.value.update_subobjective})"
+                                    [disabled]="this.resourcesService.disabledButton([planningUpdateSubObjective.value.update_subobjective])"
+                                    data-bs-dismiss="modal"
+                                    [disabled]="!planningUpdateSubObjective.valid">Actualizar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
                     (pageChange)="pageChanged($event)"></app-pagination>
             </div>

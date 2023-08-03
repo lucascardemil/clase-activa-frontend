@@ -54,64 +54,59 @@
                             <td>{{ skill.name}}</td>
                             <td>
                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                    [attr.data-bs-target]="'#edit_modal_skill_' + skill.id"
-                                    (click)="editSkill(skill)">
+                                    data-bs-target="#edit_modal_skill" (click)="editSkill(skill)">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
                             </td>
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="{{ 'edit_modal_skill_' + skill.id }}" tabindex="-1"
-                                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Habilidad</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form [formGroup]="planningUpdateSkill">
-                                                <input type="text" class="form-control" formControlName="id" hidden>
-
-                                                <div class="col mb-3">
-                                                    <label class="fw-semibold mb-3">N° OAH</label>
-                                                    <input type="text" class="form-control"
-                                                        formControlName="update_number_oah"
-                                                        [ngClass]="(update_number_oah?.touched || update_number_oah?.dirty) && update_number_oah?.hasError('required') ? 'is-invalid' : '' || 
-                                                        ((update_number_oah?.touched || update_number_oah?.dirty) && !update_number_oah?.invalid) ? 'is-valid' : ''"
-                                                        placeholder="A">
-                                                    <div class="invalid-feedback">
-                                                        {{ update_number_oah?.hasError('required') ? 'El OAA es requerido': '' }}
-                                                    </div>
-                                                </div>
-                                                <div class="col mb-3">
-                                                    <label class="fw-semibold mb-3">Objetivo</label>
-                                                    <input type="text" class="form-control"
-                                                        formControlName="update_skill"
-                                                        [ngClass]="(update_skill?.touched || update_skill?.dirty) && update_skill?.hasError('required') ? 'is-invalid' : '' || 
-                                                        ((update_skill?.touched || update_skill?.dirty) && !update_skill?.invalid) ? 'is-valid' : ''"
-                                                        placeholder="Objetivo">
-                                                    <div class="invalid-feedback">
-                                                        {{ update_skill?.hasError('required') ? 'El objetivo es requerido': '' }}
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="d-grid gap-2 d-flex justify-content-end">
-                                                    <button type="submit" class="btn btn-primary"
-                                                        (click)="updatePlanningSkill({id: planningUpdateSkill.value.id, oa: planningUpdateSkill.value.update_number_oah, name: planningUpdateSkill.value.update_skill})"
-                                                        [disabled]="this.resourcesService.disabledButton([planningUpdateSkill.value.update_number_oah, planningUpdateSkill.value.update_skill])"
-                                                        data-bs-dismiss="modal"
-                                                        [disabled]="!planningUpdateSkill.valid">Actualizar</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </tr>
                     </tbody>
                 </table>
+
+                <!-- Modal -->
+                <div class="modal fade" id="edit_modal_skill" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Habilidad</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form [formGroup]="planningUpdateSkill">
+                                    <input type="text" class="form-control" formControlName="id" hidden>
+
+                                    <div class="col mb-3">
+                                        <label class="fw-semibold mb-3">N° OAH</label>
+                                        <input type="text" class="form-control" formControlName="update_number_oah"
+                                            [ngClass]="(update_number_oah?.touched || update_number_oah?.dirty) && update_number_oah?.hasError('required') ? 'is-invalid' : '' || 
+                                        ((update_number_oah?.touched || update_number_oah?.dirty) && !update_number_oah?.invalid) ? 'is-valid' : ''"
+                                            placeholder="A">
+                                        <div class="invalid-feedback">
+                                            {{ update_number_oah?.hasError('required') ? 'El OAA es requerido': '' }}
+                                        </div>
+                                    </div>
+                                    <div class="col mb-3">
+                                        <label class="fw-semibold mb-3">Objetivo</label>
+                                        <input type="text" class="form-control" formControlName="update_skill"
+                                            [ngClass]="(update_skill?.touched || update_skill?.dirty) && update_skill?.hasError('required') ? 'is-invalid' : '' || 
+                                        ((update_skill?.touched || update_skill?.dirty) && !update_skill?.invalid) ? 'is-valid' : ''"
+                                            placeholder="Objetivo">
+                                        <div class="invalid-feedback">
+                                            {{ update_skill?.hasError('required') ? 'El objetivo es requerido': '' }}
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary"
+                                    (click)="updatePlanningSkill({id: planningUpdateSkill.value.id, oa: planningUpdateSkill.value.update_number_oah, name: planningUpdateSkill.value.update_skill})"
+                                    [disabled]="this.resourcesService.disabledButton([planningUpdateSkill.value.update_number_oah, planningUpdateSkill.value.update_skill])"
+                                    data-bs-dismiss="modal" [disabled]="!planningUpdateSkill.valid">Actualizar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <app-pagination [currentPage]="currentPage" [totalPages]="totalPages"
                     (pageChange)="pageChanged($event)"></app-pagination>
             </div>
