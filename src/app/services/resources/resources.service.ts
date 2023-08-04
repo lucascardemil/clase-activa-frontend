@@ -10,6 +10,22 @@ export class ResourcesService {
     constructor() { }
 
 
+    datalistArray(recordSaved: any, list: any) {
+        if (recordSaved) {
+            recordSaved.map((record:any) =>{
+                const existingIndex = list.findIndex((element: any) => element.id === record.id);
+                if (existingIndex >= 0) {
+                    list.splice(existingIndex, 1);
+                }
+                list.push({
+                    id: record.id,
+                    name: record.course + '/' + record.subject + '/' + record.name
+                });
+            })
+        }
+        return list;
+    }
+    
     datalist(recordSaved: any, record: any, list: any) {
         if (recordSaved !== record) {
             record = recordSaved;

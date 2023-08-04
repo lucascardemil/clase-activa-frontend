@@ -27,6 +27,10 @@ export class CourseService {
         return this.http.get(`${this.url}/courses/getCourseForLevel/${id}`);
     }
 
+    getCourseForSubject(name: string) {
+        return this.http.get(`${this.url}/courses/getCourseForSubject/${name}`);
+    }
+
     addCourse(curso: Course) {
         return this.http.post(`${this.url}/courses/addCourse`, curso);
     }

@@ -73,10 +73,8 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
     }
 
     ngDoCheck(): void {
-
-        this.resourcesService.datalist(this.axiService.savedPlanningSubjectAxi, this.savedPlanningSubjectAxi, this.select_axis);
+        this.resourcesService.datalistArray(this.axiService.savedPlanningSubjectAxi, this.select_axis);
         this.resourcesService.datalist(this.objectiveService.savedPlanningObjective, this.savedPlanningObjective, this.list_objectives_axis);
-        // this.resourcesService.datalist(this.objectiveService.savedPlanningObjective, this.savedPlanningObjective, this.list_update_objectives_axis);
     }
 
     getAxiObjectiveForTable() {
@@ -174,7 +172,7 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
             axis.map((axi: any) => {
                 this.select_axis.push({
                     id: axi.id,
-                    name: axi.subject + '/' + axi.name
+                    name: axi.course + '/' + axi.subject + '/' + axi.name
                 })
             })
         })
