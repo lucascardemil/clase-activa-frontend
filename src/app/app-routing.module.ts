@@ -31,6 +31,7 @@ import { UnitSkillComponent } from './components/home/administrator/planning/uni
 import { UnitAttitudeComponent } from './components/home/administrator/planning/unit-attitude/unit-attitude.component';
 import { ObjectiveIndicatorComponent } from './components/home/administrator/planning/objective-indicator/objective-indicator.component';
 import { IndicatorComponent } from './components/home/administrator/indicator/indicator.component';
+import { UnitPlannerComponent } from './components/home/administrator/unit-planner/unit-planner.component';
 
 const routes: Routes = [
     {
@@ -40,6 +41,10 @@ const routes: Routes = [
                     {
                         path: 'cobertura_curricular',
                         component: PlanningComponent
+                    },
+                    {
+                        path: 'planificador',
+                        component: UnitPlannerComponent
                     },
                     { path: '', redirectTo: 'administrador', pathMatch: "full" }
                 ]

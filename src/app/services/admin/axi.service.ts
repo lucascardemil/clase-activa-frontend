@@ -33,10 +33,6 @@ export class AxiService {
         return this.http.post(`${this.url}/axis/addPlanningAxiObjective`, axis);
     }
 
-    updatePlaningSubjectAxi(axis: any) {
-        return this.http.put(`${this.url}/axis/updatePlaningSubjectAxi`, axis);
-    }
-
     updatePlanningAxiObjective(axis: any) {
         return this.http.put(`${this.url}/axis/updatePlanningAxiObjective`, axis);
     }

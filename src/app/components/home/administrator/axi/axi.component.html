@@ -50,18 +50,24 @@
                     <thead>
                         <tr>
                             <th scope="col">Asignaturas</th>
+                            <th scope="col">Cursos</th>
                             <th scope="col">Ejes</th>
                             <th scope="col">Accion</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngIf="pagedItems.length === 0">¡No hay datos para la busqueda!</tr>
-                        <tr *ngFor="let axi of pagedItems">
-                            <td>{{ axi.subject }} - {{ axi.course }}</td>
-                            <td>{{ axi.name}}</td>
+                        <tr *ngFor="let row of pagedItems">
+                            <td>{{ row.subject }}</td>
+                            <td>
+                                <div *ngFor="let course of row.courses">
+                                    <span>{{ course.name }}</span>
+                                </div>
+                            </td>
+                            <td>{{ row.axi }}</td>
                             <td>
                                 <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#edit_modal_axi" (click)="editAxi(axi)">
+                                    data-bs-target="#edit_modal_axi" (click)="editAxi(row)">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
                             </td>
@@ -70,8 +76,8 @@
                 </table>
 
                 <!-- Modal -->
-                <div class="modal fade" id="edit_modal_axi" tabindex="-1"
-                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="edit_modal_axi" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -81,17 +87,17 @@
                             </div>
                             <div class="modal-body">
                                 <form [formGroup]="planningUpdateAxi">
-                                    <input type="text" class="form-control" formControlName="id" hidden>
+                                    <input type="text" class="form-control" formControlName="update_subject" hidden>
+                                    <input type="text" class="form-control" formControlName="update_axi" hidden>
 
-                                    <div class="col mb-3">
+                                    <!-- <div class="col mb-3">
                                         <label class="fw-semibold mb-3">Asignaturas</label>
                                         <select class="form-select" formControlName="update_subject"
                                             [ngClass]="(update_subject?.touched || update_subject?.dirty) && update_subject?.hasError('required') ? 'is-invalid' : '' || 
                                     ((update_subject?.touched || update_subject?.dirty) && !update_subject?.invalid) ? 'is-valid' : ''">
                                             <option value="">Seleccione la asignatura</option>
                                             <option *ngFor="let subject of list_all_update_subjects"
-                                                [value]="subject.id">{{ subject.name }} - {{
-                                                subject.course }}
+                                                [value]="subject.id">{{ subject.name }}
                                             </option>
                                         </select>
 
@@ -99,8 +105,8 @@
                                             {{ update_subject?.hasError('required') ? 'La asignatura es requerido' : ''
                                             }}
                                         </div>
-                                    </div>
-                                    <div class="col mb-3">
+                                    </div> -->
+                                    <!-- <div class="col mb-3">
                                         <label class="fw-semibold mb-3">Eje</label>
                                         <input type="text" class="form-control" formControlName="update_axi"
                                             [ngClass]="(update_axi?.touched || update_axi?.dirty) && update_axi?.hasError('required') ? 'is-invalid' : '' || 
@@ -110,17 +116,29 @@
                                             {{ update_axi?.hasError('required') ? 'El eje es requerido' : ''
                                             }}
                                         </div>
-                                    </div>
-                                    <hr>
-                                    <div class="d-grid gap-2 d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-primary"
-                                            (click)="updatePlanningSubjectAxi({id: planningUpdateAxi.value.id, name: planningUpdateAxi.value.update_axi, subject: planningUpdateAxi.value.update_subject})"
-                                            [disabled]="this.resourcesService.disabledButton([planningUpdateAxi.value.update_axi, planningUpdateAxi.value.update_subject])"
-                                            data-bs-dismiss="modal"
-                                            [disabled]="!planningUpdateAxi.valid">Actualizar</button>
+                                    </div> -->
+
+                                    <div class="col-12">
+                                        <label class="fw-semibold mb-3">Cursos</label>
+                                        <div class="row container-scroll">
+                                            <div class="col">
+                                                <div class="form-check" *ngFor="let course of list_all_update_courses">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        formControlName="{{ 'update_course_' + course.id }}"
+                                                        [id]="course.id" (click)="checkBox($event)">
+                                                    <label class="form-check-label" [for]="course.id">{{ course.name
+                                                        }}</label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </form>
-
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary"
+                                    (click)="updatePlanningSubjectAxi({id: checkboxs, subject: planningUpdateAxi.value.update_subject, axi: planningUpdateAxi.value.update_axi})"
+                                    [disabled]="this.resourcesService.isArrayEmpty(checkboxs)" data-bs-dismiss="modal"
+                                    [disabled]="!planningUpdateAxi.valid">Actualizar</button>
                             </div>
                         </div>
                     </div>

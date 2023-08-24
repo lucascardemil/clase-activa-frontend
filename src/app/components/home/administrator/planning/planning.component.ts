@@ -61,8 +61,8 @@ export class PlanningComponent implements OnInit {
             })
 
         // this.loadPlannings()
-        // this.loadFilterCourses()
-        // this.calculatePagedItems()
+        this.loadFilterCourses()
+        this.calculatePagedItems()
     }
 
 
@@ -100,14 +100,17 @@ export class PlanningComponent implements OnInit {
                 const list_subobjectives = await firstValueFrom(this.planningService.getIdSubObjective(planning.id_objective));
                 const list_skills = await firstValueFrom(this.skillService.getIdSkill(planning.id_unit));
                 const list_attitudes = await firstValueFrom(this.attitudeService.getIdAttitude(planning.id_unit));
-                const list_indicators = await firstValueFrom(this.planningService.getIdIndicator(planning.id_objective, planning.id_unit));
+                const list_indicators = await firstValueFrom(this.planningService.getIdIndicator(planning.id_objective));
 
-                const indicatorsForThisPlanning = Object.values(list_indicators).filter((indicator: any) => indicator.objective === planning.id_objective && indicator.unit === planning.id_unit);
+                // console.log(list_indicators)
+                console.log(list_subobjectives)
+
+                const indicatorsForThisPlanning = Object.values(list_indicators).filter((indicator: any) => indicator.id_objective === planning.id_objective);
                 const indicator = indicatorsForThisPlanning.map((indicator: any) => {
                     return this.truncateChar(indicator.name)
                 });
 
-                const subobjectivesForThisPlanning = Object.values(list_subobjectives).filter((subobjective: any) => subobjective.objective === planning.id_objective);
+                const subobjectivesForThisPlanning = Object.values(list_subobjectives).filter((subobjective: any) => subobjective.id_objective === planning.id_objective);
                 const subobjective = subobjectivesForThisPlanning.reduce((result, item) => {
                     const { oa, name, name_subobjective, objective } = item;
                     const existingItem = result.find((obj: any) => obj.oa === oa);

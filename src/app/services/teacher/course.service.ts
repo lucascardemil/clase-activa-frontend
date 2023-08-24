@@ -16,19 +16,23 @@ export class CourseService {
     ) { }
 
     getCourse() {
-        return this.http.get(`${this.url}/courses/`);
+        return this.http.get(`${this.url}/courses/getAllCourses`);
     }
 
     getIdCourse(id: number) {
-        return this.http.get(`${this.url}/courses/${id}`);
+        return this.http.get(`${this.url}/courses/getIdCourse/${id}`);
     }
 
     getCourseForLevel(id: number) {
         return this.http.get(`${this.url}/courses/getCourseForLevel/${id}`);
     }
+    
+    getAllCourseForSubject() {
+        return this.http.get(`${this.url}/courses/getAllCourseForSubject`);
+    }
 
-    getCourseForSubject(name: string) {
-        return this.http.get(`${this.url}/courses/getCourseForSubject/${name}`);
+    getCourseForSubjectName(name: string) {
+        return this.http.get(`${this.url}/courses/getCourseForSubjectName/${name}`);
     }
 
     addCourse(curso: Course) {

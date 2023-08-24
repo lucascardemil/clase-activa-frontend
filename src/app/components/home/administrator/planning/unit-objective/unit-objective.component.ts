@@ -137,7 +137,7 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
                 this.checkboxs = []
             }
         });
-        await this.planningComponent.loadPlannings();
+        
     }
 
     async updatePlanningUnitObjective(data: any) {
@@ -163,7 +163,7 @@ export class UnitObjectiveComponent implements OnInit, DoCheck {
             }
         });
 
-        await this.planningComponent.loadPlannings();
+        
     }
 
     

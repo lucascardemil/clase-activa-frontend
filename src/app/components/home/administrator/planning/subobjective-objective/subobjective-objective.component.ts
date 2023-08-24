@@ -138,7 +138,6 @@ export class SubobjectiveObjectiveComponent implements OnInit {
                 this.checkboxs = []
             }
         });
-        await this.planningComponent.loadPlannings();
     }
 
 
@@ -164,7 +163,6 @@ export class SubobjectiveObjectiveComponent implements OnInit {
                 this.checkboxs = []
             }
         });
-        await this.planningComponent.loadPlannings();
     }
 
     selectSubObjectives() {

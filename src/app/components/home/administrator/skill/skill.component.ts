@@ -97,7 +97,7 @@ export class SkillComponent implements OnInit {
                     name: res.result.name
                 })
                 
-                await this.planningComponent.loadPlannings();
+                
             } else {
                 this.notyf.error(res.message);
             }

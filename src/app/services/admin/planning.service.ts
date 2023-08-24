@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Planning } from 'src/app/models/Planning';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -26,8 +25,8 @@ export class PlanningService {
         return this.http.get(`${this.url}/plannings/getIdSubObjective/${id}`);
     }
 
-    getIdIndicator(objective: number, unit: number) {
-        return this.http.get(`${this.url}/plannings/getIdIndicator/${objective}/${unit}`);
+    getIdIndicator(id: number) {
+        return this.http.get(`${this.url}/plannings/getIdIndicator/${id}`);
     }
 
     getSubjectForUnit(id: number) {

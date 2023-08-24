@@ -137,7 +137,7 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
             }
         });
 
-        await this.planningComponent.loadPlannings();
+        
     }
 
 
@@ -163,7 +163,7 @@ export class AxiObjectiveComponent implements OnInit, DoCheck {
                 this.checkboxs = []
             }
         });
-        await this.planningComponent.loadPlannings();
+        
     }
 
     selectAxis() {

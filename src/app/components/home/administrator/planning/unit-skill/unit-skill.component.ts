@@ -155,7 +155,7 @@ export class UnitSkillComponent implements OnInit, DoCheck {
             }
         });
 
-        // await this.planningComponent.loadPlannings();
+        // 
     }
 
     async updatePlanningUnitSkill(planning: any) {
@@ -181,7 +181,7 @@ export class UnitSkillComponent implements OnInit, DoCheck {
             }
         });
 
-        // await this.planningComponent.loadPlannings();
+        // 
     }
 
     selectUnitsSkills() {

@@ -160,7 +160,7 @@ export class UnitComponent implements OnInit {
                         name: res.result.level + '/' + res.result.course + '/' + res.result.subject + '/' + res.result.unit
                     });
 
-                    await this.planningComponent.loadPlannings();
+                    
 
                 } else {
                     this.notyf.error(res.message);

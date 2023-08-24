@@ -138,7 +138,7 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
                 this.checkboxs = []
             }
         });
-        await this.planningComponent.loadPlannings();
+        
     }
 
 
@@ -164,7 +164,7 @@ export class ObjectiveIndicatorComponent implements OnInit, DoCheck {
                 this.checkboxs = []
             }
         });
-        await this.planningComponent.loadPlannings();
+        
     }
 
     selectIndicators() {

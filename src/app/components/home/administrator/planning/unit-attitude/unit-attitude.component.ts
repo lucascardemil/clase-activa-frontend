@@ -156,7 +156,6 @@ export class UnitAttitudeComponent implements OnInit, DoCheck {
                 this.checkboxs = []
             }
         });
-        // await this.planningComponent.loadPlannings();
     }
 
     async updatePlanningUnitAttitude(planning: any) {
@@ -165,25 +164,22 @@ export class UnitAttitudeComponent implements OnInit, DoCheck {
             element.unit = this.resourcesService.list(planning.unit, this.select_units_attitudes)
         })
 
-        console.log(this.checkboxs);
+        this.unitService.updatePlanningUnitAttitude(this.checkboxs).subscribe((res: any) => {
+            if (res.status === 'success') {
+                const { insertedRecords, existingRecords } = res.result;
 
-        // this.unitService.updatePlanningUnitAttitude(this.checkboxs).subscribe((res: any) => {
-        //     if (res.status === 'success') {
-        //         const { insertedRecords, existingRecords } = res.result;
+                insertedRecords.forEach((record: any) => {
+                    this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
+                });
 
-        //         insertedRecords.forEach((record: any) => {
-        //             this.notyf.success('¡El ' + record.name + ' y OA' + record.oa + ' se asociaron correctamente!');
-        //         });
+                existingRecords.forEach((record: any) => {
+                    this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
+                });
 
-        //         existingRecords.forEach((record: any) => {
-        //             this.notyf.error('¡El ' + record.name + ' y OA' + record.oa + ' ya están asociados!');
-        //         });
-
-        //         this.getUnitAttitudeForTable()
-        //         this.checkboxs = []
-        //     }
-        // });
-        // await this.planningComponent.loadPlannings();
+                this.getUnitAttitudeForTable()
+                this.checkboxs = []
+            }
+        });
     }
 
     selectUnitsAttitudes() {

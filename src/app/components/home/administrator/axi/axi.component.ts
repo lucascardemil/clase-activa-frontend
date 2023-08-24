@@ -3,7 +3,7 @@ import { PlanningService } from 'src/app/services/admin/planning.service';
 
 import { NOTYF } from 'src/app/services/notyf/notyf.token';
 import { Notyf } from 'notyf';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { SubjectService } from 'src/app/services/teacher/subject.service';
 import { AxiService } from 'src/app/services/admin/axi.service';
 import { ResourcesService } from 'src/app/services/resources/resources.service';
@@ -21,6 +21,7 @@ export class AxiComponent implements OnInit {
     list_all_subjects: any = []
     list_all_update_subjects: any = []
     list_all_courses: any = []
+    list_all_update_courses: any = []
     list_axis: any = []
     checkboxs: any = []
 
@@ -36,13 +37,11 @@ export class AxiComponent implements OnInit {
     });
 
     planningUpdateAxi = new FormGroup({
-        update_course: new FormControl(),
         update_subject: new FormControl(),
         update_axi: new FormControl(),
     });
 
     constructor(
-        private planningComponent: PlanningComponent,
         public resourcesService: ResourcesService,
         private axiService: AxiService,
         private subjectService: SubjectService,
@@ -61,19 +60,33 @@ export class AxiComponent implements OnInit {
 
         this.planningUpdateAxi = this.formBuilder.group(
             {
-                id: [''],
-                update_course: ['', [Validators.required]],
+                
                 update_subject: ['', [Validators.required]],
                 update_axi: ['', [Validators.required]],
             })
+
         this.loadAllSubjects()
         this.loadAllUpdateSubjects()
         this.getAxisForTable()
     }
 
+    editAxi(data: any) {
+        this.planningUpdateAxi.get('update_subject')?.setValue(data.subject);
+        this.planningUpdateAxi.get('update_axi')?.setValue(data.axi);
+        this.loadAllCourses(data);
+    }
+
+
+    editSelected(axi: any) {
+        const selectedSubject = this.list_all_update_subjects.find((subject: any) => subject.name === axi.subject);
+        if (selectedSubject) {
+            this.planningUpdateAxi.get('update_subject')?.setValue(selectedSubject.id);
+        }
+    }
+
     getAxisForTable() {
         this.axiService.getSelectAxis().subscribe((axis) => {
-            this.list_axis = axis;
+            this.list_axis = this.groupObjectivesTable(axis);
             this.calculatePagedItems();
         });
     }
@@ -82,7 +95,7 @@ export class AxiComponent implements OnInit {
         this.list_all_subjects = []
         this.subjectService.getSubject().subscribe((subjects: any) => {
             const uniqueNames: any = {};
-            this.list_all_subjects = subjects.filter((obj:any) => {
+            this.list_all_subjects = subjects.filter((obj: any) => {
                 if (!uniqueNames[obj.name]) {
                     uniqueNames[obj.name] = true;
                     return true;
@@ -95,13 +108,52 @@ export class AxiComponent implements OnInit {
     loadAllUpdateSubjects() {
         this.list_all_update_subjects = []
         this.subjectService.getSubject().subscribe((subjects: any) => {
-            subjects.map((subject: any) =>{
-                this.list_all_update_subjects.push({
-                    id: subject.id,
-                    name: subject.name,
-                    course: subject.course
+            const uniqueNames: any = {};
+            this.list_all_update_subjects = subjects.filter((obj: any) => {
+                if (!uniqueNames[obj.name]) {
+                    uniqueNames[obj.name] = true;
+                    return true;
+                }
+                return false;
+            });
+        })
+    }
+
+    loadAllCourses(data: any) {
+        this.list_all_update_courses = [];
+        this.checkboxs = [];
+
+        this.courseService.getCourseForSubjectName(data.subject).subscribe((courses: any) => {
+            courses.map((course: any) => {
+                this.list_all_update_courses.push({
+                    id: course.id,
+                    name: course.name,
+                    checked: false
                 })
+
+                this.planningUpdateAxi.addControl(`update_course_${course.id}`, new FormControl(false, Validators.required));
             })
+
+            for (let course of data.courses) {
+                let edit_select = this.list_all_update_courses.find((item: any) => item.id === course.id);
+                if (edit_select) {
+                    edit_select.checked = true;
+                    this.planningUpdateAxi.get(`update_course_${edit_select.id}`)?.patchValue(true);
+
+                    this.checkboxs.push({
+                        id: edit_select.id,
+                        checked: edit_select.checked
+                    })
+                }
+            }
+
+            for (let course of this.list_all_update_courses) {
+                let edit_deselect = data.courses.find((item: any) => item.id === course.id);
+                if (!edit_deselect) {
+                    course.checked = false;
+                    this.planningUpdateAxi.get(`update_course_${course.id}`)?.patchValue(false);
+                }
+            }
         })
     }
 
@@ -110,7 +162,7 @@ export class AxiComponent implements OnInit {
         this.list_all_courses = []
         this.checkboxs = []
         this.planningAddAxi.patchValue({ course: false });
-        this.courseService.getCourseForSubject(id).subscribe((courses: any) => {
+        this.courseService.getCourseForSubjectName(id).subscribe((courses: any) => {
             courses.map((course: any) => {
                 this.list_all_courses.push({
                     id: course.id,
@@ -125,10 +177,26 @@ export class AxiComponent implements OnInit {
 
         if (event.target.checked === true) {
             this.checkboxs.push({
-                id: id
+                id: id,
+                checked: true
             })
+
+            let selected = this.list_all_update_courses.find((item: any) => item.id === id);
+            if (selected) {
+                selected.checked = true;
+            }
+
         } else {
             this.checkboxs = this.checkboxs.filter((element: any) => element.id !== id)
+
+            let deselect = this.list_all_update_courses.find((item: any) => item.id === id);
+            if (deselect) {
+                deselect.checked = false;
+                this.checkboxs.push({
+                    id: deselect.id,
+                    checked: deselect.checked
+                })
+            }
         }
     }
 
@@ -137,7 +205,7 @@ export class AxiComponent implements OnInit {
     savePlanningSubjectAxi(planning: any) {
         this.checkboxs.map((element: any) => {
             element.axi = planning.axi,
-            element.subject = planning.subject
+                element.subject = planning.subject
         })
 
         this.axiService.addPlaningSubjectAxi(this.checkboxs).subscribe((res: any) => {
@@ -162,37 +230,35 @@ export class AxiComponent implements OnInit {
         });
     }
 
-    editAxi(axi: any) {
-        this.planningUpdateAxi.get('id')?.setValue(axi.id);
-        this.planningUpdateAxi.get('update_axi')?.setValue(axi.name);
-        this.editSelected(axi);
-    }
+    updatePlanningSubjectAxi(planning: any) {
+        this.checkboxs.map((element: any) => {
+            element.axi = planning.axi,
+                element.subject = planning.subject
+        })
 
-    editSelected(axi: any) {
-        const selectedSubject = this.list_all_update_subjects.find((subject: any) => subject.name === axi.subject && subject.course === axi.course);
-        if (selectedSubject) {
-            this.planningUpdateAxi.get('update_subject')?.setValue(selectedSubject.id);
-        }
-    }
+        this.axiService.addPlaningSubjectAxi(this.checkboxs).subscribe((res: any) => {
+            if (res.status === 'success') {
+                const { insertedRecords, existingRecords, deleteRecords } = res.result;
 
-    updatePlanningSubjectAxi(axis: any) {
-        this.axiService.updatePlaningSubjectAxi(axis).subscribe(
-            async (res: any) => {
-                if (res.status === 'success') {
-                    this.notyf.success(res.message);
-                    this.getAxisForTable();
+                insertedRecords.forEach((record: any) => {
+                    this.notyf.success('¡El Eje ' + record.name + ' y el Curso ' + record.course + ' se asociaron correctamente!');
+                });
 
-                    this.axiService.savePlanningSubjectAxi({
-                        id: res.result.id,
-                        name: res.result.subject + '/' + res.result.name
-                    })
+                existingRecords.forEach((record: any) => {
+                    this.notyf.error('¡El Eje ' + record.name + ' y el Curso ' + record.course + ' ya están asociados!');
+                });
 
-                    await this.planningComponent.loadPlannings();
+                deleteRecords.forEach((record: any) => {
+                    this.notyf.success('¡El Curso ' + record.course + ' fue eliminado!');
+                });
 
-                } else {
-                    this.notyf.error(res.message);
-                }
-            });
+                this.axiService.savePlanningSubjectAxi(insertedRecords)
+
+                this.getAxisForTable();
+                this.planningUpdateAxi.patchValue({ update_course: false });
+                this.checkboxs = []
+            }
+        });
     }
 
     clearForm() {
@@ -213,6 +279,35 @@ export class AxiComponent implements OnInit {
     pageChanged(pageNumber: number) {
         this.currentPage = pageNumber;
         this.calculatePagedItems();
+    }
+
+    groupObjectivesTable(data: any) {
+        const result: any[] = [];
+
+        data.forEach((item: any) => {
+            const axi = item.name;
+            const subject = item.subject;
+
+            // Buscar si ya existe un objeto con el mismo axi en el resultado
+            const existingAxi = result.find(obj => obj.axi === axi);
+
+            if (!existingAxi) {
+                result.push({
+                    subject: subject,
+                    courses: [{ id: item.id_course, name: item.course }],
+                    axi: axi
+                });
+            } else {
+                // Si ya existe el axi, verificar si el curso ya está en la lista de cursos
+                const existingCourse = existingAxi.courses.find((course: any) => course.id_course === item.id_course);
+
+                if (!existingCourse) {
+                    existingAxi.courses.push({ id: item.id_course, name: item.course });
+                }
+            }
+        });
+
+        return result;
     }
 
     get axi() {
