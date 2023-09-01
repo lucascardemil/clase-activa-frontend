@@ -102,9 +102,6 @@ export class PlanningComponent implements OnInit {
                 const list_attitudes = await firstValueFrom(this.attitudeService.getIdAttitude(planning.id_unit));
                 const list_indicators = await firstValueFrom(this.planningService.getIdIndicator(planning.id_objective));
 
-                // console.log(list_indicators)
-                console.log(list_subobjectives)
-
                 const indicatorsForThisPlanning = Object.values(list_indicators).filter((indicator: any) => indicator.id_objective === planning.id_objective);
                 const indicator = indicatorsForThisPlanning.map((indicator: any) => {
                     return this.truncateChar(indicator.name)

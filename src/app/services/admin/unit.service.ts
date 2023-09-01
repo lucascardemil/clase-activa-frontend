@@ -46,6 +46,11 @@ export class UnitService {
         const timestamp = new Date().getTime();
         return this.http.get(`${this.url}/units/getSelectUnitsAttitudes?timestamp=${timestamp}`);
     }
+
+    getUnitForSubjectName(name: string) {
+        return this.http.get(`${this.url}/units/getUnitForSubjectName/${name}`);
+    }
+
     addPlanningUnit(planning: Planning) {
         return this.http.post(`${this.url}/units/addPlanningUnit`, planning);
     }

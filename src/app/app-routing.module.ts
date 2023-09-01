@@ -129,5 +129,6 @@ export const ArrayOfComponents = [
     UnitAttitudeComponent,
     ObjectiveIndicatorComponent,
     SubobjectiveObjectiveComponent,
-    IndicatorComponent
+    IndicatorComponent,
+    UnitPlannerComponent
 ]

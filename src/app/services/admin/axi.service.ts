@@ -25,6 +25,10 @@ export class AxiService {
         return this.http.get(`${this.url}/axis/getIdAxisSubjects/${name}/${subject}`);
     }
 
+    getAxiForSubjectAndCourse(id: any) {
+        return this.http.get(`${this.url}/axis/getAxiForSubjectAndCourse/${id}`);
+    }
+
     addPlaningSubjectAxi(axis: any) {
         return this.http.post(`${this.url}/axis/addPlaningSubjectAxi`, axis);
     }

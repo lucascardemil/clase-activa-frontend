@@ -8,158 +8,99 @@
         </figcaption>
     </figure>
 
+    <!-- Form -->
     <div class="shadow p-3 mb-5 bg-body rounded">
-        <div class="row">
-            <div class="col">
-                <div class="mb-3">
-                    <label class="form-label fw-semibold" for="subject">Asignatura</label>
-                    <select class="form-select" id="subject">
-                        <option selected>Choose...</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
+        <form [formGroup]="formPlanner">
+            <div class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="subject">Asignatura</label>
+                        <select class="form-select" formControlName="select_subject_planner" (change)="searchCourse($event)">
+                            <option value="">Seleccione la asignatura</option>
+                            <option *ngFor="let subject of list_subjects_planner" [value]="subject.name">{{ subject.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="course">Curso</label>
+                        <select class="form-select" formControlName="select_course_planner">
+                            <option value="">Seleccione el curso</option>
+                            <option *ngFor="let course of list_courses_planner" [value]="course.name">{{ course.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <label class="form-label fw-semibold" for="letter">Letra</label>
+                    <input type="text" class="form-control" placeholder="Letra" aria-label="letter"
+                        aria-describedby="letter" formControlName="letter">
                 </div>
             </div>
-            <div class="col">
-                <div class="mb-3">
-                    <label class="form-label fw-semibold" for="subject">Curso</label>
-                    <select class="form-select" id="subject">
-                        <option selected>Choose...</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col">
-                <label class="form-label fw-semibold" for="letter">Letra</label>
-                <input type="text" class="form-control" placeholder="Letra" aria-label="letter"
-                    aria-describedby="letter">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="mb-3">
-                    <label class="form-label fw-semibold" for="unit">Unidad</label>
-                    <select class="form-select" id="unit">
-                        <option selected>Choose...</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="shadow-none p-3 mb-3 bg-light rounded">
-                    <label class="form-label fw-semibold" for="axis">Ejes</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="axi-1">
-                        <label class="form-check-label" for="axi-1">Eje 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="axi-1">
-                        <label class="form-check-label" for="axi-1">Eje 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="axi-1">
-                        <label class="form-check-label" for="axi-1">Eje 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="axi-1">
-                        <label class="form-check-label" for="axi-1">Eje 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="axi-1">
-                        <label class="form-check-label" for="axi-1">Eje 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="axi-1">
-                        <label class="form-check-label" for="axi-1">Eje 1</label>
+            <div class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="unit">Unidad</label>
+                        <select class="form-select" formControlName="select_unit_planner" (change)="searchSkillAttitude($event)">
+                            <option value="">Seleccione la unidad</option>
+                            <option *ngFor="let unit of list_units_planner" [value]="unit.id">{{ unit.name }}</option>
+                        </select>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col mb-3">
-                <label class="form-label fw-semibold" for="weekly_hours">N° Horas Semanales</label>
-                <input type="text" class="form-control" placeholder="N° Horas Semanales" aria-label="weekly_hours"
-                    aria-describedby="weekly_hours">
-            </div>
-            <div class="col mb-3">
-                <label class="form-label fw-semibold" for="teacher">Docente</label>
-                <input type="text" class="form-control" placeholder="Docente" aria-label="teacher"
-                    aria-describedby="teacher">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col mb-3">
-                <label class="form-label fw-semibold" for="concepts">Conceptos</label>
-                <input type="text" class="form-control" placeholder="Conceptos" aria-label="concepts"
-                    aria-describedby="concepts">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="shadow-none p-3 mb-3 bg-light rounded">
-                    <label class="form-label fw-semibold" for="skills">Habilidades</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="skill-1">
-                        <label class="form-check-label" for="skill-1">Habilidad 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="skill-1">
-                        <label class="form-check-label" for="skill-1">Habilidad 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="skill-1">
-                        <label class="form-check-label" for="skill-1">Habilidad 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="skill-1">
-                        <label class="form-check-label" for="skill-1">Habilidad 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="skill-1">
-                        <label class="form-check-label" for="skill-1">Habilidad 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="skill-1">
-                        <label class="form-check-label" for="skill-1">Habilidad 1</label>
+            <div class="row">
+                <div class="col">
+                    <div class="shadow-none p-3 mb-3 bg-light rounded">
+                        <label class="form-label fw-semibold" for="axis">Ejes</label>
+                        <div class="form-check" *ngFor="let axi of list_axis_planner">
+                            <input class="form-check-input" type="checkbox" formControlName="select_axi_planner" [id]="axi.id" (click)="checkAxi($event)">
+                            <label class="form-check-label" [for]="axi.id">{{ axi.name }}</label>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="shadow-none p-3 mb-3 bg-light rounded">
-                    <label class="form-label fw-semibold" for="axis">Actitudes</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="attitude-1">
-                        <label class="form-check-label" for="attitude-1">Actitud 1</label>
+            <div class="row">
+                <div class="col mb-3">
+                    <label class="form-label fw-semibold" for="weekly_hours">N° Horas Semanales</label>
+                    <input type="text" class="form-control" placeholder="N° Horas Semanales" aria-label="weekly_hours"
+                        aria-describedby="weekly_hours" formControlName="weekly_hours">
+                </div>
+                <div class="col mb-3">
+                    <label class="form-label fw-semibold" for="teacher">Docente</label>
+                    <input type="text" class="form-control" placeholder="Docente" aria-label="teacher"
+                        aria-describedby="teacher" formControlName="teacher">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <label class="form-label fw-semibold" for="concepts">Conceptos</label>
+                    <input type="text" class="form-control" placeholder="Conceptos" aria-label="concepts"
+                        aria-describedby="concepts" formControlName="concepts">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="shadow-none p-3 mb-3 bg-light rounded">
+                        <label class="form-label fw-semibold" for="skills">Habilidades</label>
+                        <div class="form-check" *ngFor="let skill of list_skills_planner">
+                            <input class="form-check-input" type="checkbox" formControlName="select_skill_planner" [id]="skill.id">
+                            <label class="form-check-label" [for]="skill.id">OAH{{ skill.oa }} - {{ skill.name }}</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="attitude-1">
-                        <label class="form-check-label" for="attitude-1">Actitud 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="attitude-1">
-                        <label class="form-check-label" for="attitude-1">Actitud 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="attitude-1">
-                        <label class="form-check-label" for="attitude-1">Actitud 1</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="attitude-1">
-                        <label class="form-check-label" for="attitude-1">Actitud 1</label>
+                </div>
+                <div class="col">
+                    <div class="shadow-none p-3 mb-3 bg-light rounded">
+                        <label class="form-label fw-semibold" for="axis">Actitudes</label>
+                        <div class="form-check" *ngFor="let attitude of list_attitudes_planner">
+                            <input class="form-check-input" type="checkbox" formControlName="select_attitude_planner" [id]="attitude.id">
+                            <label class="form-check-label" [for]="attitude.id">OAA{{ attitude.oa }} - {{ attitude.name }}</label>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
-
+    <!-- Table -->
     <div class="shadow p-3 mb-5 bg-body rounded">
         <div class="row">
             <div class="col-3 mb-3">
@@ -200,19 +141,14 @@
                                 <div class="row">
                                     <div class="col">
                                         <div class="mb-3">
-                                            <select class="form-select" id="objective">
-                                                <option selected>Objetivo</option>
-                                                <option value="1">One</option>
-                                                <option value="2">Two</option>
-                                                <option value="3">Three</option>
-                                            </select>
+                                            Objetivo
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
                                         <div class="shadow-none p-3 mb-3 bg-light rounded">
-                                            <label class="form-label fw-semibold" for="subobjective">Subobjetivo</label>
+                                            <!-- <label class="form-label fw-semibold" for="subobjective">Subobjetivo</label> -->
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="subobjective-1">
                                                 <label class="form-check-label" for="subobjective-1">Subobjetivo
@@ -250,22 +186,29 @@
                                     <div class="col">
                                         <div class="shadow-none p-3 mb-3 bg-light rounded">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="didactic-resources-1">
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="didactic-resources-1">
                                                 <label class="form-check-label" for="didactic-resources-1">PPT</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="didactic-resources-1">
-                                                <label class="form-check-label" for="didactic-resources-1">Recortes</label>
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="didactic-resources-1">
+                                                <label class="form-check-label"
+                                                    for="didactic-resources-1">Recortes</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="didactic-resources-1">
-                                                <label class="form-check-label" for="didactic-resources-1">Texto del estudiante</label>
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="didactic-resources-1">
+                                                <label class="form-check-label" for="didactic-resources-1">Texto del
+                                                    estudiante</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="didactic-resources-1">
-                                                <label class="form-check-label" for="didactic-resources-1">Utiles</label>
+                                                <input class="form-check-input" type="checkbox"
+                                                    id="didactic-resources-1">
+                                                <label class="form-check-label"
+                                                    for="didactic-resources-1">Utiles</label>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -306,17 +249,19 @@
                                         <div class="shadow-none p-3 mb-3 bg-light rounded">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="evaluation-type-1">
-                                                <label class="form-check-label" for="evaluation-type-1">Diagnostica</label>
+                                                <label class="form-check-label"
+                                                    for="evaluation-type-1">Diagnostica</label>
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="evaluation-type-1">
-                                                <label class="form-check-label" for="evaluation-type-1">Formativa</label>
+                                                <label class="form-check-label"
+                                                    for="evaluation-type-1">Formativa</label>
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="evaluation-type-1">
                                                 <label class="form-check-label" for="evaluation-type-1">Sumativa</label>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
